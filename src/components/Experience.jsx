@@ -13,8 +13,8 @@ const Experience = () => {
         shadow-mapSize-height={2048}
       />
       <group position={[0, -1, 0]}>
-        <Woman player={1} position={[-0.8, 0, 0]} />
-        <Woman player={2} position={[0.8, 0, 0]} rotation={[0, Math.PI, 0]} />
+        <Woman player={1} position={[-0.8, 0, 0]} rotation={[0, Math.PI / 2, 0]} />
+        <Woman player={2} position={[0.8, 0, 0]} rotation={[0, -Math.PI / 2, 0]} />
       </group>
       <mesh
         rotation={[-0.5 * Math.PI, 0, 0]}
