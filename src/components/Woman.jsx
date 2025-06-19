@@ -7,14 +7,29 @@ import React, { useEffect, useRef, useMemo } from "react";
 import { SkeletonUtils } from "three-stdlib";
 import { useCharacterAnimations } from "../contexts/CharacterAnimations";
 
-function Woman(props) {
+function Woman({ player = 1, ...props }) {
   const group = useRef();
   const { scene, animations } = useGLTF("./models/woman.gltf");
-  const { setAnimations, animationIndex, animations: contextAnimations } = useCharacterAnimations();
+  const { 
+    setAnimations, 
+    animationIndex, 
+    animations: contextAnimations,
+    player1AnimationIndex,
+    player2AnimationIndex,
+    isCombatMode
+  } = useCharacterAnimations();
   
   // Clone the scene to create independent instances
   const clonedScene = useMemo(() => SkeletonUtils.clone(scene), [scene]);
   const { actions, names } = useAnimations(animations, group);
+
+  // Determinar qué índice de animación usar
+  const currentAnimationIndex = useMemo(() => {
+    if (isCombatMode) {
+      return player === 1 ? player1AnimationIndex : player2AnimationIndex;
+    }
+    return animationIndex;
+  }, [isCombatMode, player, player1AnimationIndex, player2AnimationIndex, animationIndex]);
 
   useEffect(() => {
     if (contextAnimations.length === 0) {
@@ -23,15 +38,15 @@ function Woman(props) {
   }, [names, contextAnimations.length, setAnimations]);
 
   useEffect(() => {
-    if (actions && names[animationIndex]) {
-      actions[names[animationIndex]].reset().fadeIn(0.5).play();
+    if (actions && names[currentAnimationIndex]) {
+      actions[names[currentAnimationIndex]].reset().fadeIn(0.5).play();
       return () => {
-        if (actions[names[animationIndex]]) {
-          actions[names[animationIndex]].fadeOut(0.5);
+        if (actions[names[currentAnimationIndex]]) {
+          actions[names[currentAnimationIndex]].fadeOut(0.5);
         }
       };
     }
-  }, [animationIndex, actions, names]);
+  }, [currentAnimationIndex, actions, names]);
 
   return (
     <group ref={group} {...props} dispose={null}>
