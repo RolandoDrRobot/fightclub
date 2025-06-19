@@ -1,5 +1,6 @@
-import { Affix, Button, Group, Switch, Text, Stack } from "@mantine/core";
+import { Affix, Button, Group, Switch, Text, Stack, Box } from "@mantine/core";
 import { useCharacterAnimations } from "../contexts/CharacterAnimations";
+import { useMediaQuery } from "@mantine/hooks";
 
 const Interface = () => {
   const { 
@@ -17,6 +18,10 @@ const Interface = () => {
     player1IsDead,
     player2IsDead
   } = useCharacterAnimations();
+
+  // Media queries para responsive design
+  const isMobile = useMediaQuery("(max-width: 768px)");
+  const isTablet = useMediaQuery("(max-width: 1024px)");
 
   // Botones de ataque para modo combate
   const attackButtons = [
@@ -42,84 +47,119 @@ const Interface = () => {
   
   return (
     <>
-      {/* Toggle de modo */}
-      <Affix position={{ top: 20, left: 20 }}>
-        <Stack spacing="xs">
+      {/* Toggle de modo - Responsive */}
+      <Affix position={{ 
+        top: isMobile ? 10 : 20, 
+        left: isMobile ? 10 : 20 
+      }}>
+        <Box style={{ maxWidth: isMobile ? "200px" : "auto" }}>
           <Switch
             checked={isCombatMode}
             onChange={handleModeChange}
+            size={isMobile ? "sm" : "md"}
             label={
-              <Text size="sm" weight={500}>
+              <Text size={isMobile ? "xs" : "sm"} weight={500}>
                 {isCombatMode ? "Modo Combate" : "Modo Sincronizado"}
               </Text>
             }
           />
-        </Stack>
+        </Box>
       </Affix>
 
-      {/* Controles de combate */}
-      {isCombatMode && (
-        <Affix position={{ top: 80, left: 20 }}>
-          <Stack spacing="xs">
-            <Text size="sm" weight={500}>Ataques Player 1:</Text>
-            <Group>
-              {attackButtons.map((attack) => (
-                <Button
-                  key={attack.name}
-                  variant="filled"
-                  color="red"
-                  disabled={isCombatOver}
-                  onClick={() => triggerAttack(attack.name)}
-                >
-                  {attack.label}
-                </Button>
-              ))}
-            </Group>
-            
-            {/* Estado del combate */}
-            {isCombatOver && (
-              <Text size="sm" color="red" weight={500}>
-                {player1IsDead ? "Player 1 está muerto - usando animación de muerte" : 
-                 player2IsDead ? "Player 2 está muerto - usando animación de muerte" : ""}
+      {/* Controles de animación - Solo en modo sincronizado */}
+      {!isCombatMode && (
+        <Affix position={{ 
+          top: isMobile ? 50 : 70, 
+          right: isMobile ? 10 : 20 
+        }}>
+          <Box style={{ maxWidth: isMobile ? "300px" : isTablet ? "400px" : "auto" }}>
+            <Stack spacing="xs">
+              <Text size={isMobile ? "xs" : "sm"} weight={500}>
+                Animaciones:
               </Text>
-            )}
-            
-            {/* Botón de Reset */}
-            <Button
-              variant="outline"
-              color="blue"
-              onClick={resetHealth}
-              style={{ marginTop: "10px" }}
-            >
-              {isCombatOver ? "Nuevo Combate" : "Reset Vida"}
-            </Button>
-          </Stack>
+              <Group spacing={isMobile ? "xs" : "sm"}>
+                {animations.map((animation, index) => (
+                  <Button
+                    key={animation}
+                    variant={index === animationIndex ? "filled" : "light"}
+                    size={isMobile ? "xs" : isTablet ? "sm" : "md"}
+                    onClick={() => setAnimationIndex(index)}
+                    style={{
+                      fontSize: isMobile ? "10px" : "12px",
+                      padding: isMobile ? "4px 8px" : "8px 12px"
+                    }}
+                  >
+                    {isMobile 
+                      ? animation.substring(0, 6) + (animation.length > 6 ? "..." : "")
+                      : animation
+                    } {index === animations.length - 1 ? "(Muerte)" : ""}
+                  </Button>
+                ))}
+              </Group>
+            </Stack>
+          </Box>
         </Affix>
       )}
 
-      {/* Controles de animación (modo normal o sincronizado) */}
-      <Affix position={{ bottom: 50, right: 20 }}>
-        <Stack spacing="xs">
-          <Text size="sm" weight={500}>
-            {isCombatMode ? "Animaciones Sincronizadas:" : "Animaciones:"}
-          </Text>
-          <Group>
-            {animations.map((animation, index) => (
+      {/* Controles de combate - Solo en modo combate */}
+      {isCombatMode && (
+        <Affix position={{ 
+          bottom: isMobile ? 10 : 20, 
+          left: isMobile ? 10 : 20 
+        }}>
+          <Box style={{ maxWidth: isMobile ? "350px" : isTablet ? "500px" : "auto" }}>
+            <Stack spacing="xs">
+              <Text size={isMobile ? "xs" : "sm"} weight={500}>
+                Ataques Player 1:
+              </Text>
+              
+              <Group spacing={isMobile ? "xs" : "sm"}>
+                {attackButtons.map((attack) => (
+                  <Button
+                    key={attack.name}
+                    variant="filled"
+                    color="red"
+                    size={isMobile ? "xs" : isTablet ? "sm" : "md"}
+                    disabled={isCombatOver}
+                    onClick={() => triggerAttack(attack.name)}
+                    style={{
+                      fontSize: isMobile ? "10px" : "12px",
+                      padding: isMobile ? "4px 8px" : "8px 12px"
+                    }}
+                  >
+                    {isMobile 
+                      ? attack.label.substring(0, 8) + (attack.label.length > 8 ? "..." : "")
+                      : attack.label
+                    }
+                  </Button>
+                ))}
+              </Group>
+              
+              {/* Estado del combate - Responsive */}
+              {isCombatOver && (
+                <Text size={isMobile ? "xs" : "sm"} color="red" weight={500}>
+                  {player1IsDead ? "P1 muerto - animación muerte" : 
+                   player2IsDead ? "P2 muerto - animación muerte" : ""}
+                </Text>
+              )}
+              
+              {/* Botón de Reset - Responsive */}
               <Button
-                key={animation}
-                variant={index === animationIndex ? "filled" : "light"}
-                onClick={() => 
-                  isCombatMode 
-                    ? triggerSyncAnimation(index)
-                    : setAnimationIndex(index)
-                }
+                variant="outline"
+                color="blue"
+                size={isMobile ? "xs" : isTablet ? "sm" : "md"}
+                onClick={resetHealth}
+                style={{ 
+                  marginTop: isMobile ? "5px" : "10px",
+                  fontSize: isMobile ? "10px" : "12px"
+                }}
               >
-                {animation} {index === animations.length - 1 ? "(Muerte)" : ""}
+                {isCombatOver ? "Nuevo Combate" : "Reset Vida"}
               </Button>
-            ))}
-          </Group>
-        </Stack>
-      </Affix>
+            </Stack>
+          </Box>
+        </Affix>
+      )}
     </>
   );
 };
