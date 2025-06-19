@@ -9,7 +9,13 @@ const Interface = () => {
     isCombatMode,
     setIsCombatMode,
     triggerAttack,
-    triggerSyncAnimation
+    triggerSyncAnimation,
+    initializeCombat,
+    resetHealth,
+    player1Health,
+    player2Health,
+    player1IsDead,
+    player2IsDead
   } = useCharacterAnimations();
 
   // Botones de ataque para modo combate
@@ -19,6 +25,20 @@ const Interface = () => {
     { name: "strong", label: "Golpe Fuerte" },
     { name: "uppercut", label: "Uppercut" }
   ];
+
+  // Manejar cambio de modo
+  const handleModeChange = (event) => {
+    const combatMode = event.currentTarget.checked;
+    setIsCombatMode(combatMode);
+    
+    // Si se activa modo combate, inicializar ambos en idle
+    if (combatMode) {
+      initializeCombat();
+    }
+  };
+
+  // Determinar si el combate ha terminado
+  const isCombatOver = player1IsDead || player2IsDead;
   
   return (
     <>
@@ -27,7 +47,7 @@ const Interface = () => {
         <Stack spacing="xs">
           <Switch
             checked={isCombatMode}
-            onChange={(event) => setIsCombatMode(event.currentTarget.checked)}
+            onChange={handleModeChange}
             label={
               <Text size="sm" weight={500}>
                 {isCombatMode ? "Modo Combate" : "Modo Sincronizado"}
@@ -48,12 +68,31 @@ const Interface = () => {
                   key={attack.name}
                   variant="filled"
                   color="red"
+                  disabled={isCombatOver}
                   onClick={() => triggerAttack(attack.name)}
                 >
                   {attack.label}
                 </Button>
               ))}
             </Group>
+            
+            {/* Estado del combate */}
+            {isCombatOver && (
+              <Text size="sm" color="red" weight={500}>
+                {player1IsDead ? "Player 1 está muerto - usando animación de muerte" : 
+                 player2IsDead ? "Player 2 está muerto - usando animación de muerte" : ""}
+              </Text>
+            )}
+            
+            {/* Botón de Reset */}
+            <Button
+              variant="outline"
+              color="blue"
+              onClick={resetHealth}
+              style={{ marginTop: "10px" }}
+            >
+              {isCombatOver ? "Nuevo Combate" : "Reset Vida"}
+            </Button>
           </Stack>
         </Affix>
       )}
@@ -75,7 +114,7 @@ const Interface = () => {
                     : setAnimationIndex(index)
                 }
               >
-                {animation}
+                {animation} {index === animations.length - 1 ? "(Muerte)" : ""}
               </Button>
             ))}
           </Group>

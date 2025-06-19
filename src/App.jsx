@@ -1,6 +1,7 @@
 import { Canvas } from "@react-three/fiber";
 import Experience from "./components/Experience";
 import Interface from "./components/Interface";
+import HealthBars from "./components/HealthBars";
 
 function App() {
   return (
@@ -13,6 +14,7 @@ function App() {
         <Experience />
       </Canvas>
       <Interface />
+      <HealthBars />
     </>
   );
 }
