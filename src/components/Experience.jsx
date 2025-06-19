@@ -13,14 +13,15 @@ const Experience = () => {
         shadow-mapSize-height={2048}
       />
       <group position={[0, -1, 0]}>
-        <Woman />
+        <Woman position={[-0.8, 0, 0]} />
+        <Woman position={[0.8, 0, 0]} rotation={[0, Math.PI, 0]} />
       </group>
       <mesh
         rotation={[-0.5 * Math.PI, 0, 0]}
         position={[0, -1, 0]}
         receiveShadow
       >
-        <planeBufferGeometry args={[10, 10, 1, 1]} />
+        <planeBufferGeometry args={[15, 15, 1, 1]} />
         <shadowMaterial transparent opacity={0.2} />
       </mesh>
     </>

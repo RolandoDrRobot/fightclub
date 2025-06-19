@@ -6,7 +6,7 @@ function App() {
   return (
     <>
       <Canvas
-        camera={{ position: [1, 1.5, 2.5], fov: 50 }}
+        camera={{ position: [0, 1.5, 4], fov: 60 }}
         shadows
         gl={{ preserveDrawingBuffer: true }}
       >
