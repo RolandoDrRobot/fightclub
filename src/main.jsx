@@ -3,7 +3,6 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 import App from "./App";
 import { CharacterAnimationsProvider } from "./contexts/CharacterAnimations";
-import { CharacterCustomizationProvider } from "./contexts/CharacterCustomizationContext";
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
@@ -23,11 +22,9 @@ ReactDOM.createRoot(document.getElementById("root")).render(
         }),
       }}
     >
-      <CharacterCustomizationProvider>
-        <CharacterAnimationsProvider>
-          <App />
-        </CharacterAnimationsProvider>
-      </CharacterCustomizationProvider>
+      <CharacterAnimationsProvider>
+        <App />
+      </CharacterAnimationsProvider>
     </MantineProvider>
   </React.StrictMode>
 );
