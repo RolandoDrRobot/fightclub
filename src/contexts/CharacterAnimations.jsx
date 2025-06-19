@@ -84,6 +84,25 @@ export const CharacterAnimationsProvider = (props) => {
     }
   };
 
+  // Función para aplicar daño al jugador 1
+  const applyDamageToPlayer1 = (attackType) => {
+    const damage = attackDamage[attackType] || 10;
+    setPlayer1Health(prevHealth => {
+      const newHealth = Math.max(0, prevHealth - damage);
+      console.log(`Player 1 receives ${damage} damage. Health: ${newHealth}/${maxHealth}`);
+      
+      // Verificar si Player 1 muere
+      if (newHealth <= 0 && !player1IsDead) {
+        console.log("Player 1 has died! Setting permanent death animation");
+        setPlayer1IsDead(true);
+        // Activar animación de muerte inmediatamente y de forma permanente
+        setPlayer1AnimationIndex(getDeathAnimationIndex());
+      }
+      
+      return newHealth;
+    });
+  };
+
   // Función para aplicar daño al jugador 2
   const applyDamageToPlayer2 = (attackType) => {
     const damage = attackDamage[attackType] || 10;
@@ -119,23 +138,8 @@ export const CharacterAnimationsProvider = (props) => {
     console.log("All players revived and returned to idle");
   };
 
-  // Función para activar ataque del jugador 1 y reacción del jugador 2
-  const triggerAttack = (attackAnimationName) => {
-    // No permitir ataques si algún jugador está muerto
-    if (player1IsDead || player2IsDead) {
-      console.log("Cannot attack - a player is dead");
-      return;
-    }
-
-    console.log("Trigger attack:", attackAnimationName);
-    console.log("Available animations:", animations);
-    
-    // Limpiar timeout anterior si existe
-    if (attackTimeoutRef.current) {
-      clearTimeout(attackTimeoutRef.current);
-    }
-    
-    // Para testing, usamos índices específicos de las animaciones disponibles
+  // Función para obtener animaciones según el tipo de ataque
+  const getAttackAnimations = (attackAnimationName) => {
     let attackIndex = 0;
     let defenseIndex = 0;
     
@@ -161,7 +165,26 @@ export const CharacterAnimationsProvider = (props) => {
         defenseIndex = 0;
     }
     
-    console.log(`Attack: ${animations[attackIndex]}, Defense: ${animations[defenseIndex]}`);
+    return { attackIndex, defenseIndex };
+  };
+
+  // Función para activar ataque del jugador 1 contra jugador 2
+  const triggerPlayer1Attack = (attackAnimationName) => {
+    // No permitir ataques si algún jugador está muerto
+    if (player1IsDead || player2IsDead) {
+      console.log("Cannot attack - a player is dead");
+      return;
+    }
+
+    console.log("Player 1 attacks:", attackAnimationName);
+    
+    // Limpiar timeout anterior si existe
+    if (attackTimeoutRef.current) {
+      clearTimeout(attackTimeoutRef.current);
+    }
+    
+    const { attackIndex, defenseIndex } = getAttackAnimations(attackAnimationName);
+    console.log(`P1 Attack: ${animations[attackIndex]}, P2 Defense: ${animations[defenseIndex]}`);
     
     // Ejecutar las animaciones de ataque usando las funciones protegidas
     setPlayer1Animation(attackIndex);
@@ -172,7 +195,37 @@ export const CharacterAnimationsProvider = (props) => {
     
     // Volver a idle después de 2 segundos solo si no hay muerte
     attackTimeoutRef.current = setTimeout(() => {
-      // Esta función ya verifica internamente si los jugadores están muertos
+      returnToIdle();
+    }, 2000);
+  };
+
+  // Función para activar ataque del jugador 2 contra jugador 1
+  const triggerPlayer2Attack = (attackAnimationName) => {
+    // No permitir ataques si algún jugador está muerto
+    if (player1IsDead || player2IsDead) {
+      console.log("Cannot attack - a player is dead");
+      return;
+    }
+
+    console.log("Player 2 attacks:", attackAnimationName);
+    
+    // Limpiar timeout anterior si existe
+    if (attackTimeoutRef.current) {
+      clearTimeout(attackTimeoutRef.current);
+    }
+    
+    const { attackIndex, defenseIndex } = getAttackAnimations(attackAnimationName);
+    console.log(`P2 Attack: ${animations[attackIndex]}, P1 Defense: ${animations[defenseIndex]}`);
+    
+    // Ejecutar las animaciones de ataque usando las funciones protegidas
+    setPlayer2Animation(attackIndex);
+    setPlayer1Animation(defenseIndex);
+    
+    // Aplicar daño al Player 1
+    applyDamageToPlayer1(attackAnimationName);
+    
+    // Volver a idle después de 2 segundos solo si no hay muerte
+    attackTimeoutRef.current = setTimeout(() => {
       returnToIdle();
     }, 2000);
   };
@@ -212,7 +265,8 @@ export const CharacterAnimationsProvider = (props) => {
         setPlayer2AnimationIndex: setPlayer2Animation, // Usar función protegida
         isCombatMode,
         setIsCombatMode,
-        triggerAttack,
+        triggerPlayer1Attack,
+        triggerPlayer2Attack,
         triggerSyncAnimation,
         returnToIdle,
         initializeCombat,

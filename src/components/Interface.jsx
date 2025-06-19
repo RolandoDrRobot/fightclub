@@ -9,7 +9,8 @@ const Interface = () => {
     setAnimationIndex,
     isCombatMode,
     setIsCombatMode,
-    triggerAttack,
+    triggerPlayer1Attack,
+    triggerPlayer2Attack,
     triggerSyncAnimation,
     initializeCombat,
     resetHealth,
@@ -103,62 +104,112 @@ const Interface = () => {
 
       {/* Controles de combate - Solo en modo combate */}
       {isCombatMode && (
-        <Affix position={{ 
-          bottom: isMobile ? 10 : 20, 
-          left: isMobile ? 10 : 20 
-        }}>
-          <Box style={{ maxWidth: isMobile ? "350px" : isTablet ? "500px" : "auto" }}>
-            <Stack spacing="xs">
-              <Text size={isMobile ? "xs" : "sm"} weight={500}>
-                Ataques Player 1:
-              </Text>
-              
-              <Group spacing={isMobile ? "xs" : "sm"}>
-                {attackButtons.map((attack) => (
-                  <Button
-                    key={attack.name}
-                    variant="filled"
-                    color="red"
-                    size={isMobile ? "xs" : isTablet ? "sm" : "md"}
-                    disabled={isCombatOver}
-                    onClick={() => triggerAttack(attack.name)}
-                    style={{
-                      fontSize: isMobile ? "10px" : "12px",
-                      padding: isMobile ? "4px 8px" : "8px 12px"
-                    }}
-                  >
-                    {isMobile 
-                      ? attack.label.substring(0, 8) + (attack.label.length > 8 ? "..." : "")
-                      : attack.label
-                    }
-                  </Button>
-                ))}
-              </Group>
-              
-              {/* Estado del combate - Responsive */}
-              {isCombatOver && (
-                <Text size={isMobile ? "xs" : "sm"} color="red" weight={500}>
-                  {player1IsDead ? "P1 muerto - animación muerte" : 
-                   player2IsDead ? "P2 muerto - animación muerte" : ""}
+        <>
+          {/* Ataques Player 1 - Izquierda */}
+          <Affix position={{ 
+            bottom: isMobile ? 10 : 20, 
+            left: isMobile ? 10 : 20 
+          }}>
+            <Box style={{ maxWidth: isMobile ? "170px" : isTablet ? "200px" : "250px" }}>
+              <Stack spacing="xs">
+                <Text size={isMobile ? "xs" : "sm"} weight={500} color="blue">
+                  Ataques Player 1:
                 </Text>
-              )}
-              
-              {/* Botón de Reset - Responsive */}
-              <Button
-                variant="outline"
-                color="blue"
-                size={isMobile ? "xs" : isTablet ? "sm" : "md"}
-                onClick={resetHealth}
-                style={{ 
-                  marginTop: isMobile ? "5px" : "10px",
-                  fontSize: isMobile ? "10px" : "12px"
-                }}
-              >
-                {isCombatOver ? "Nuevo Combate" : "Reset Vida"}
-              </Button>
-            </Stack>
-          </Box>
-        </Affix>
+                
+                <Stack spacing={isMobile ? "xs" : "sm"}>
+                  {attackButtons.map((attack) => (
+                    <Button
+                      key={`p1-${attack.name}`}
+                      variant="filled"
+                      color="blue"
+                      size={isMobile ? "xs" : isTablet ? "sm" : "md"}
+                      disabled={isCombatOver}
+                      onClick={() => triggerPlayer1Attack(attack.name)}
+                      style={{
+                        fontSize: isMobile ? "9px" : "11px",
+                        padding: isMobile ? "4px 6px" : "6px 10px"
+                      }}
+                    >
+                      {isMobile 
+                        ? attack.label.substring(0, 6) + (attack.label.length > 6 ? "..." : "")
+                        : attack.label
+                      }
+                    </Button>
+                  ))}
+                </Stack>
+              </Stack>
+            </Box>
+          </Affix>
+
+          {/* Ataques Player 2 - Derecha */}
+          <Affix position={{ 
+            bottom: isMobile ? 10 : 20, 
+            right: isMobile ? 10 : 20 
+          }}>
+            <Box style={{ maxWidth: isMobile ? "170px" : isTablet ? "200px" : "250px" }}>
+              <Stack spacing="xs">
+                <Text size={isMobile ? "xs" : "sm"} weight={500} color="red">
+                  Ataques Player 2:
+                </Text>
+                
+                <Stack spacing={isMobile ? "xs" : "sm"}>
+                  {attackButtons.map((attack) => (
+                    <Button
+                      key={`p2-${attack.name}`}
+                      variant="filled"
+                      color="red"
+                      size={isMobile ? "xs" : isTablet ? "sm" : "md"}
+                      disabled={isCombatOver}
+                      onClick={() => triggerPlayer2Attack(attack.name)}
+                      style={{
+                        fontSize: isMobile ? "9px" : "11px",
+                        padding: isMobile ? "4px 6px" : "6px 10px"
+                      }}
+                    >
+                      {isMobile 
+                        ? attack.label.substring(0, 6) + (attack.label.length > 6 ? "..." : "")
+                        : attack.label
+                      }
+                    </Button>
+                  ))}
+                </Stack>
+              </Stack>
+            </Box>
+          </Affix>
+
+          {/* Estado del combate y Reset - Centro abajo */}
+          <Affix position={{ 
+            bottom: isMobile ? 10 : 20, 
+            left: "50%",
+            transform: "translateX(-50%)"
+          }}>
+            <Box style={{ textAlign: "center" }}>
+              <Stack spacing="xs">
+                {/* Estado del combate */}
+                {isCombatOver && (
+                  <Text size={isMobile ? "xs" : "sm"} color="yellow" weight={500}>
+                    {player1IsDead ? "P1 muerto - animación muerte" : 
+                     player2IsDead ? "P2 muerto - animación muerte" : ""}
+                  </Text>
+                )}
+                
+                {/* Botón de Reset */}
+                <Button
+                  variant="outline"
+                  color="green"
+                  size={isMobile ? "sm" : isTablet ? "md" : "lg"}
+                  onClick={resetHealth}
+                  style={{ 
+                    fontSize: isMobile ? "11px" : "13px",
+                    fontWeight: 600
+                  }}
+                >
+                  {isCombatOver ? "🔄 Nuevo Combate" : "💚 Reset Vida"}
+                </Button>
+              </Stack>
+            </Box>
+          </Affix>
+        </>
       )}
     </>
   );
