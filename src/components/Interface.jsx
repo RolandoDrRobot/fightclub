@@ -16,12 +16,16 @@ const Interface = () => {
     resetHealth,
     player1Health,
     player2Health,
+    player1Stamina,
+    player2Stamina,
+    maxStamina,
     player1IsDead,
     player2IsDead,
     player1IsBlocking,
     player2IsBlocking,
     togglePlayer1Block,
-    togglePlayer2Block
+    togglePlayer2Block,
+    staminaCosts
   } = useCharacterAnimations();
 
   // Media queries para responsive design
@@ -30,10 +34,10 @@ const Interface = () => {
 
   // Botones de ataque para modo combate
   const attackButtons = [
-    { name: "punch", label: "Puñetazo" },
-    { name: "kick", label: "Patada" },
-    { name: "strong", label: "Golpe Fuerte" },
-    { name: "uppercut", label: "Uppercut" }
+    { name: "punch", label: "Puñetazo", emoji: "👊" },
+    { name: "kick", label: "Patada", emoji: "🦵" },
+    { name: "strong", label: "Golpe Fuerte", emoji: "💥" },
+    { name: "uppercut", label: "Uppercut", emoji: "⬆️" }
   ];
 
   // Manejar cambio de modo
@@ -49,6 +53,18 @@ const Interface = () => {
 
   // Determinar si el combate ha terminado
   const isCombatOver = player1IsDead || player2IsDead;
+
+  // Función para verificar si un ataque está disponible
+  const canAttack = (playerStamina, attackName, isPlayerDead, isPlayerBlocking) => {
+    if (isPlayerDead || isPlayerBlocking || isCombatOver) return false;
+    const cost = staminaCosts[attackName] || 0;
+    return playerStamina >= cost;
+  };
+
+  // Función para verificar si se puede bloquear
+  const canBlock = (playerStamina, isPlayerDead) => {
+    return !isPlayerDead && playerStamina > 0;
+  };
   
   return (
     <>
@@ -126,37 +142,58 @@ const Interface = () => {
                   variant={player1IsBlocking ? "filled" : "outline"}
                   color="orange"
                   size={isMobile ? "xs" : isTablet ? "sm" : "md"}
-                  disabled={player1IsDead}
+                  disabled={!canBlock(player1Stamina, player1IsDead)}
                   onClick={togglePlayer1Block}
                   style={{
                     fontSize: isMobile ? "9px" : "11px",
                     padding: isMobile ? "4px 6px" : "6px 10px",
-                    fontWeight: 700
+                    fontWeight: 700,
+                    opacity: !canBlock(player1Stamina, player1IsDead) ? 0.5 : 1
                   }}
                 >
                   🛡️ {player1IsBlocking ? "DEJAR BLOQUEO" : "BLOQUEAR"}
+                  {!player1IsBlocking && player1Stamina <= 0 && !player1IsDead && (
+                    <Text span size="xs" color="red" style={{ display: "block" }}>
+                      Sin stamina
+                    </Text>
+                  )}
                 </Button>
                 
                 <Stack spacing={isMobile ? "xs" : "sm"}>
-                  {attackButtons.map((attack) => (
-                    <Button
-                      key={`p1-${attack.name}`}
-                      variant="filled"
-                      color="blue"
-                      size={isMobile ? "xs" : isTablet ? "sm" : "md"}
-                      disabled={isCombatOver || player1IsBlocking}
-                      onClick={() => triggerPlayer1Attack(attack.name)}
-                      style={{
-                        fontSize: isMobile ? "9px" : "11px",
-                        padding: isMobile ? "4px 6px" : "6px 10px"
-                      }}
-                    >
-                      {isMobile 
-                        ? attack.label.substring(0, 6) + (attack.label.length > 6 ? "..." : "")
-                        : attack.label
-                      }
-                    </Button>
-                  ))}
+                  {attackButtons.map((attack) => {
+                    const canUseAttack = canAttack(player1Stamina, attack.name, player1IsDead, player1IsBlocking);
+                    const staminaCost = staminaCosts[attack.name] || 0;
+                    
+                    return (
+                      <Button
+                        key={`p1-${attack.name}`}
+                        variant="filled"
+                        color="blue"
+                        size={isMobile ? "xs" : isTablet ? "sm" : "md"}
+                        disabled={!canUseAttack}
+                        onClick={() => triggerPlayer1Attack(attack.name)}
+                        style={{
+                          fontSize: isMobile ? "9px" : "11px",
+                          padding: isMobile ? "4px 6px" : "6px 10px",
+                          opacity: !canUseAttack ? 0.5 : 1
+                        }}
+                      >
+                        <Stack spacing={0} align="center">
+                          <Text size={isMobile ? "xs" : "sm"}>
+                            {attack.emoji} {isMobile 
+                              ? attack.label.substring(0, 6) + (attack.label.length > 6 ? "..." : "")
+                              : attack.label
+                            }
+                          </Text>
+                          {staminaCost > 0 && (
+                            <Text size="xs" color={player1Stamina < staminaCost ? "red" : "white"}>
+                              ⚡{staminaCost}
+                            </Text>
+                          )}
+                        </Stack>
+                      </Button>
+                    );
+                  })}
                 </Stack>
               </Stack>
             </Box>
@@ -178,37 +215,58 @@ const Interface = () => {
                   variant={player2IsBlocking ? "filled" : "outline"}
                   color="orange"
                   size={isMobile ? "xs" : isTablet ? "sm" : "md"}
-                  disabled={player2IsDead}
+                  disabled={!canBlock(player2Stamina, player2IsDead)}
                   onClick={togglePlayer2Block}
                   style={{
                     fontSize: isMobile ? "9px" : "11px",
                     padding: isMobile ? "4px 6px" : "6px 10px",
-                    fontWeight: 700
+                    fontWeight: 700,
+                    opacity: !canBlock(player2Stamina, player2IsDead) ? 0.5 : 1
                   }}
                 >
                   🛡️ {player2IsBlocking ? "DEJAR BLOQUEO" : "BLOQUEAR"}
+                  {!player2IsBlocking && player2Stamina <= 0 && !player2IsDead && (
+                    <Text span size="xs" color="red" style={{ display: "block" }}>
+                      Sin stamina
+                    </Text>
+                  )}
                 </Button>
                 
                 <Stack spacing={isMobile ? "xs" : "sm"}>
-                  {attackButtons.map((attack) => (
-                    <Button
-                      key={`p2-${attack.name}`}
-                      variant="filled"
-                      color="red"
-                      size={isMobile ? "xs" : isTablet ? "sm" : "md"}
-                      disabled={isCombatOver || player2IsBlocking}
-                      onClick={() => triggerPlayer2Attack(attack.name)}
-                      style={{
-                        fontSize: isMobile ? "9px" : "11px",
-                        padding: isMobile ? "4px 6px" : "6px 10px"
-                      }}
-                    >
-                      {isMobile 
-                        ? attack.label.substring(0, 6) + (attack.label.length > 6 ? "..." : "")
-                        : attack.label
-                      }
-                    </Button>
-                  ))}
+                  {attackButtons.map((attack) => {
+                    const canUseAttack = canAttack(player2Stamina, attack.name, player2IsDead, player2IsBlocking);
+                    const staminaCost = staminaCosts[attack.name] || 0;
+                    
+                    return (
+                      <Button
+                        key={`p2-${attack.name}`}
+                        variant="filled"
+                        color="red"
+                        size={isMobile ? "xs" : isTablet ? "sm" : "md"}
+                        disabled={!canUseAttack}
+                        onClick={() => triggerPlayer2Attack(attack.name)}
+                        style={{
+                          fontSize: isMobile ? "9px" : "11px",
+                          padding: isMobile ? "4px 6px" : "6px 10px",
+                          opacity: !canUseAttack ? 0.5 : 1
+                        }}
+                      >
+                        <Stack spacing={0} align="center">
+                          <Text size={isMobile ? "xs" : "sm"}>
+                            {attack.emoji} {isMobile 
+                              ? attack.label.substring(0, 6) + (attack.label.length > 6 ? "..." : "")
+                              : attack.label
+                            }
+                          </Text>
+                          {staminaCost > 0 && (
+                            <Text size="xs" color={player2Stamina < staminaCost ? "red" : "white"}>
+                              ⚡{staminaCost}
+                            </Text>
+                          )}
+                        </Stack>
+                      </Button>
+                    );
+                  })}
                 </Stack>
               </Stack>
             </Box>
@@ -227,6 +285,13 @@ const Interface = () => {
                   <Text size={isMobile ? "xs" : "sm"} color="yellow" weight={500}>
                     {player1IsDead ? "P1 muerto - animación muerte" : 
                      player2IsDead ? "P2 muerto - animación muerte" : ""}
+                  </Text>
+                )}
+                
+                {/* Información de stamina */}
+                {!isCombatOver && (
+                  <Text size="xs" color="gray">
+                    {isMobile ? "🛡️ 5s máx • 💥 30⚡" : "🛡️ Bloqueo: máx 5s • 💥 Golpe fuerte: 30⚡"}
                   </Text>
                 )}
                 

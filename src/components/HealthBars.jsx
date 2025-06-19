@@ -6,92 +6,172 @@ const HealthBars = () => {
   const { 
     player1Health, 
     player2Health, 
-    maxHealth, 
-    isCombatMode,
+    maxHealth,
+    player1Stamina,
+    player2Stamina,
+    maxStamina,
     player1IsDead,
-    player2IsDead
+    player2IsDead,
+    isCombatMode
   } = useCharacterAnimations();
 
   // Media queries para responsive design
   const isMobile = useMediaQuery("(max-width: 768px)");
   const isTablet = useMediaQuery("(max-width: 1024px)");
 
-  // No mostrar las barras si no estamos en modo combate
+  // No mostrar si no estamos en modo combate
   if (!isCombatMode) return null;
 
-  // Calcular porcentajes de vida
-  const player1Percentage = (player1Health / maxHealth) * 100;
-  const player2Percentage = (player2Health / maxHealth) * 100;
-
-  // Determinar colores según el nivel de vida
-  const getHealthColor = (percentage, isDead) => {
-    if (isDead) return "dark";
+  // Función para obtener color de vida según porcentaje
+  const getHealthColor = (current, max) => {
+    const percentage = (current / max) * 100;
     if (percentage > 60) return "green";
     if (percentage > 30) return "yellow";
     return "red";
   };
 
+  // Función para obtener color de stamina según porcentaje
+  const getStaminaColor = (current, max) => {
+    const percentage = (current / max) * 100;
+    if (percentage > 50) return "blue";
+    if (percentage > 25) return "orange";
+    return "red";
+  };
+
+  // Determinar si el combate ha terminado
+  const winner = player1IsDead ? "Player 2" : player2IsDead ? "Player 1" : null;
+
   return (
     <Box
       style={{
         position: "fixed",
-        top: isMobile ? 90 : 120, // Ajuste para no sobreponerse con otros elementos
+        top: isMobile ? 60 : 80,
         left: "50%",
         transform: "translateX(-50%)",
         zIndex: 1000,
-        background: "rgba(0, 0, 0, 0.8)",
-        padding: isMobile ? "12px" : "20px",
+        backgroundColor: "rgba(0, 0, 0, 0.8)",
+        padding: isMobile ? "8px 12px" : "12px 20px",
         borderRadius: "8px",
-        minWidth: isMobile ? "280px" : isTablet ? "350px" : "400px",
-        maxWidth: isMobile ? "90vw" : "auto",
+        minWidth: isMobile ? "280px" : isTablet ? "400px" : "500px",
       }}
     >
-      <Stack spacing={isMobile ? "sm" : "md"}>
-        {/* Player 1 Health */}
-        <Box>
-          <Group position="apart" mb="xs">
-            <Text color="white" weight={500} size={isMobile ? "xs" : "sm"}>
-              Player 1 {player1IsDead && <Text span color="red" weight={700} size={isMobile ? "xs" : "sm"}>(MUERTO)</Text>}
-            </Text>
-            <Text color="white" size={isMobile ? "xs" : "sm"}>{player1Health}/{maxHealth}</Text>
-          </Group>
-          <Progress
-            value={player1Percentage}
-            color={getHealthColor(player1Percentage, player1IsDead)}
-            size={isMobile ? "md" : "xl"}
-            radius="sm"
-            animate={!player1IsDead}
-          />
-        </Box>
-
-        {/* Player 2 Health */}
-        <Box>
-          <Group position="apart" mb="xs">
-            <Text color="white" weight={500} size={isMobile ? "xs" : "sm"}>
-              Player 2 {player2IsDead && <Text span color="red" weight={700} size={isMobile ? "xs" : "sm"}>(MUERTO)</Text>}
-            </Text>
-            <Text color="white" size={isMobile ? "xs" : "sm"}>{player2Health}/{maxHealth}</Text>
-          </Group>
-          <Progress
-            value={player2Percentage}
-            color={getHealthColor(player2Percentage, player2IsDead)}
-            size={isMobile ? "md" : "xl"}
-            radius="sm"
-            animate={!player2IsDead}
-          />
-        </Box>
-
-        {/* Game Over Message */}
-        {(player1IsDead || player2IsDead) && (
-          <Box style={{ textAlign: "center" }}>
-            <Text color="red" weight={700} size={isMobile ? "md" : "lg"}>
-              {player1IsDead ? "Player 2 Wins!" : "Player 1 Wins!"}
-            </Text>
-            <Text color="yellow" size={isMobile ? "xs" : "sm"} style={{ marginTop: "5px" }}>
-              {isMobile ? "Animación muerte activa" : "Animación de muerte activada"}
-            </Text>
-          </Box>
+      <Stack spacing={isMobile ? "xs" : "sm"}>
+        {/* Mensaje de victoria */}
+        {winner && (
+          <Text 
+            align="center" 
+            color="yellow" 
+            weight={700}
+            size={isMobile ? "sm" : "md"}
+          >
+            🏆 ¡{winner} Wins! 🏆
+          </Text>
         )}
+
+        {/* Barras de Player 1 */}
+        <Box>
+          <Group position="apart" mb={2}>
+            <Text 
+              color="blue" 
+              weight={600}
+              size={isMobile ? "xs" : "sm"}
+            >
+              Player 1
+            </Text>
+            <Text 
+              size={isMobile ? "xs" : "sm"}
+              color="white"
+            >
+              ❤️ {player1Health}/{maxHealth}
+            </Text>
+          </Group>
+          <Progress
+            value={(player1Health / maxHealth) * 100}
+            color={getHealthColor(player1Health, maxHealth)}
+            size={isMobile ? "sm" : "md"}
+            radius="sm"
+            mb="xs"
+          />
+          
+          <Group position="apart" mb={2}>
+            <Text 
+              color="blue" 
+              weight={500}
+              size={isMobile ? "xs" : "sm"}
+            >
+              Stamina
+            </Text>
+            <Text 
+              size={isMobile ? "xs" : "sm"}
+              color="white"
+            >
+              ⚡ {Math.round(player1Stamina * 10) / 10}/{maxStamina}
+            </Text>
+          </Group>
+          <Progress
+            value={(player1Stamina / maxStamina) * 100}
+            color={getStaminaColor(player1Stamina, maxStamina)}
+            size={isMobile ? "xs" : "sm"}
+            radius="sm"
+          />
+        </Box>
+
+        {/* Separador visual */}
+        <Box 
+          style={{
+            height: "1px",
+            backgroundColor: "rgba(255, 255, 255, 0.3)",
+            margin: isMobile ? "4px 0" : "8px 0"
+          }}
+        />
+
+        {/* Barras de Player 2 */}
+        <Box>
+          <Group position="apart" mb={2}>
+            <Text 
+              color="red" 
+              weight={600}
+              size={isMobile ? "xs" : "sm"}
+            >
+              Player 2
+            </Text>
+            <Text 
+              size={isMobile ? "xs" : "sm"}
+              color="white"
+            >
+              ❤️ {player2Health}/{maxHealth}
+            </Text>
+          </Group>
+          <Progress
+            value={(player2Health / maxHealth) * 100}
+            color={getHealthColor(player2Health, maxHealth)}
+            size={isMobile ? "sm" : "md"}
+            radius="sm"
+            mb="xs"
+          />
+          
+          <Group position="apart" mb={2}>
+            <Text 
+              color="red" 
+              weight={500}
+              size={isMobile ? "xs" : "sm"}
+            >
+              Stamina
+            </Text>
+            <Text 
+              size={isMobile ? "xs" : "sm"}
+              color="white"
+            >
+              ⚡ {Math.round(player2Stamina * 10) / 10}/{maxStamina}
+            </Text>
+          </Group>
+          <Progress
+            value={(player2Stamina / maxStamina) * 100}
+            color={getStaminaColor(player2Stamina, maxStamina)}
+            size={isMobile ? "xs" : "sm"}
+            radius="sm"
+          />
+        </Box>
       </Stack>
     </Box>
   );
