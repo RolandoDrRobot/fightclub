@@ -17,7 +17,11 @@ const Interface = () => {
     player1Health,
     player2Health,
     player1IsDead,
-    player2IsDead
+    player2IsDead,
+    player1IsBlocking,
+    player2IsBlocking,
+    togglePlayer1Block,
+    togglePlayer2Block
   } = useCharacterAnimations();
 
   // Media queries para responsive design
@@ -94,6 +98,7 @@ const Interface = () => {
                       ? animation.substring(0, 6) + (animation.length > 6 ? "..." : "")
                       : animation
                     } {index === animations.length - 1 ? "(Muerte)" : ""}
+                    {index === 1 ? "(Bloqueo)" : ""}
                   </Button>
                 ))}
               </Group>
@@ -113,8 +118,24 @@ const Interface = () => {
             <Box style={{ maxWidth: isMobile ? "170px" : isTablet ? "200px" : "250px" }}>
               <Stack spacing="xs">
                 <Text size={isMobile ? "xs" : "sm"} weight={500} color="blue">
-                  Ataques Player 1:
+                  Player 1 {player1IsBlocking && <Text span color="orange" weight={700}>(BLOQUEANDO)</Text>}
                 </Text>
+                
+                {/* Botón de bloqueo Player 1 */}
+                <Button
+                  variant={player1IsBlocking ? "filled" : "outline"}
+                  color="orange"
+                  size={isMobile ? "xs" : isTablet ? "sm" : "md"}
+                  disabled={player1IsDead}
+                  onClick={togglePlayer1Block}
+                  style={{
+                    fontSize: isMobile ? "9px" : "11px",
+                    padding: isMobile ? "4px 6px" : "6px 10px",
+                    fontWeight: 700
+                  }}
+                >
+                  🛡️ {player1IsBlocking ? "DEJAR BLOQUEO" : "BLOQUEAR"}
+                </Button>
                 
                 <Stack spacing={isMobile ? "xs" : "sm"}>
                   {attackButtons.map((attack) => (
@@ -123,7 +144,7 @@ const Interface = () => {
                       variant="filled"
                       color="blue"
                       size={isMobile ? "xs" : isTablet ? "sm" : "md"}
-                      disabled={isCombatOver}
+                      disabled={isCombatOver || player1IsBlocking}
                       onClick={() => triggerPlayer1Attack(attack.name)}
                       style={{
                         fontSize: isMobile ? "9px" : "11px",
@@ -149,8 +170,24 @@ const Interface = () => {
             <Box style={{ maxWidth: isMobile ? "170px" : isTablet ? "200px" : "250px" }}>
               <Stack spacing="xs">
                 <Text size={isMobile ? "xs" : "sm"} weight={500} color="red">
-                  Ataques Player 2:
+                  Player 2 {player2IsBlocking && <Text span color="orange" weight={700}>(BLOQUEANDO)</Text>}
                 </Text>
+                
+                {/* Botón de bloqueo Player 2 */}
+                <Button
+                  variant={player2IsBlocking ? "filled" : "outline"}
+                  color="orange"
+                  size={isMobile ? "xs" : isTablet ? "sm" : "md"}
+                  disabled={player2IsDead}
+                  onClick={togglePlayer2Block}
+                  style={{
+                    fontSize: isMobile ? "9px" : "11px",
+                    padding: isMobile ? "4px 6px" : "6px 10px",
+                    fontWeight: 700
+                  }}
+                >
+                  🛡️ {player2IsBlocking ? "DEJAR BLOQUEO" : "BLOQUEAR"}
+                </Button>
                 
                 <Stack spacing={isMobile ? "xs" : "sm"}>
                   {attackButtons.map((attack) => (
@@ -159,7 +196,7 @@ const Interface = () => {
                       variant="filled"
                       color="red"
                       size={isMobile ? "xs" : isTablet ? "sm" : "md"}
-                      disabled={isCombatOver}
+                      disabled={isCombatOver || player2IsBlocking}
                       onClick={() => triggerPlayer2Attack(attack.name)}
                       style={{
                         fontSize: isMobile ? "9px" : "11px",

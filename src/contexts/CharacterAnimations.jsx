@@ -37,13 +37,24 @@ export const CharacterAnimationsProvider = (props) => {
   const [player1IsDead, setPlayer1IsDead] = useState(false);
   const [player2IsDead, setPlayer2IsDead] = useState(false);
   
+  // Estados de defensa/bloqueo
+  const [player1IsBlocking, setPlayer1IsBlocking] = useState(false);
+  const [player2IsBlocking, setPlayer2IsBlocking] = useState(false);
+  
   // Referencias para timeouts
   const attackTimeoutRef = useRef(null);
+  const blockTimeoutRef = useRef(null);
 
   // Función para obtener índice de animación de muerte (usando una animación disponible)
   const getDeathAnimationIndex = () => {
     // Para prueba, usamos la última animación disponible como "muerte"
     return Math.max(0, animations.length - 1);
+  };
+
+  // Función para obtener índice de animación de bloqueo (usando una animación disponible)
+  const getBlockAnimationIndex = () => {
+    // Para prueba, usamos la segunda animación disponible como "bloqueo"
+    return Math.min(1, animations.length - 1);
   };
 
   // Función para aplicar animación con verificación de muerte
@@ -68,24 +79,72 @@ export const CharacterAnimationsProvider = (props) => {
     console.log("Attempting to return players to idle");
     const idleIndex = 0; // Asumimos que idle es la primera animación
     
-    // Solo volver a idle si no están muertos
-    if (!player1IsDead) {
+    // Solo volver a idle si no están muertos y no están bloqueando
+    if (!player1IsDead && !player1IsBlocking) {
       console.log("Player 1 returning to idle");
       setPlayer1AnimationIndex(idleIndex);
+    } else if (player1IsBlocking) {
+      console.log("Player 1 is blocking - staying in block animation");
     } else {
       console.log("Player 1 is dead - staying in death animation");
     }
     
-    if (!player2IsDead) {
+    if (!player2IsDead && !player2IsBlocking) {
       console.log("Player 2 returning to idle");
       setPlayer2AnimationIndex(idleIndex);
+    } else if (player2IsBlocking) {
+      console.log("Player 2 is blocking - staying in block animation");
     } else {
       console.log("Player 2 is dead - staying in death animation");
     }
   };
 
+  // Función para activar/desactivar bloqueo del Player 1
+  const togglePlayer1Block = () => {
+    if (player1IsDead) {
+      console.log("Player 1 is dead - cannot block");
+      return;
+    }
+
+    const newBlockState = !player1IsBlocking;
+    setPlayer1IsBlocking(newBlockState);
+    
+    if (newBlockState) {
+      console.log("Player 1 starts blocking");
+      setPlayer1Animation(getBlockAnimationIndex());
+    } else {
+      console.log("Player 1 stops blocking");
+      setPlayer1Animation(0); // Volver a idle
+    }
+  };
+
+  // Función para activar/desactivar bloqueo del Player 2
+  const togglePlayer2Block = () => {
+    if (player2IsDead) {
+      console.log("Player 2 is dead - cannot block");
+      return;
+    }
+
+    const newBlockState = !player2IsBlocking;
+    setPlayer2IsBlocking(newBlockState);
+    
+    if (newBlockState) {
+      console.log("Player 2 starts blocking");
+      setPlayer2Animation(getBlockAnimationIndex());
+    } else {
+      console.log("Player 2 stops blocking");
+      setPlayer2Animation(0); // Volver a idle
+    }
+  };
+
   // Función para aplicar daño al jugador 1
   const applyDamageToPlayer1 = (attackType) => {
+    // Si Player 1 está bloqueando, no recibe daño
+    if (player1IsBlocking) {
+      console.log("Player 1 is blocking - no damage taken!");
+      return;
+    }
+
     const damage = attackDamage[attackType] || 10;
     setPlayer1Health(prevHealth => {
       const newHealth = Math.max(0, prevHealth - damage);
@@ -95,6 +154,7 @@ export const CharacterAnimationsProvider = (props) => {
       if (newHealth <= 0 && !player1IsDead) {
         console.log("Player 1 has died! Setting permanent death animation");
         setPlayer1IsDead(true);
+        setPlayer1IsBlocking(false); // No puede bloquear si está muerto
         // Activar animación de muerte inmediatamente y de forma permanente
         setPlayer1AnimationIndex(getDeathAnimationIndex());
       }
@@ -105,6 +165,12 @@ export const CharacterAnimationsProvider = (props) => {
 
   // Función para aplicar daño al jugador 2
   const applyDamageToPlayer2 = (attackType) => {
+    // Si Player 2 está bloqueando, no recibe daño
+    if (player2IsBlocking) {
+      console.log("Player 2 is blocking - no damage taken!");
+      return;
+    }
+
     const damage = attackDamage[attackType] || 10;
     setPlayer2Health(prevHealth => {
       const newHealth = Math.max(0, prevHealth - damage);
@@ -114,6 +180,7 @@ export const CharacterAnimationsProvider = (props) => {
       if (newHealth <= 0 && !player2IsDead) {
         console.log("Player 2 has died! Setting permanent death animation");
         setPlayer2IsDead(true);
+        setPlayer2IsBlocking(false); // No puede bloquear si está muerto
         // Activar animación de muerte inmediatamente y de forma permanente
         setPlayer2AnimationIndex(getDeathAnimationIndex());
       }
@@ -129,6 +196,8 @@ export const CharacterAnimationsProvider = (props) => {
     setPlayer2Health(maxHealth);
     setPlayer1IsDead(false);
     setPlayer2IsDead(false);
+    setPlayer1IsBlocking(false);
+    setPlayer2IsBlocking(false);
     
     // Volver ambos a idle al resetear (ahora es posible porque no están muertos)
     const idleIndex = 0;
@@ -170,9 +239,9 @@ export const CharacterAnimationsProvider = (props) => {
 
   // Función para activar ataque del jugador 1 contra jugador 2
   const triggerPlayer1Attack = (attackAnimationName) => {
-    // No permitir ataques si algún jugador está muerto
-    if (player1IsDead || player2IsDead) {
-      console.log("Cannot attack - a player is dead");
+    // No permitir ataques si algún jugador está muerto o si el atacante está bloqueando
+    if (player1IsDead || player2IsDead || player1IsBlocking) {
+      console.log("Cannot attack - a player is dead or attacker is blocking");
       return;
     }
 
@@ -188,7 +257,10 @@ export const CharacterAnimationsProvider = (props) => {
     
     // Ejecutar las animaciones de ataque usando las funciones protegidas
     setPlayer1Animation(attackIndex);
-    setPlayer2Animation(defenseIndex);
+    // Solo cambiar animación del defensor si no está bloqueando
+    if (!player2IsBlocking) {
+      setPlayer2Animation(defenseIndex);
+    }
     
     // Aplicar daño al Player 2
     applyDamageToPlayer2(attackAnimationName);
@@ -201,9 +273,9 @@ export const CharacterAnimationsProvider = (props) => {
 
   // Función para activar ataque del jugador 2 contra jugador 1
   const triggerPlayer2Attack = (attackAnimationName) => {
-    // No permitir ataques si algún jugador está muerto
-    if (player1IsDead || player2IsDead) {
-      console.log("Cannot attack - a player is dead");
+    // No permitir ataques si algún jugador está muerto o si el atacante está bloqueando
+    if (player1IsDead || player2IsDead || player2IsBlocking) {
+      console.log("Cannot attack - a player is dead or attacker is blocking");
       return;
     }
 
@@ -219,7 +291,10 @@ export const CharacterAnimationsProvider = (props) => {
     
     // Ejecutar las animaciones de ataque usando las funciones protegidas
     setPlayer2Animation(attackIndex);
-    setPlayer1Animation(defenseIndex);
+    // Solo cambiar animación del defensor si no está bloqueando
+    if (!player1IsBlocking) {
+      setPlayer1Animation(defenseIndex);
+    }
     
     // Aplicar daño al Player 1
     applyDamageToPlayer1(attackAnimationName);
@@ -282,6 +357,12 @@ export const CharacterAnimationsProvider = (props) => {
         // Estados de muerte
         player1IsDead,
         player2IsDead,
+        
+        // Sistema de bloqueo/defensa
+        player1IsBlocking,
+        player2IsBlocking,
+        togglePlayer1Block,
+        togglePlayer2Block,
       }}
     >
       {props.children}
