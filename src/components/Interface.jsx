@@ -32,12 +32,11 @@ const Interface = () => {
   const isMobile = useMediaQuery("(max-width: 768px)");
   const isTablet = useMediaQuery("(max-width: 1024px)");
 
-  // Botones de ataque para modo combate
+  // Botones de ataque para modo combate - usando las animaciones reales de Pete
   const attackButtons = [
     { name: "punch", label: "Puñetazo", emoji: "👊" },
     { name: "kick", label: "Patada", emoji: "🦵" },
-    { name: "strong", label: "Golpe Fuerte", emoji: "💥" },
-    { name: "uppercut", label: "Uppercut", emoji: "⬆️" }
+    { name: "punches", label: "Combo Puñetazos", emoji: "💥" }
   ];
 
   // Manejar cambio de modo

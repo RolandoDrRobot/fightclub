@@ -3,54 +3,51 @@ import { createContext, useContext, useState, useRef, useEffect } from "react";
 const CharacterAnimationsContext = createContext({});
 
 // Mapeo de animaciones de ataque a animaciones de defensa para Pete
-// Pete tiene animaciones específicas de pelea y baile
+// Usando las animaciones reales disponibles
 const attackToDefenseMap = {
-  // Animaciones de combate de Pete
-  "punch": "block", // Player 1 ataca, Player 2 bloquea
-  "kick": "dodge", // Player 1 patada, Player 2 esquiva
-  "strong": "hit", // Player 1 golpe fuerte, Player 2 recibe golpe
-  "uppercut": "stunned", // Player 1 uppercut, Player 2 queda aturdido
+  // Todos los ataques causan la animación "hurt" en el defensor
+  "kick": "hurt",
+  "punch": "hurt", 
+  "punches": "hurt", // Combo de puñetazos
 };
 
-// Definir animaciones específicas de Pete por categoría
+// Definir animaciones específicas de Pete por categoría usando las reales
 const peteAnimations = {
   // Animaciones de combate (para modo combate)
   combat: {
-    idle: "idle",
-    punch: "punch",
-    kick: "kick", 
-    strong: "strong_attack",
-    uppercut: "uppercut",
-    block: "block",
-    dodge: "dodge",
-    hit: "hit_reaction",
-    stunned: "stunned",
-    death: "death"
+    idle: "idleFight",        // Idle específico para combate
+    kick: "kick",             // Patada
+    punch: "punch",           // Puñetazo simple
+    punches: "punches",       // Combo de puñetazos (ataque fuerte)
+    hurt: "hurt",             // Reacción al recibir daño
+    die: "die",               // Animación de muerte
+    block: "cover"            // Usar cover como bloqueo
   },
-  // Animaciones de baile (para modo fuera de combate)
+  // Animaciones de baile y celebración (para modo fuera de combate)
   dance: {
-    dance1: "dance_hip_hop",
-    dance2: "dance_salsa",
-    dance3: "dance_breakdance",
-    dance4: "dance_freestyle",
-    victory: "victory_dance"
+    celebration: "celebration",
+    dance1: "dance1",
+    dance2: "dance2", 
+    dance3: "dance3",
+    dance4: "dance4",
+    dance5: "dance5",
+    dance6: "dance6",
+    intro: "intro"
   }
 };
 
 // Daño por tipo de ataque
 const attackDamage = {
-  "punch": 10,
-  "kick": 15,
-  "strong": 25,
-  "uppercut": 20,
+  "punch": 15,    // Puñetazo básico
+  "kick": 20,     // Patada
+  "punches": 35,  // Combo de puñetazos (más daño)
 };
 
 // Costo de stamina por acción
 const staminaCosts = {
-  "punch": 5,
-  "kick": 10,
-  "strong": 30, // Golpe fuerte cuesta más stamina
-  "uppercut": 15,
+  "punch": 5,     // Puñetazo básico - bajo costo
+  "kick": 10,     // Patada - costo medio
+  "punches": 25,  // Combo de puñetazos - alto costo
 };
 
 // Constantes de stamina
@@ -96,12 +93,19 @@ export const CharacterAnimationsProvider = (props) => {
   const player1BlockStaminaRef = useRef(null);
   const player2BlockStaminaRef = useRef(null);
 
-  // Función para encontrar índice de animación por nombre
+  // Función para encontrar índice de animación por nombre exacto
   const findAnimationIndex = (animationName) => {
-    const index = animations.findIndex(anim => 
+    const index = animations.findIndex(anim => anim === animationName);
+    if (index >= 0) {
+      return index;
+    }
+    
+    // Si no encuentra la animación exacta, buscar por nombre similar
+    const fallbackIndex = animations.findIndex(anim => 
       anim.toLowerCase().includes(animationName.toLowerCase())
     );
-    return index >= 0 ? index : 0; // Fallback a idle si no se encuentra
+    
+    return fallbackIndex >= 0 ? fallbackIndex : 0; // Fallback a la primera animación
   };
 
   // Función para obtener animación específica según el modo
@@ -109,12 +113,19 @@ export const CharacterAnimationsProvider = (props) => {
     if (isCombatMode) {
       // En modo combate, usar animaciones de pelea
       const combatAnim = peteAnimations.combat[animationType];
-      return findAnimationIndex(combatAnim || "idle");
+      if (combatAnim) {
+        return findAnimationIndex(combatAnim);
+      }
+      // Si no encuentra la animación, usar idleFight como fallback
+      return findAnimationIndex("idleFight");
     } else {
       // Fuera de combate, usar animaciones de baile para movimientos básicos
       if (animationType === "idle") {
-        return findAnimationIndex("idle");
+        // Buscar idle normal primero, si no existe usar la primera animación
+        const idleIndex = findAnimationIndex("idle");
+        return idleIndex > 0 ? idleIndex : 0;
       }
+      
       // Para otros movimientos, usar animaciones de baile
       const danceAnimations = Object.values(peteAnimations.dance);
       const randomDance = danceAnimations[Math.floor(Math.random() * danceAnimations.length)];
@@ -253,12 +264,12 @@ export const CharacterAnimationsProvider = (props) => {
 
   // Función para obtener índice de animación de muerte usando Pete
   const getDeathAnimationIndex = () => {
-    return getAnimationForMode("death");
+    return findAnimationIndex("die");
   };
 
   // Función para obtener índice de animación de bloqueo usando Pete
   const getBlockAnimationIndex = () => {
-    return getAnimationForMode("block");
+    return findAnimationIndex("cover");
   };
 
   // Función para aplicar animación con verificación de muerte
@@ -281,7 +292,9 @@ export const CharacterAnimationsProvider = (props) => {
   // Función para volver ambos personajes a idle
   const returnToIdle = () => {
     console.log("Attempting to return players to idle");
-    const idleIndex = getAnimationForMode("idle");
+    
+    // Determinar qué animación idle usar según el modo
+    const idleIndex = isCombatMode ? findAnimationIndex("idleFight") : findAnimationIndex("idle");
     
     // Solo volver a idle si no están muertos y no están bloqueando
     if (!player1IsDead && !player1IsBlocking) {
@@ -307,7 +320,10 @@ export const CharacterAnimationsProvider = (props) => {
   const stopPlayer1Block = () => {
     console.log("Player 1 stops blocking");
     setPlayer1IsBlocking(false);
-    setPlayer1Animation(getAnimationForMode("idle")); // Volver a idle usando Pete
+    
+    // Usar la animación idle correcta según el modo
+    const idleIndex = isCombatMode ? findAnimationIndex("idleFight") : findAnimationIndex("idle");
+    setPlayer1Animation(idleIndex);
     
     // Limpiar completamente todos los timeouts e intervals del bloqueo
     if (player1BlockTimeoutRef.current) {
@@ -331,7 +347,10 @@ export const CharacterAnimationsProvider = (props) => {
   const stopPlayer2Block = () => {
     console.log("=== Player 2 STOPPING BLOCK ===");
     setPlayer2IsBlocking(false);
-    setPlayer2Animation(getAnimationForMode("idle")); // Volver a idle usando Pete
+    
+    // Usar la animación idle correcta según el modo
+    const idleIndex = isCombatMode ? findAnimationIndex("idleFight") : findAnimationIndex("idle");
+    setPlayer2Animation(idleIndex);
     
     // Limpiar completamente todos los timeouts e intervals del bloqueo
     if (player2BlockTimeoutRef.current) {
@@ -571,8 +590,8 @@ export const CharacterAnimationsProvider = (props) => {
     if (player1BlockStaminaRef.current) clearInterval(player1BlockStaminaRef.current);
     if (player2BlockStaminaRef.current) clearInterval(player2BlockStaminaRef.current);
     
-    // Volver ambos a idle al resetear usando el sistema de Pete
-    const idleIndex = getAnimationForMode("idle");
+    // Volver ambos a idle usando la animación correcta según el modo
+    const idleIndex = isCombatMode ? findAnimationIndex("idleFight") : findAnimationIndex("idle");
     setPlayer1AnimationIndex(idleIndex);
     setPlayer2AnimationIndex(idleIndex);
     
@@ -582,11 +601,11 @@ export const CharacterAnimationsProvider = (props) => {
   // Función para obtener animaciones según el tipo de ataque usando Pete
   const getAttackAnimations = (attackAnimationName) => {
     // Obtener animación de ataque
-    const attackIndex = getAnimationForMode(attackAnimationName);
+    const attackIndex = findAnimationIndex(attackAnimationName);
     
-    // Obtener animación de defensa usando el mapeo
-    const defenseAnimationName = attackToDefenseMap[attackAnimationName] || "idle";
-    const defenseIndex = getAnimationForMode(defenseAnimationName);
+    // Obtener animación de defensa usando el mapeo (siempre "hurt")
+    const defenseAnimationName = attackToDefenseMap[attackAnimationName] || "hurt";
+    const defenseIndex = findAnimationIndex(defenseAnimationName);
     
     return { attackIndex, defenseIndex };
   };
@@ -715,7 +734,7 @@ export const CharacterAnimationsProvider = (props) => {
     resetHealth(); // Resetear vida y stamina al iniciar combate (esto revive a todos)
     
     // Poner ambos jugadores en idle de combate
-    const combatIdleIndex = getAnimationForMode("idle");
+    const combatIdleIndex = findAnimationIndex("idleFight");
     setPlayer1AnimationIndex(combatIdleIndex);
     setPlayer2AnimationIndex(combatIdleIndex);
   };
