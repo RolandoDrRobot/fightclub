@@ -1,7 +1,41 @@
 import { CameraControls } from "./CameraControls";
 import Pete from "./Pete";
+import { useCharacterAnimations } from "../contexts/CharacterAnimations";
 
 const Experience = () => {
+  const { isCombatMode } = useCharacterAnimations();
+
+  // Posiciones y rotaciones según el modo
+  const getCharacterTransforms = () => {
+    if (isCombatMode) {
+      // Modo combate: mirándose uno al otro
+      return {
+        player1: {
+          position: [-0.5, 0, 0],
+          rotation: [0, Math.PI / 2, 0] // Mirando hacia la derecha
+        },
+        player2: {
+          position: [0.5, 0, 0], 
+          rotation: [0, -Math.PI / 2, 0] // Mirando hacia la izquierda
+        }
+      };
+    } else {
+      // Modo sincronización: misma distancia pero mirando al frente
+      return {
+        player1: {
+          position: [-0.5, 0, 0], // Misma distancia
+          rotation: [0, 0, 0] // Mirando al frente
+        },
+        player2: {
+          position: [0.5, 0, 0], // Misma distancia
+          rotation: [0, 0, 0] // Mirando al frente
+        }
+      };
+    }
+  };
+
+  const transforms = getCharacterTransforms();
+
   return (
     <>
       <CameraControls />
@@ -13,8 +47,16 @@ const Experience = () => {
         shadow-mapSize-height={2048}
       />
       <group position={[0, -1, 0]}>
-        <Pete player={1} position={[-0.5, 0, 0]} rotation={[0, Math.PI / 2, 0]} />
-        <Pete player={2} position={[0.5, 0, 0]} rotation={[0, -Math.PI / 2, 0]} />
+        <Pete 
+          player={1} 
+          position={transforms.player1.position} 
+          rotation={transforms.player1.rotation} 
+        />
+        <Pete 
+          player={2} 
+          position={transforms.player2.position} 
+          rotation={transforms.player2.rotation} 
+        />
       </group>
       <mesh
         rotation={[-0.5 * Math.PI, 0, 0]}
