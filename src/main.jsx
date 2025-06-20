@@ -10,14 +10,29 @@ ReactDOM.createRoot(document.getElementById("root")).render(
       withGlobalStyles
       withNormalizeCSS
       theme={{
+        fontFamily: '"Exo 2", sans-serif',
+        headings: { fontFamily: '"Exo 2", sans-serif' },
         globalStyles: (_theme) => ({
           body: {
             width: "100vw",
             height: "100vh",
+            fontFamily: '"Exo 2", sans-serif',
           },
           "#root": {
             width: "100%",
             height: "100%",
+          },
+          // Ensure all buttons use Exo 2 font with proper settings
+          ".mantine-Button-root": {
+            fontFamily: '"Exo 2", sans-serif',
+            fontOpticalSizing: 'auto',
+            fontStyle: 'normal',
+          },
+          // Also target any button elements
+          "button": {
+            fontFamily: '"Exo 2", sans-serif',
+            fontOpticalSizing: 'auto',
+            fontStyle: 'normal',
           },
         }),
       }}
