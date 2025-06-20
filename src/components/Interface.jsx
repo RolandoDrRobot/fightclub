@@ -39,6 +39,28 @@ const Interface = () => {
     { name: "punches", label: "Combo Puñetazos", emoji: "💥" }
   ];
 
+  // Animaciones de baile - solo estas en modo sincronizado
+  const danceAnimations = [
+    "celebration",
+    "dance1", 
+    "dance2",
+    "dance3",
+    "dance4",
+    "dance5",
+    "dance6",
+    "intro"
+  ];
+
+  // Función para verificar si una animación es de baile
+  const isDanceAnimation = (animationName) => {
+    return danceAnimations.some(dance => 
+      animationName.toLowerCase().includes(dance.toLowerCase())
+    );
+  };
+
+  // Filtrar solo animaciones de baile para el modo sincronizado
+  const filteredAnimations = animations.filter(isDanceAnimation);
+
   // Manejar cambio de modo
   const handleModeChange = (event) => {
     const combatMode = event.currentTarget.checked;
@@ -86,36 +108,45 @@ const Interface = () => {
         </Box>
       </Affix>
 
-      {/* Controles de animación - Solo en modo sincronizado */}
+      {/* Controles de animación de baile - Solo en modo sincronizado - ABAJO */}
       {!isCombatMode && (
         <Affix position={{ 
-          top: isMobile ? 50 : 70, 
-          right: isMobile ? 10 : 20 
+          bottom: isMobile ? 10 : 20, 
+          left: "50%",
+          transform: "translateX(-50%)"
         }}>
-          <Box style={{ maxWidth: isMobile ? "300px" : isTablet ? "400px" : "auto" }}>
+          <Box style={{ 
+            maxWidth: isMobile ? "340px" : isTablet ? "600px" : "800px",
+            textAlign: "center"
+          }}>
             <Stack spacing="xs">
-              <Text size={isMobile ? "xs" : "sm"} weight={500}>
-                Animaciones:
+              <Text size={isMobile ? "xs" : "sm"} weight={500} color="violet">
+                🕺 Animaciones de Baile 💃
               </Text>
-              <Group spacing={isMobile ? "xs" : "sm"}>
-                {animations.map((animation, index) => (
-                  <Button
-                    key={animation}
-                    variant={index === animationIndex ? "filled" : "light"}
-                    size={isMobile ? "xs" : isTablet ? "sm" : "md"}
-                    onClick={() => setAnimationIndex(index)}
-                    style={{
-                      fontSize: isMobile ? "10px" : "12px",
-                      padding: isMobile ? "4px 8px" : "8px 12px"
-                    }}
-                  >
-                    {isMobile 
-                      ? animation.substring(0, 6) + (animation.length > 6 ? "..." : "")
-                      : animation
-                    } {index === animations.length - 1 ? "(Muerte)" : ""}
-                    {index === 1 ? "(Bloqueo)" : ""}
-                  </Button>
-                ))}
+              <Group spacing={isMobile ? "xs" : "sm"} position="center">
+                {filteredAnimations.map((animation, index) => {
+                  // Encontrar el índice original en el array completo de animaciones
+                  const originalIndex = animations.findIndex(anim => anim === animation);
+                  
+                  return (
+                    <Button
+                      key={animation}
+                      variant={originalIndex === animationIndex ? "filled" : "light"}
+                      color="violet"
+                      size={isMobile ? "xs" : isTablet ? "sm" : "md"}
+                      onClick={() => setAnimationIndex(originalIndex)}
+                      style={{
+                        fontSize: isMobile ? "10px" : "12px",
+                        padding: isMobile ? "4px 8px" : "8px 12px"
+                      }}
+                    >
+                      {isMobile 
+                        ? animation.substring(0, 6) + (animation.length > 6 ? "..." : "")
+                        : animation
+                      }
+                    </Button>
+                  );
+                })}
               </Group>
             </Stack>
           </Box>
