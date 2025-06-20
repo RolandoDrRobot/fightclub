@@ -121,13 +121,13 @@ const Interface = () => {
             backgroundColor: "rgba(0, 0, 0, 0.95)",
             padding: isMobile ? "20px" : "40px",
             borderRadius: "16px",
-            border: "4px solid gold",
-            boxShadow: "0 0 30px rgba(255, 215, 0, 0.8)",
+            border: "4px solid #fc3f31",
+            boxShadow: "0 0 30px rgba(252, 63, 49, 0.8)",
             textAlign: "center",
             minWidth: isMobile ? "280px" : "400px"
           }}>
             <Stack spacing="md" align="center">
-              <Text size={isMobile ? "xl" : "2xl"} weight={700} color="gold">
+              <Text size={isMobile ? "xl" : "2xl"} weight={700} style={{ color: "#fc3f31" }}>
                 🏆 ¡VICTORIA! 🏆
               </Text>
               <Text size={isMobile ? "lg" : "xl"} weight={600} color="white">
@@ -151,8 +151,7 @@ const Interface = () => {
                   <Group spacing="md" position="center">
                     {/* Botón Volver a Pelear */}
                     <Button
-                      variant="gradient"
-                      gradient={{ from: 'red', to: 'orange' }}
+                      variant="outline"
                       size={isMobile ? "sm" : "md"}
                       onClick={() => {
                         resetHealth();
@@ -161,7 +160,10 @@ const Interface = () => {
                       style={{
                         fontSize: isMobile ? "11px" : "13px",
                         fontWeight: 700,
-                        padding: isMobile ? "8px 12px" : "12px 16px"
+                        padding: isMobile ? "8px 12px" : "12px 16px",
+                        backgroundColor: "transparent",
+                        borderColor: "#fc3f31",
+                        color: "#fc3f31"
                       }}
                     >
                       <Stack spacing={2} align="center">
@@ -174,14 +176,16 @@ const Interface = () => {
 
                     {/* Botón Modo Baile */}
                     <Button
-                      variant="gradient"
-                      gradient={{ from: 'violet', to: 'purple' }}
+                      variant="outline"
                       size={isMobile ? "sm" : "md"}
                       onClick={() => setIsCombatMode(false)}
                       style={{
                         fontSize: isMobile ? "11px" : "13px",
                         fontWeight: 700,
-                        padding: isMobile ? "8px 12px" : "12px 16px"
+                        padding: isMobile ? "8px 12px" : "12px 16px",
+                        backgroundColor: "transparent",
+                        borderColor: "violet",
+                        color: "violet"
                       }}
                     >
                       <Stack spacing={2} align="center">
@@ -235,7 +239,7 @@ const Interface = () => {
                       return (
                         <Button
                           key={animation}
-                          variant={originalIndex === animationIndex ? "filled" : "light"}
+                          variant={originalIndex === animationIndex ? "filled" : "outline"}
                           color="violet"
                           size="sm"
                           onClick={() => setAnimationIndex(originalIndex)}
@@ -250,7 +254,8 @@ const Interface = () => {
                             alignItems: "center",
                             justifyContent: "center",
                             textAlign: "center",
-                            lineHeight: 1
+                            lineHeight: 1,
+                            backgroundColor: originalIndex === animationIndex ? "violet" : "transparent"
                           }}
                         >
                           {isMobile 
@@ -273,7 +278,7 @@ const Interface = () => {
                       return (
                         <Button
                           key={animation}
-                          variant={originalIndex === animationIndex ? "filled" : "light"}
+                          variant={originalIndex === animationIndex ? "filled" : "outline"}
                           color="violet"
                           size="sm"
                           onClick={() => setAnimationIndex(originalIndex)}
@@ -288,7 +293,8 @@ const Interface = () => {
                             alignItems: "center",
                             justifyContent: "center",
                             textAlign: "center",
-                            lineHeight: 1
+                            lineHeight: 1,
+                            backgroundColor: originalIndex === animationIndex ? "violet" : "transparent"
                           }}
                         >
                           {isMobile 
@@ -305,17 +311,19 @@ const Interface = () => {
 
                 {/* Botón para iniciar combate - ABAJO DE LOS BOTONES DE BAILE */}
                 <Button
-                  variant="gradient"
-                  gradient={{ from: 'red', to: 'orange' }}
+                  variant="outline"
                   size={isMobile ? "md" : "lg"}
                   onClick={() => setIsCombatMode(true)}
                   style={{
                     fontSize: isMobile ? "14px" : "16px",
                     fontWeight: 700,
                     padding: isMobile ? "12px 20px" : "16px 24px",
-                    boxShadow: "0 4px 12px rgba(255, 0, 0, 0.3)",
+                    boxShadow: "0 4px 12px rgba(252, 63, 49, 0.3)",
                     width: "100%",
-                    marginTop: "12px"
+                    marginTop: "12px",
+                    backgroundColor: "transparent",
+                    borderColor: "#fc3f31",
+                    color: "#fc3f31"
                   }}
                 >
                   <Stack spacing={4} align="center">
@@ -334,18 +342,14 @@ const Interface = () => {
         <>
           {/* Botones de ataque - CENTRO HORIZONTAL */}
           <Affix position={{ 
-            bottom: isMobile ? 80 : 100, 
+            bottom: isMobile ? 40 : 60, 
             left: "50%",
             transform: "translateX(-50%)"
           }}>
             <Box style={{ textAlign: "center" }}>
               <Stack spacing="xs" align="center">
-                <Text size={isMobile ? "sm" : "md"} weight={600} color="blue">
-                  ⚔️ ATAQUES PLAYER 1
-                </Text>
-                
                 {/* Botones de ataque en horizontal */}
-                <Group spacing={isMobile ? "xs" : "sm"} position="center">
+                <Group spacing={isMobile ? "sm" : "md"} position="center">
                   {attackButtons.map((attack) => {
                     const canUseAttack = canAttack(player1Stamina, attack.name, player1IsDead, player1IsBlocking);
                     const staminaCost = staminaCosts[attack.name] || 0;
@@ -353,30 +357,32 @@ const Interface = () => {
                     return (
                       <Button
                         key={`p1-${attack.name}`}
-                        variant="filled"
-                        color="blue"
-                        size={isMobile ? "sm" : isTablet ? "md" : "lg"}
+                        variant="outline"
+                        size={isMobile ? "md" : "lg"}
                         disabled={!canUseAttack}
                         onClick={() => triggerPlayer1Attack(attack.name)}
                         style={{
-                          fontSize: isMobile ? "10px" : "12px",
-                          padding: isMobile ? "8px 12px" : "12px 16px",
+                          fontSize: isMobile ? "12px" : "14px",
+                          padding: isMobile ? "12px 16px" : "16px 20px",
                           opacity: !canUseAttack ? 0.5 : 1,
-                          minWidth: isMobile ? "70px" : "90px"
+                          minWidth: isMobile ? "90px" : "110px",
+                          width: isMobile ? "90px" : "110px",
+                          height: isMobile ? "70px" : "85px",
+                          backgroundColor: "transparent",
+                          borderColor: "#04cbee",
+                          color: "#04cbee",
+                          borderWidth: "2px",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center"
                         }}
                       >
-                        <Stack spacing={2} align="center">
-                          <Text size={isMobile ? "sm" : "md"} weight={700}>
-                            {attack.emoji}
-                          </Text>
-                          <Text size={isMobile ? "xs" : "sm"}>
-                            {isMobile 
-                              ? attack.label.substring(0, 4) + (attack.label.length > 4 ? "..." : "")
-                              : attack.label
-                            }
+                        <Stack spacing={4} align="center">
+                          <Text size={isMobile ? "xs" : "sm"} weight={600} align="center">
+                            {attack.label}
                           </Text>
                           {staminaCost > 0 && (
-                            <Text size="xs" color={player1Stamina < staminaCost ? "red" : "lightblue"}>
+                            <Text size="xs" color={player1Stamina < staminaCost ? "#fc3f31" : "#04cbee"} weight={600}>
                               ⚡{staminaCost}
                             </Text>
                           )}
@@ -391,13 +397,12 @@ const Interface = () => {
 
           {/* Botón de bloqueo - IZQUIERDA */}
           <Affix position={{ 
-            bottom: isMobile ? 140 : 180, 
+            bottom: isMobile ? 100 : 140, 
             left: isMobile ? 10 : 20 
           }}>
             <Box>
               <Button
-                variant={player1IsBlocking ? "filled" : "outline"}
-                color="orange"
+                variant="outline"
                 size={isMobile ? "sm" : "md"}
                 disabled={!canBlock(player1Stamina, player1IsDead)}
                 onClick={togglePlayer1Block}
@@ -405,7 +410,10 @@ const Interface = () => {
                   fontSize: isMobile ? "10px" : "12px",
                   padding: isMobile ? "8px 12px" : "12px 16px",
                   fontWeight: 700,
-                  opacity: !canBlock(player1Stamina, player1IsDead) ? 0.5 : 1
+                  opacity: !canBlock(player1Stamina, player1IsDead) ? 0.5 : 1,
+                  backgroundColor: player1IsBlocking ? "#04cbee" : "transparent",
+                  borderColor: "#04cbee",
+                  color: player1IsBlocking ? "white" : "#04cbee"
                 }}
               >
                 <Stack spacing={2} align="center">
@@ -419,7 +427,7 @@ const Interface = () => {
                     </Text>
                   )}
                   {!player1IsBlocking && player1Stamina <= 0 && !player1IsDead && (
-                    <Text size="xs" color="red">
+                    <Text size="xs" style={{ color: "#fc3f31" }}>
                       Sin stamina
                     </Text>
                   )}
@@ -430,7 +438,7 @@ const Interface = () => {
 
           {/* Estado del combate y Reset - DERECHA */}
           <Affix position={{ 
-            bottom: isMobile ? 140 : 180, 
+            bottom: isMobile ? 100 : 140, 
             right: isMobile ? 10 : 20
           }}>
             <Box>
@@ -446,13 +454,15 @@ const Interface = () => {
                 {/* Botón de Reset */}
                 <Button
                   variant="outline"
-                  color="green"
                   size={isMobile ? "sm" : "md"}
                   onClick={resetHealth}
                   style={{ 
                     fontSize: isMobile ? "10px" : "12px",
                     fontWeight: 600,
-                    padding: isMobile ? "8px 12px" : "12px 16px"
+                    padding: isMobile ? "8px 12px" : "12px 16px",
+                    backgroundColor: "transparent",
+                    borderColor: "#04cbee",
+                    color: "#04cbee"
                   }}
                 >
                   <Stack spacing={2} align="center">
@@ -470,26 +480,6 @@ const Interface = () => {
               </Stack>
             </Box>
           </Affix>
-
-          {/* Información de stamina - ARRIBA CENTRO */}
-          {!isCombatOver && (
-            <Affix position={{ 
-              bottom: isMobile ? 200 : 260, 
-              left: "50%",
-              transform: "translateX(-50%)"
-            }}>
-              <Box style={{
-                backgroundColor: "rgba(0, 0, 0, 0.7)",
-                padding: isMobile ? "4px 8px" : "6px 12px",
-                borderRadius: "4px",
-                border: "1px solid rgba(255, 255, 255, 0.3)"
-              }}>
-                <Text size="xs" color="gray" align="center">
-                  {isMobile ? "🛡️ 5s máx • 💥 30⚡" : "🛡️ Bloqueo: máx 5s • 💥 Golpe fuerte: 30⚡"}
-                </Text>
-              </Box>
-            </Affix>
-          )}
         </>
       )}
     </>

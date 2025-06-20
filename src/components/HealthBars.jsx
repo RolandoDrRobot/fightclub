@@ -22,22 +22,6 @@ const HealthBars = () => {
   // No mostrar si no estamos en modo combate
   if (!isCombatMode) return null;
 
-  // Función para obtener color de vida según porcentaje
-  const getHealthColor = (current, max) => {
-    const percentage = (current / max) * 100;
-    if (percentage > 60) return "green";
-    if (percentage > 30) return "yellow";
-    return "red";
-  };
-
-  // Función para obtener color de stamina según porcentaje
-  const getStaminaColor = (current, max) => {
-    const percentage = (current / max) * 100;
-    if (percentage > 50) return "blue";
-    if (percentage > 25) return "orange";
-    return "red";
-  };
-
   // Determinar si el combate ha terminado
   const winner = player1IsDead ? "Player 2" : player2IsDead ? "Player 1" : null;
 
@@ -55,34 +39,6 @@ const HealthBars = () => {
 
   return (
     <>
-      {/* Mensaje de victoria - Centro superior */}
-      {winner && (
-        <Box
-          style={{
-            position: "fixed",
-            top: isMobile ? 10 : 20,
-            left: "50%",
-            transform: "translateX(-50%)",
-            zIndex: 1001,
-            backgroundColor: "rgba(255, 215, 0, 0.95)",
-            color: "black",
-            padding: isMobile ? "8px 16px" : "12px 24px",
-            borderRadius: "8px",
-            border: "3px solid gold",
-            boxShadow: "0 0 20px rgba(255, 215, 0, 0.8)",
-          }}
-        >
-          <Text 
-            align="center" 
-            weight={700}
-            size={isMobile ? "md" : "lg"}
-            style={{ textShadow: "2px 2px 4px rgba(0,0,0,0.5)" }}
-          >
-            🏆 ¡{winner} WINS! 🏆
-          </Text>
-        </Box>
-      )}
-
       {/* Player 1 - Esquina superior izquierda */}
       <Box
         style={{
@@ -93,11 +49,10 @@ const HealthBars = () => {
       >
         {/* Nombre del jugador */}
         <Text 
-          color="cyan" 
           weight={700}
           size={isMobile ? "sm" : "md"}
           mb={4}
-          style={{ textShadow: "1px 1px 2px black" }}
+          style={{ textShadow: "1px 1px 2px black", color: "#04cbee" }}
         >
           PLAYER 1
         </Text>
@@ -110,7 +65,7 @@ const HealthBars = () => {
           </Group>
           <Progress
             value={(player1Health / maxHealth) * 100}
-            color={getHealthColor(player1Health, maxHealth)}
+            color="#04cbee"
             size={isMobile ? "md" : "lg"}
             radius={2}
             style={{
@@ -122,16 +77,16 @@ const HealthBars = () => {
         {/* Barra de stamina */}
         <Box>
           <Group position="apart" mb={2} spacing={4}>
-            <Text size="xs" color="lightblue" weight={600}>SP</Text>
-            <Text size="xs" color="lightblue">{Math.round(player1Stamina)}</Text>
+            <Text size="xs" weight={600} style={{ color: "#04cbee" }}>SP</Text>
+            <Text size="xs" style={{ color: "#04cbee" }}>{Math.round(player1Stamina)}</Text>
           </Group>
           <Progress
             value={(player1Stamina / maxStamina) * 100}
-            color={getStaminaColor(player1Stamina, maxStamina)}
+            color="#04cbee"
             size={isMobile ? "sm" : "md"}
             radius={2}
             style={{
-              border: "1px solid rgba(173,216,230,0.4)",
+              border: `1px solid rgba(4, 203, 238, 0.4)`,
             }}
           />
         </Box>
@@ -147,12 +102,11 @@ const HealthBars = () => {
       >
         {/* Nombre del jugador */}
         <Text 
-          color="orange" 
           weight={700}
           size={isMobile ? "sm" : "md"}
           mb={4}
           align="right"
-          style={{ textShadow: "1px 1px 2px black" }}
+          style={{ textShadow: "1px 1px 2px black", color: "#fc3f31" }}
         >
           PLAYER 2
         </Text>
@@ -165,7 +119,7 @@ const HealthBars = () => {
           </Group>
           <Progress
             value={(player2Health / maxHealth) * 100}
-            color={getHealthColor(player2Health, maxHealth)}
+            color="#fc3f31"
             size={isMobile ? "md" : "lg"}
             radius={2}
             style={{
@@ -178,16 +132,16 @@ const HealthBars = () => {
         {/* Barra de stamina */}
         <Box>
           <Group position="apart" mb={2} spacing={4}>
-            <Text size="xs" color="lightblue">{Math.round(player2Stamina)}</Text>
-            <Text size="xs" color="lightblue" weight={600}>SP</Text>
+            <Text size="xs" style={{ color: "#fc3f31" }}>{Math.round(player2Stamina)}</Text>
+            <Text size="xs" weight={600} style={{ color: "#fc3f31" }}>SP</Text>
           </Group>
           <Progress
             value={(player2Stamina / maxStamina) * 100}
-            color={getStaminaColor(player2Stamina, maxStamina)}
+            color="#fc3f31"
             size={isMobile ? "sm" : "md"}
             radius={2}
             style={{
-              border: "1px solid rgba(173,216,230,0.4)",
+              border: `1px solid rgba(252, 63, 49, 0.4)`,
               transform: "scaleX(-1)", // Invertir dirección para Player 2
             }}
           />
