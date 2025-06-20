@@ -2,13 +2,39 @@ import { createContext, useContext, useState, useRef, useEffect } from "react";
 
 const CharacterAnimationsContext = createContext({});
 
-// Mapeo de animaciones de ataque a animaciones de defensa usando animaciones existentes
+// Mapeo de animaciones de ataque a animaciones de defensa para Pete
+// Pete tiene animaciones específicas de pelea y baile
 const attackToDefenseMap = {
-  // Usamos las animaciones disponibles en el modelo para testing
-  "punch": "idle", // Player 1 hace alguna animación, Player 2 hace idle como "reacción"
-  "kick": "walking", // Player 1 hace otra animación, Player 2 hace walking
-  "strong": "running", // Player 1 hace una tercera, Player 2 hace running
-  "uppercut": "jump", // Si hay jump, Player 2 hace jump
+  // Animaciones de combate de Pete
+  "punch": "block", // Player 1 ataca, Player 2 bloquea
+  "kick": "dodge", // Player 1 patada, Player 2 esquiva
+  "strong": "hit", // Player 1 golpe fuerte, Player 2 recibe golpe
+  "uppercut": "stunned", // Player 1 uppercut, Player 2 queda aturdido
+};
+
+// Definir animaciones específicas de Pete por categoría
+const peteAnimations = {
+  // Animaciones de combate (para modo combate)
+  combat: {
+    idle: "idle",
+    punch: "punch",
+    kick: "kick", 
+    strong: "strong_attack",
+    uppercut: "uppercut",
+    block: "block",
+    dodge: "dodge",
+    hit: "hit_reaction",
+    stunned: "stunned",
+    death: "death"
+  },
+  // Animaciones de baile (para modo fuera de combate)
+  dance: {
+    dance1: "dance_hip_hop",
+    dance2: "dance_salsa",
+    dance3: "dance_breakdance",
+    dance4: "dance_freestyle",
+    victory: "victory_dance"
+  }
 };
 
 // Daño por tipo de ataque
@@ -21,18 +47,18 @@ const attackDamage = {
 
 // Costo de stamina por acción
 const staminaCosts = {
-  "punch": 0,
-  "kick": 0,
-  "strong": 30, // Golpe fuerte cuesta stamina
-  "uppercut": 0,
+  "punch": 5,
+  "kick": 10,
+  "strong": 30, // Golpe fuerte cuesta más stamina
+  "uppercut": 15,
 };
 
 // Constantes de stamina
 const MAX_STAMINA = 100;
-const STAMINA_REGEN_RATE = 20; // Stamina que se regenera por segundo (ajustado para regeneración más rápida)
+const STAMINA_REGEN_RATE = 20; // Stamina que se regenera por segundo
 const STAMINA_REGEN_DELAY = 1000; // Tiempo antes de empezar a regenerar (ms)
 const BLOCK_DURATION = 5000; // Máximo tiempo de bloqueo (5 segundos)
-const BLOCK_STAMINA_DRAIN_RATE = 20; // Stamina que se drena por segundo mientras bloquea (100/5 = 20 por segundo)
+const BLOCK_STAMINA_DRAIN_RATE = 20; // Stamina que se drena por segundo mientras bloquea
 const STAMINA_UPDATE_INTERVAL = 50; // Actualizar cada 50ms para animación suave
 
 export const CharacterAnimationsProvider = (props) => {
@@ -69,6 +95,32 @@ export const CharacterAnimationsProvider = (props) => {
   const player2StaminaRegenRef = useRef(null);
   const player1BlockStaminaRef = useRef(null);
   const player2BlockStaminaRef = useRef(null);
+
+  // Función para encontrar índice de animación por nombre
+  const findAnimationIndex = (animationName) => {
+    const index = animations.findIndex(anim => 
+      anim.toLowerCase().includes(animationName.toLowerCase())
+    );
+    return index >= 0 ? index : 0; // Fallback a idle si no se encuentra
+  };
+
+  // Función para obtener animación específica según el modo
+  const getAnimationForMode = (animationType) => {
+    if (isCombatMode) {
+      // En modo combate, usar animaciones de pelea
+      const combatAnim = peteAnimations.combat[animationType];
+      return findAnimationIndex(combatAnim || "idle");
+    } else {
+      // Fuera de combate, usar animaciones de baile para movimientos básicos
+      if (animationType === "idle") {
+        return findAnimationIndex("idle");
+      }
+      // Para otros movimientos, usar animaciones de baile
+      const danceAnimations = Object.values(peteAnimations.dance);
+      const randomDance = danceAnimations[Math.floor(Math.random() * danceAnimations.length)];
+      return findAnimationIndex(randomDance);
+    }
+  };
 
   // Función para consumir stamina del Player 1
   const consumePlayer1Stamina = (amount) => {
@@ -199,16 +251,14 @@ export const CharacterAnimationsProvider = (props) => {
     }, STAMINA_REGEN_DELAY);
   };
 
-  // Función para obtener índice de animación de muerte (usando una animación disponible)
+  // Función para obtener índice de animación de muerte usando Pete
   const getDeathAnimationIndex = () => {
-    // Para prueba, usamos la última animación disponible como "muerte"
-    return Math.max(0, animations.length - 1);
+    return getAnimationForMode("death");
   };
 
-  // Función para obtener índice de animación de bloqueo (usando una animación disponible)
+  // Función para obtener índice de animación de bloqueo usando Pete
   const getBlockAnimationIndex = () => {
-    // Para prueba, usamos la segunda animación disponible como "bloqueo"
-    return Math.min(1, animations.length - 1);
+    return getAnimationForMode("block");
   };
 
   // Función para aplicar animación con verificación de muerte
@@ -231,7 +281,7 @@ export const CharacterAnimationsProvider = (props) => {
   // Función para volver ambos personajes a idle
   const returnToIdle = () => {
     console.log("Attempting to return players to idle");
-    const idleIndex = 0; // Asumimos que idle es la primera animación
+    const idleIndex = getAnimationForMode("idle");
     
     // Solo volver a idle si no están muertos y no están bloqueando
     if (!player1IsDead && !player1IsBlocking) {
@@ -257,7 +307,7 @@ export const CharacterAnimationsProvider = (props) => {
   const stopPlayer1Block = () => {
     console.log("Player 1 stops blocking");
     setPlayer1IsBlocking(false);
-    setPlayer1Animation(0); // Volver a idle
+    setPlayer1Animation(getAnimationForMode("idle")); // Volver a idle usando Pete
     
     // Limpiar completamente todos los timeouts e intervals del bloqueo
     if (player1BlockTimeoutRef.current) {
@@ -281,7 +331,7 @@ export const CharacterAnimationsProvider = (props) => {
   const stopPlayer2Block = () => {
     console.log("=== Player 2 STOPPING BLOCK ===");
     setPlayer2IsBlocking(false);
-    setPlayer2Animation(0); // Volver a idle
+    setPlayer2Animation(getAnimationForMode("idle")); // Volver a idle usando Pete
     
     // Limpiar completamente todos los timeouts e intervals del bloqueo
     if (player2BlockTimeoutRef.current) {
@@ -521,40 +571,22 @@ export const CharacterAnimationsProvider = (props) => {
     if (player1BlockStaminaRef.current) clearInterval(player1BlockStaminaRef.current);
     if (player2BlockStaminaRef.current) clearInterval(player2BlockStaminaRef.current);
     
-    // Volver ambos a idle al resetear (ahora es posible porque no están muertos)
-    const idleIndex = 0;
+    // Volver ambos a idle al resetear usando el sistema de Pete
+    const idleIndex = getAnimationForMode("idle");
     setPlayer1AnimationIndex(idleIndex);
     setPlayer2AnimationIndex(idleIndex);
     
     console.log("All players revived and returned to idle");
   };
 
-  // Función para obtener animaciones según el tipo de ataque
+  // Función para obtener animaciones según el tipo de ataque usando Pete
   const getAttackAnimations = (attackAnimationName) => {
-    let attackIndex = 0;
-    let defenseIndex = 0;
+    // Obtener animación de ataque
+    const attackIndex = getAnimationForMode(attackAnimationName);
     
-    switch(attackAnimationName) {
-      case "punch":
-        attackIndex = Math.min(1, animations.length - 1); // Segunda animación disponible
-        defenseIndex = Math.min(0, animations.length - 1); // Primera animación (idle)
-        break;
-      case "kick":
-        attackIndex = Math.min(2, animations.length - 1); // Tercera animación
-        defenseIndex = Math.min(1, animations.length - 1); // Segunda animación
-        break;
-      case "strong":
-        attackIndex = Math.min(3, animations.length - 1); // Cuarta animación
-        defenseIndex = Math.min(2, animations.length - 1); // Tercera animación
-        break;
-      case "uppercut":
-        attackIndex = Math.min(0, animations.length - 1); // Primera animación
-        defenseIndex = Math.min(3, animations.length - 1); // Cuarta animación
-        break;
-      default:
-        attackIndex = 0;
-        defenseIndex = 0;
-    }
+    // Obtener animación de defensa usando el mapeo
+    const defenseAnimationName = attackToDefenseMap[attackAnimationName] || "idle";
+    const defenseIndex = getAnimationForMode(defenseAnimationName);
     
     return { attackIndex, defenseIndex };
   };
@@ -658,16 +690,34 @@ export const CharacterAnimationsProvider = (props) => {
       clearTimeout(attackTimeoutRef.current);
     }
     
+    let animationToUse = index;
+    
+    // Si no estamos en modo combate, mapear a animaciones de baile
+    if (!isCombatMode && animations.length > 0) {
+      const animationName = animations[index];
+      // Si la animación seleccionada no es idle, usar una animación de baile
+      if (animationName && !animationName.toLowerCase().includes('idle')) {
+        const danceAnimations = Object.values(peteAnimations.dance);
+        const randomDance = danceAnimations[index % danceAnimations.length];
+        animationToUse = findAnimationIndex(randomDance);
+      }
+    }
+    
     // Usar las funciones protegidas para evitar cambiar animaciones de jugadores muertos
-    setPlayer1Animation(index);
-    setPlayer2Animation(index);
-    setAnimationIndex(index);
+    setPlayer1Animation(animationToUse);
+    setPlayer2Animation(animationToUse);
+    setAnimationIndex(animationToUse);
   };
 
   // Función para inicializar combate en idle
   const initializeCombat = () => {
     console.log("Initializing combat mode");
     resetHealth(); // Resetear vida y stamina al iniciar combate (esto revive a todos)
+    
+    // Poner ambos jugadores en idle de combate
+    const combatIdleIndex = getAnimationForMode("idle");
+    setPlayer1AnimationIndex(combatIdleIndex);
+    setPlayer2AnimationIndex(combatIdleIndex);
   };
 
   // Limpiar timeouts al desmontar el componente
