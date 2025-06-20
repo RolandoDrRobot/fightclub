@@ -206,71 +206,125 @@ const Interface = () => {
       {/* Controles de animación de baile - Solo en modo sincronizado - CENTRO ARRIBA */}
       {!isCombatMode && (
         <>
-          <Affix position={{ 
-            top: isMobile ? 60 : 80, 
-            left: "50%",
-            transform: "translateX(-50%)"
-          }}>
-            <Box style={{ 
-              maxWidth: isMobile ? "340px" : isTablet ? "600px" : "800px",
-              textAlign: "center"
-            }}>
-              <Stack spacing="xs">
-                <Text size={isMobile ? "xs" : "sm"} weight={500} color="violet">
-                  🕺 Animaciones de Baile 💃
-                </Text>
-                <Group spacing={isMobile ? "xs" : "sm"} position="center">
-                  {filteredAnimations.map((animation, index) => {
-                    // Encontrar el índice original en el array completo de animaciones
-                    const originalIndex = animations.findIndex(anim => anim === animation);
-                    
-                    return (
-                      <Button
-                        key={animation}
-                        variant={originalIndex === animationIndex ? "filled" : "light"}
-                        color="violet"
-                        size={isMobile ? "xs" : isTablet ? "sm" : "md"}
-                        onClick={() => setAnimationIndex(originalIndex)}
-                        style={{
-                          fontSize: isMobile ? "10px" : "12px",
-                          padding: isMobile ? "4px 8px" : "8px 12px"
-                        }}
-                      >
-                        {isMobile 
-                          ? animation.substring(0, 6) + (animation.length > 6 ? "..." : "")
-                          : animation
-                        }
-                      </Button>
-                    );
-                  })}
-                </Group>
-              </Stack>
-            </Box>
-          </Affix>
-
-          {/* Botón para iniciar combate - ABAJO CENTRO */}
+          {/* Botones de baile - ABAJO CENTRO */}
           <Affix position={{ 
             bottom: isMobile ? 20 : 30, 
             left: "50%",
             transform: "translateX(-50%)"
           }}>
-            <Button
-              variant="gradient"
-              gradient={{ from: 'red', to: 'orange' }}
-              size={isMobile ? "md" : "lg"}
-              onClick={() => setIsCombatMode(true)}
-              style={{
-                fontSize: isMobile ? "14px" : "16px",
-                fontWeight: 700,
-                padding: isMobile ? "12px 20px" : "16px 24px",
-                boxShadow: "0 4px 12px rgba(255, 0, 0, 0.3)"
-              }}
-            >
-              <Stack spacing={4} align="center">
-                <Text size={isMobile ? "lg" : "xl"}>⚔️</Text>
-                <Text size={isMobile ? "sm" : "md"}>INICIAR COMBATE</Text>
+            <Box style={{ 
+              maxWidth: isMobile ? "100%" : "400px",
+              width: isMobile ? "100%" : "400px",
+              textAlign: "center",
+              padding: isMobile ? "0 10px" : "0",
+              margin: "0 auto"
+            }}>
+              <Stack spacing="xs">
+                <Text size={isMobile ? "xs" : "sm"} weight={500} color="violet">
+                  🕺 Animaciones de Baile 💃
+                </Text>
+                
+                {/* Organizar botones en 2 filas */}
+                <Stack spacing="xs" style={{ width: "100vw", margin: "auto" }}>
+                  {/* Primera fila - 4 botones */}
+                  <Group spacing={isMobile ? "xs" : "sm"} position="center">
+                    {filteredAnimations.slice(0, 4).map((animation, index) => {
+                      // Encontrar el índice original en el array completo de animaciones
+                      const originalIndex = animations.findIndex(anim => anim === animation);
+                      
+                      return (
+                        <Button
+                          key={animation}
+                          variant={originalIndex === animationIndex ? "filled" : "light"}
+                          color="violet"
+                          size="sm"
+                          onClick={() => setAnimationIndex(originalIndex)}
+                          style={{
+                            fontSize: isMobile ? "9px" : "11px",
+                            fontWeight: 600,
+                            padding: "0px",
+                            minWidth: isMobile ? "65px" : "80px",
+                            width: isMobile ? "65px" : "80px",
+                            height: isMobile ? "30px" : "36px",
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            textAlign: "center",
+                            lineHeight: 1
+                          }}
+                        >
+                          {isMobile 
+                            ? animation.substring(0, 5) + (animation.length > 5 ? "..." : "")
+                            : animation.length > 8 
+                              ? animation.substring(0, 8) + "..."
+                              : animation
+                          }
+                        </Button>
+                      );
+                    })}
+                  </Group>
+                  
+                  {/* Segunda fila - 4 botones */}
+                  <Group spacing={isMobile ? "xs" : "sm"} position="center">
+                    {filteredAnimations.slice(4, 8).map((animation, index) => {
+                      // Encontrar el índice original en el array completo de animaciones
+                      const originalIndex = animations.findIndex(anim => anim === animation);
+                      
+                      return (
+                        <Button
+                          key={animation}
+                          variant={originalIndex === animationIndex ? "filled" : "light"}
+                          color="violet"
+                          size="sm"
+                          onClick={() => setAnimationIndex(originalIndex)}
+                          style={{
+                            fontSize: isMobile ? "9px" : "11px",
+                            fontWeight: 600,
+                            padding: "0px",
+                            minWidth: isMobile ? "65px" : "80px",
+                            width: isMobile ? "65px" : "80px",
+                            height: isMobile ? "30px" : "36px",
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            textAlign: "center",
+                            lineHeight: 1
+                          }}
+                        >
+                          {isMobile 
+                            ? animation.substring(0, 5) + (animation.length > 5 ? "..." : "")
+                            : animation.length > 8 
+                              ? animation.substring(0, 8) + "..."
+                              : animation
+                          }
+                        </Button>
+                      );
+                    })}
+                  </Group>
+                </Stack>
+
+                {/* Botón para iniciar combate - ABAJO DE LOS BOTONES DE BAILE */}
+                <Button
+                  variant="gradient"
+                  gradient={{ from: 'red', to: 'orange' }}
+                  size={isMobile ? "md" : "lg"}
+                  onClick={() => setIsCombatMode(true)}
+                  style={{
+                    fontSize: isMobile ? "14px" : "16px",
+                    fontWeight: 700,
+                    padding: isMobile ? "12px 20px" : "16px 24px",
+                    boxShadow: "0 4px 12px rgba(255, 0, 0, 0.3)",
+                    width: "100%",
+                    marginTop: "12px"
+                  }}
+                >
+                  <Stack spacing={4} align="center">
+                    <Text size={isMobile ? "lg" : "xl"}>⚔️</Text>
+                    <Text size={isMobile ? "sm" : "md"}>INICIAR COMBATE</Text>
+                  </Stack>
+                </Button>
               </Stack>
-            </Button>
+            </Box>
           </Affix>
         </>
       )}
