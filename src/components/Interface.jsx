@@ -1,6 +1,7 @@
 import { Affix, Button, Group, Switch, Text, Stack, Box } from "@mantine/core";
 import { useCharacterAnimations } from "../contexts/CharacterAnimations";
 import { useMediaQuery } from "@mantine/hooks";
+import React from "react";
 
 const Interface = () => {
   const { 
@@ -87,109 +88,210 @@ const Interface = () => {
     return !isPlayerDead && playerStamina > 0;
   };
   
+  // CSS para la animación de countdown
+  React.useEffect(() => {
+    const style = document.createElement('style');
+    style.textContent = `
+      @keyframes countdown {
+        from {
+          transform: scaleX(1);
+        }
+        to {
+          transform: scaleX(0);
+        }
+      }
+    `;
+    document.head.appendChild(style);
+    
+    return () => {
+      document.head.removeChild(style);
+    };
+  }, []);
+
   return (
     <>
-      {/* Toggle de modo - Responsive */}
-      <Affix position={{ 
-        top: isMobile ? 10 : 20, 
-        left: isMobile ? 10 : 20 
-      }}>
-        <Box style={{ maxWidth: isMobile ? "200px" : "auto" }}>
-          <Switch
-            checked={isCombatMode}
-            onChange={handleModeChange}
-            size={isMobile ? "sm" : "md"}
-            label={
-              <Text size={isMobile ? "xs" : "sm"} weight={500}>
-                {isCombatMode ? "Modo Combate" : "Modo Sincronizado"}
-              </Text>
-            }
-          />
-        </Box>
-      </Affix>
-
-      {/* Controles de animación de baile - Solo en modo sincronizado - ABAJO */}
-      {!isCombatMode && (
+      {/* Mensaje de Victoria - Overlay cuando termina el combate */}
+      {isCombatOver && isCombatMode && (
         <Affix position={{ 
-          bottom: isMobile ? 10 : 20, 
+          top: "50%", 
           left: "50%",
-          transform: "translateX(-50%)"
+          transform: "translate(-50%, -50%)"
         }}>
-          <Box style={{ 
-            maxWidth: isMobile ? "340px" : isTablet ? "600px" : "800px",
-            textAlign: "center"
+          <Box style={{
+            backgroundColor: "rgba(0, 0, 0, 0.95)",
+            padding: isMobile ? "20px" : "40px",
+            borderRadius: "16px",
+            border: "4px solid gold",
+            boxShadow: "0 0 30px rgba(255, 215, 0, 0.8)",
+            textAlign: "center",
+            minWidth: isMobile ? "280px" : "400px"
           }}>
-            <Stack spacing="xs">
-              <Text size={isMobile ? "xs" : "sm"} weight={500} color="violet">
-                🕺 Animaciones de Baile 💃
+            <Stack spacing="md" align="center">
+              <Text size={isMobile ? "xl" : "2xl"} weight={700} color="gold">
+                🏆 ¡VICTORIA! 🏆
               </Text>
-              <Group spacing={isMobile ? "xs" : "sm"} position="center">
-                {filteredAnimations.map((animation, index) => {
-                  // Encontrar el índice original en el array completo de animaciones
-                  const originalIndex = animations.findIndex(anim => anim === animation);
+              <Text size={isMobile ? "lg" : "xl"} weight={600} color="white">
+                {player1IsDead ? "PLAYER 2 WINS!" : "PLAYER 1 WINS!"}
+              </Text>
+              
+              {/* Toggle de modo - Solo aparece en el modal de victoria */}
+              <Box style={{ 
+                backgroundColor: "rgba(255, 255, 255, 0.1)",
+                padding: isMobile ? "12px" : "16px",
+                borderRadius: "8px",
+                border: "2px solid rgba(255, 255, 255, 0.3)",
+                marginTop: "16px"
+              }}>
+                <Stack spacing="md" align="center">
+                  <Text size={isMobile ? "sm" : "md"} color="gray">
+                    ¿Qué quieres hacer ahora?
+                  </Text>
                   
-                  return (
+                  {/* Botones de acción */}
+                  <Group spacing="md" position="center">
+                    {/* Botón Volver a Pelear */}
                     <Button
-                      key={animation}
-                      variant={originalIndex === animationIndex ? "filled" : "light"}
-                      color="violet"
-                      size={isMobile ? "xs" : isTablet ? "sm" : "md"}
-                      onClick={() => setAnimationIndex(originalIndex)}
+                      variant="gradient"
+                      gradient={{ from: 'red', to: 'orange' }}
+                      size={isMobile ? "sm" : "md"}
+                      onClick={() => {
+                        resetHealth();
+                        initializeCombat();
+                      }}
                       style={{
-                        fontSize: isMobile ? "10px" : "12px",
-                        padding: isMobile ? "4px 8px" : "8px 12px"
+                        fontSize: isMobile ? "11px" : "13px",
+                        fontWeight: 700,
+                        padding: isMobile ? "8px 12px" : "12px 16px"
                       }}
                     >
-                      {isMobile 
-                        ? animation.substring(0, 6) + (animation.length > 6 ? "..." : "")
-                        : animation
-                      }
+                      <Stack spacing={2} align="center">
+                        <Text size={isMobile ? "md" : "lg"}>⚔️</Text>
+                        <Text size={isMobile ? "xs" : "sm"}>
+                          VOLVER A PELEAR
+                        </Text>
+                      </Stack>
                     </Button>
-                  );
-                })}
-              </Group>
+
+                    {/* Botón Modo Baile */}
+                    <Button
+                      variant="gradient"
+                      gradient={{ from: 'violet', to: 'purple' }}
+                      size={isMobile ? "sm" : "md"}
+                      onClick={() => setIsCombatMode(false)}
+                      style={{
+                        fontSize: isMobile ? "11px" : "13px",
+                        fontWeight: 700,
+                        padding: isMobile ? "8px 12px" : "12px 16px"
+                      }}
+                    >
+                      <Stack spacing={2} align="center">
+                        <Text size={isMobile ? "md" : "lg"}>🕺</Text>
+                        <Text size={isMobile ? "xs" : "sm"}>
+                          CELEBRAR BAILANDO
+                        </Text>
+                      </Stack>
+                    </Button>
+                  </Group>
+                  
+                  <Text size="xs" color="gray" align="center">
+                    Elige tu próxima acción
+                  </Text>
+                </Stack>
+              </Box>
             </Stack>
           </Box>
         </Affix>
       )}
 
-      {/* Controles de combate - Solo en modo combate */}
-      {isCombatMode && (
+      {/* Controles de animación de baile - Solo en modo sincronizado - CENTRO ARRIBA */}
+      {!isCombatMode && (
         <>
-          {/* Ataques Player 1 - Izquierda */}
           <Affix position={{ 
-            bottom: isMobile ? 10 : 20, 
-            left: isMobile ? 10 : 20 
+            top: isMobile ? 60 : 80, 
+            left: "50%",
+            transform: "translateX(-50%)"
           }}>
-            <Box style={{ maxWidth: isMobile ? "170px" : isTablet ? "200px" : "250px" }}>
+            <Box style={{ 
+              maxWidth: isMobile ? "340px" : isTablet ? "600px" : "800px",
+              textAlign: "center"
+            }}>
               <Stack spacing="xs">
-                <Text size={isMobile ? "xs" : "sm"} weight={500} color="blue">
-                  Player 1 {player1IsBlocking && <Text span color="orange" weight={700}>(BLOQUEANDO)</Text>}
+                <Text size={isMobile ? "xs" : "sm"} weight={500} color="violet">
+                  🕺 Animaciones de Baile 💃
+                </Text>
+                <Group spacing={isMobile ? "xs" : "sm"} position="center">
+                  {filteredAnimations.map((animation, index) => {
+                    // Encontrar el índice original en el array completo de animaciones
+                    const originalIndex = animations.findIndex(anim => anim === animation);
+                    
+                    return (
+                      <Button
+                        key={animation}
+                        variant={originalIndex === animationIndex ? "filled" : "light"}
+                        color="violet"
+                        size={isMobile ? "xs" : isTablet ? "sm" : "md"}
+                        onClick={() => setAnimationIndex(originalIndex)}
+                        style={{
+                          fontSize: isMobile ? "10px" : "12px",
+                          padding: isMobile ? "4px 8px" : "8px 12px"
+                        }}
+                      >
+                        {isMobile 
+                          ? animation.substring(0, 6) + (animation.length > 6 ? "..." : "")
+                          : animation
+                        }
+                      </Button>
+                    );
+                  })}
+                </Group>
+              </Stack>
+            </Box>
+          </Affix>
+
+          {/* Botón para iniciar combate - ABAJO CENTRO */}
+          <Affix position={{ 
+            bottom: isMobile ? 20 : 30, 
+            left: "50%",
+            transform: "translateX(-50%)"
+          }}>
+            <Button
+              variant="gradient"
+              gradient={{ from: 'red', to: 'orange' }}
+              size={isMobile ? "md" : "lg"}
+              onClick={() => setIsCombatMode(true)}
+              style={{
+                fontSize: isMobile ? "14px" : "16px",
+                fontWeight: 700,
+                padding: isMobile ? "12px 20px" : "16px 24px",
+                boxShadow: "0 4px 12px rgba(255, 0, 0, 0.3)"
+              }}
+            >
+              <Stack spacing={4} align="center">
+                <Text size={isMobile ? "lg" : "xl"}>⚔️</Text>
+                <Text size={isMobile ? "sm" : "md"}>INICIAR COMBATE</Text>
+              </Stack>
+            </Button>
+          </Affix>
+        </>
+      )}
+
+      {/* Controles de combate - Solo Player 1 */}
+      {isCombatMode && !isCombatOver && (
+        <>
+          {/* Botones de ataque - CENTRO HORIZONTAL */}
+          <Affix position={{ 
+            bottom: isMobile ? 80 : 100, 
+            left: "50%",
+            transform: "translateX(-50%)"
+          }}>
+            <Box style={{ textAlign: "center" }}>
+              <Stack spacing="xs" align="center">
+                <Text size={isMobile ? "sm" : "md"} weight={600} color="blue">
+                  ⚔️ ATAQUES PLAYER 1
                 </Text>
                 
-                {/* Botón de bloqueo Player 1 */}
-                <Button
-                  variant={player1IsBlocking ? "filled" : "outline"}
-                  color="orange"
-                  size={isMobile ? "xs" : isTablet ? "sm" : "md"}
-                  disabled={!canBlock(player1Stamina, player1IsDead)}
-                  onClick={togglePlayer1Block}
-                  style={{
-                    fontSize: isMobile ? "9px" : "11px",
-                    padding: isMobile ? "4px 6px" : "6px 10px",
-                    fontWeight: 700,
-                    opacity: !canBlock(player1Stamina, player1IsDead) ? 0.5 : 1
-                  }}
-                >
-                  🛡️ {player1IsBlocking ? "DEJAR BLOQUEO" : "BLOQUEAR"}
-                  {!player1IsBlocking && player1Stamina <= 0 && !player1IsDead && (
-                    <Text span size="xs" color="red" style={{ display: "block" }}>
-                      Sin stamina
-                    </Text>
-                  )}
-                </Button>
-                
-                <Stack spacing={isMobile ? "xs" : "sm"}>
+                {/* Botones de ataque en horizontal */}
+                <Group spacing={isMobile ? "xs" : "sm"} position="center">
                   {attackButtons.map((attack) => {
                     const canUseAttack = canAttack(player1Stamina, attack.name, player1IsDead, player1IsBlocking);
                     const staminaCost = staminaCosts[attack.name] || 0;
@@ -199,24 +301,28 @@ const Interface = () => {
                         key={`p1-${attack.name}`}
                         variant="filled"
                         color="blue"
-                        size={isMobile ? "xs" : isTablet ? "sm" : "md"}
+                        size={isMobile ? "sm" : isTablet ? "md" : "lg"}
                         disabled={!canUseAttack}
                         onClick={() => triggerPlayer1Attack(attack.name)}
                         style={{
-                          fontSize: isMobile ? "9px" : "11px",
-                          padding: isMobile ? "4px 6px" : "6px 10px",
-                          opacity: !canUseAttack ? 0.5 : 1
+                          fontSize: isMobile ? "10px" : "12px",
+                          padding: isMobile ? "8px 12px" : "12px 16px",
+                          opacity: !canUseAttack ? 0.5 : 1,
+                          minWidth: isMobile ? "70px" : "90px"
                         }}
                       >
-                        <Stack spacing={0} align="center">
+                        <Stack spacing={2} align="center">
+                          <Text size={isMobile ? "sm" : "md"} weight={700}>
+                            {attack.emoji}
+                          </Text>
                           <Text size={isMobile ? "xs" : "sm"}>
-                            {attack.emoji} {isMobile 
-                              ? attack.label.substring(0, 6) + (attack.label.length > 6 ? "..." : "")
+                            {isMobile 
+                              ? attack.label.substring(0, 4) + (attack.label.length > 4 ? "..." : "")
                               : attack.label
                             }
                           </Text>
                           {staminaCost > 0 && (
-                            <Text size="xs" color={player1Stamina < staminaCost ? "red" : "white"}>
+                            <Text size="xs" color={player1Stamina < staminaCost ? "red" : "lightblue"}>
                               ⚡{staminaCost}
                             </Text>
                           )}
@@ -224,104 +330,62 @@ const Interface = () => {
                       </Button>
                     );
                   })}
-                </Stack>
+                </Group>
               </Stack>
             </Box>
           </Affix>
 
-          {/* Ataques Player 2 - Derecha */}
+          {/* Botón de bloqueo - IZQUIERDA */}
           <Affix position={{ 
-            bottom: isMobile ? 10 : 20, 
-            right: isMobile ? 10 : 20 
+            bottom: isMobile ? 140 : 180, 
+            left: isMobile ? 10 : 20 
           }}>
-            <Box style={{ maxWidth: isMobile ? "170px" : isTablet ? "200px" : "250px" }}>
-              <Stack spacing="xs">
-                <Text size={isMobile ? "xs" : "sm"} weight={500} color="red">
-                  Player 2 {player2IsBlocking && <Text span color="orange" weight={700}>(BLOQUEANDO)</Text>}
-                </Text>
-                
-                {/* Botón de bloqueo Player 2 */}
-                <Button
-                  variant={player2IsBlocking ? "filled" : "outline"}
-                  color="orange"
-                  size={isMobile ? "xs" : isTablet ? "sm" : "md"}
-                  disabled={!canBlock(player2Stamina, player2IsDead)}
-                  onClick={togglePlayer2Block}
-                  style={{
-                    fontSize: isMobile ? "9px" : "11px",
-                    padding: isMobile ? "4px 6px" : "6px 10px",
-                    fontWeight: 700,
-                    opacity: !canBlock(player2Stamina, player2IsDead) ? 0.5 : 1
-                  }}
-                >
-                  🛡️ {player2IsBlocking ? "DEJAR BLOQUEO" : "BLOQUEAR"}
-                  {!player2IsBlocking && player2Stamina <= 0 && !player2IsDead && (
-                    <Text span size="xs" color="red" style={{ display: "block" }}>
+            <Box>
+              <Button
+                variant={player1IsBlocking ? "filled" : "outline"}
+                color="orange"
+                size={isMobile ? "sm" : "md"}
+                disabled={!canBlock(player1Stamina, player1IsDead)}
+                onClick={togglePlayer1Block}
+                style={{
+                  fontSize: isMobile ? "10px" : "12px",
+                  padding: isMobile ? "8px 12px" : "12px 16px",
+                  fontWeight: 700,
+                  opacity: !canBlock(player1Stamina, player1IsDead) ? 0.5 : 1
+                }}
+              >
+                <Stack spacing={2} align="center">
+                  <Text size={isMobile ? "md" : "lg"}>🛡️</Text>
+                  <Text size={isMobile ? "xs" : "sm"}>
+                    {player1IsBlocking ? "DEJAR" : "BLOQUEAR"}
+                  </Text>
+                  {player1IsBlocking && (
+                    <Text size="xs" color="yellow" weight={700}>
+                      ACTIVO
+                    </Text>
+                  )}
+                  {!player1IsBlocking && player1Stamina <= 0 && !player1IsDead && (
+                    <Text size="xs" color="red">
                       Sin stamina
                     </Text>
                   )}
-                </Button>
-                
-                <Stack spacing={isMobile ? "xs" : "sm"}>
-                  {attackButtons.map((attack) => {
-                    const canUseAttack = canAttack(player2Stamina, attack.name, player2IsDead, player2IsBlocking);
-                    const staminaCost = staminaCosts[attack.name] || 0;
-                    
-                    return (
-                      <Button
-                        key={`p2-${attack.name}`}
-                        variant="filled"
-                        color="red"
-                        size={isMobile ? "xs" : isTablet ? "sm" : "md"}
-                        disabled={!canUseAttack}
-                        onClick={() => triggerPlayer2Attack(attack.name)}
-                        style={{
-                          fontSize: isMobile ? "9px" : "11px",
-                          padding: isMobile ? "4px 6px" : "6px 10px",
-                          opacity: !canUseAttack ? 0.5 : 1
-                        }}
-                      >
-                        <Stack spacing={0} align="center">
-                          <Text size={isMobile ? "xs" : "sm"}>
-                            {attack.emoji} {isMobile 
-                              ? attack.label.substring(0, 6) + (attack.label.length > 6 ? "..." : "")
-                              : attack.label
-                            }
-                          </Text>
-                          {staminaCost > 0 && (
-                            <Text size="xs" color={player2Stamina < staminaCost ? "red" : "white"}>
-                              ⚡{staminaCost}
-                            </Text>
-                          )}
-                        </Stack>
-                      </Button>
-                    );
-                  })}
                 </Stack>
-              </Stack>
+              </Button>
             </Box>
           </Affix>
 
-          {/* Estado del combate y Reset - Centro abajo */}
+          {/* Estado del combate y Reset - DERECHA */}
           <Affix position={{ 
-            bottom: isMobile ? 10 : 20, 
-            left: "50%",
-            transform: "translateX(-50%)"
+            bottom: isMobile ? 140 : 180, 
+            right: isMobile ? 10 : 20
           }}>
-            <Box style={{ textAlign: "center" }}>
-              <Stack spacing="xs">
+            <Box>
+              <Stack spacing="xs" align="center">
                 {/* Estado del combate */}
                 {isCombatOver && (
-                  <Text size={isMobile ? "xs" : "sm"} color="yellow" weight={500}>
-                    {player1IsDead ? "P1 muerto - animación muerte" : 
-                     player2IsDead ? "P2 muerto - animación muerte" : ""}
-                  </Text>
-                )}
-                
-                {/* Información de stamina */}
-                {!isCombatOver && (
-                  <Text size="xs" color="gray">
-                    {isMobile ? "🛡️ 5s máx • 💥 30⚡" : "🛡️ Bloqueo: máx 5s • 💥 Golpe fuerte: 30⚡"}
+                  <Text size={isMobile ? "xs" : "sm"} color="yellow" weight={600} align="center">
+                    {player1IsDead ? "💀 P1 Muerto" : 
+                     player2IsDead ? "🏆 P1 Ganó" : ""}
                   </Text>
                 )}
                 
@@ -329,18 +393,49 @@ const Interface = () => {
                 <Button
                   variant="outline"
                   color="green"
-                  size={isMobile ? "sm" : isTablet ? "md" : "lg"}
+                  size={isMobile ? "sm" : "md"}
                   onClick={resetHealth}
                   style={{ 
-                    fontSize: isMobile ? "11px" : "13px",
-                    fontWeight: 600
+                    fontSize: isMobile ? "10px" : "12px",
+                    fontWeight: 600,
+                    padding: isMobile ? "8px 12px" : "12px 16px"
                   }}
                 >
-                  {isCombatOver ? "🔄 Nuevo Combate" : "💚 Reset Vida"}
+                  <Stack spacing={2} align="center">
+                    <Text size={isMobile ? "md" : "lg"}>
+                      {isCombatOver ? "🔄" : "💚"}
+                    </Text>
+                    <Text size={isMobile ? "xs" : "sm"}>
+                      {isCombatOver ? "NUEVO" : "RESET"}
+                    </Text>
+                    <Text size={isMobile ? "xs" : "sm"}>
+                      {isCombatOver ? "COMBATE" : "VIDA"}
+                    </Text>
+                  </Stack>
                 </Button>
               </Stack>
             </Box>
           </Affix>
+
+          {/* Información de stamina - ARRIBA CENTRO */}
+          {!isCombatOver && (
+            <Affix position={{ 
+              bottom: isMobile ? 200 : 260, 
+              left: "50%",
+              transform: "translateX(-50%)"
+            }}>
+              <Box style={{
+                backgroundColor: "rgba(0, 0, 0, 0.7)",
+                padding: isMobile ? "4px 8px" : "6px 12px",
+                borderRadius: "4px",
+                border: "1px solid rgba(255, 255, 255, 0.3)"
+              }}>
+                <Text size="xs" color="gray" align="center">
+                  {isMobile ? "🛡️ 5s máx • 💥 30⚡" : "🛡️ Bloqueo: máx 5s • 💥 Golpe fuerte: 30⚡"}
+                </Text>
+              </Box>
+            </Affix>
+          )}
         </>
       )}
     </>
