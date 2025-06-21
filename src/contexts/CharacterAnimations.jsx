@@ -36,6 +36,18 @@ const peteAnimations = {
   }
 };
 
+// Mapeo de bailes para Player 2 - cuando Player 1 hace un baile, Player 2 hace otro
+const danceMapping = {
+  "dance1": "dance2",
+  "dance2": "dance3", 
+  "dance3": "dance4",
+  "dance4": "dance5",
+  "dance5": "dance6",
+  "dance6": "dance1",  // Ciclo completo
+  "celebration": "intro",
+  "intro": "celebration"
+};
+
 // Daño por tipo de ataque
 const attackDamage = {
   "punch": 15,    // Puñetazo básico
@@ -274,18 +286,22 @@ export const CharacterAnimationsProvider = (props) => {
 
   // Función para aplicar animación con verificación de muerte
   const setPlayer1Animation = (index) => {
+    console.log(`setPlayer1Animation called with index: ${index}, player1IsDead: ${player1IsDead}`);
     if (player1IsDead) {
       console.log("Player 1 is dead - cannot change animation from death");
       return;
     }
+    console.log(`Setting Player 1 animation to index: ${index}`);
     setPlayer1AnimationIndex(index);
   };
 
   const setPlayer2Animation = (index) => {
+    console.log(`setPlayer2Animation called with index: ${index}, player2IsDead: ${player2IsDead}`);
     if (player2IsDead) {
       console.log("Player 2 is dead - cannot change animation from death");
       return;
     }
+    console.log(`Setting Player 2 animation to index: ${index}`);
     setPlayer2AnimationIndex(index);
   };
 
@@ -704,28 +720,71 @@ export const CharacterAnimationsProvider = (props) => {
 
   // Función para activar animación sincronizada (modo normal)
   const triggerSyncAnimation = (index) => {
+    console.log(`=== TRIGGER SYNC ANIMATION ===`);
+    console.log(`Index: ${index}, isCombatMode: ${isCombatMode}`);
+    console.log(`Player states - P1 Dead: ${player1IsDead}, P2 Dead: ${player2IsDead}`);
+    
     // Limpiar timeout si existe
     if (attackTimeoutRef.current) {
       clearTimeout(attackTimeoutRef.current);
     }
     
-    let animationToUse = index;
-    
-    // Si no estamos en modo combate, mapear a animaciones de baile
     if (!isCombatMode && animations.length > 0) {
-      const animationName = animations[index];
-      // Si la animación seleccionada no es idle, usar una animación de baile
-      if (animationName && !animationName.toLowerCase().includes('idle')) {
-        const danceAnimations = Object.values(peteAnimations.dance);
-        const randomDance = danceAnimations[index % danceAnimations.length];
-        animationToUse = findAnimationIndex(randomDance);
+      // En modo baile, asignar diferentes animaciones a cada jugador
+      const player1AnimationName = animations[index];
+      
+      // Obtener la animación mapeada para Player 2
+      const player2AnimationName = danceMapping[player1AnimationName] || player1AnimationName;
+      
+      // Encontrar los índices de las animaciones
+      const player1AnimationIndex = findAnimationIndex(player1AnimationName);
+      const player2AnimationIndex = findAnimationIndex(player2AnimationName);
+      
+      console.log(`Dance sync - P1: ${player1AnimationName} (${player1AnimationIndex}), P2: ${player2AnimationName} (${player2AnimationIndex})`);
+      
+      // Asegurar que ambos jugadores están vivos antes de asignar animaciones
+      if (player1IsDead || player2IsDead) {
+        console.log("WARNING: One or both players are dead, reviving them first");
+        setPlayer1IsDead(false);
+        setPlayer2IsDead(false);
       }
+      
+      // Asignar diferentes animaciones a cada jugador
+      console.log("Setting P1 animation...");
+      setPlayer1Animation(player1AnimationIndex);
+      console.log("Setting P2 animation...");
+      setPlayer2Animation(player2AnimationIndex);
+      
+      // Actualizar el índice principal para la UI DESPUÉS de aplicar las animaciones
+      console.log(`Updating animationIndex from ${animationIndex} to ${index}`);
+      setAnimationIndex(index); // El índice principal sigue siendo el de Player 1 para la UI
+      
+      // Verificación adicional después de un pequeño delay
+      setTimeout(() => {
+        console.log(`Verification - Current animationIndex: ${animationIndex}, Expected: ${index}`);
+        console.log(`P1 Animation Index: ${player1AnimationIndex}, P2 Animation Index: ${player2AnimationIndex}`);
+      }, 50);
+      
+      console.log("Dance sync completed");
+    } else {
+      // En modo combate, usar la lógica original (ambos iguales)
+      let animationToUse = index;
+      
+      if (animations.length > 0) {
+        const animationName = animations[index];
+        // Si la animación seleccionada no es idle, usar una animación de baile
+        if (animationName && !animationName.toLowerCase().includes('idle')) {
+          const danceAnimations = Object.values(peteAnimations.dance);
+          const randomDance = danceAnimations[index % danceAnimations.length];
+          animationToUse = findAnimationIndex(randomDance);
+        }
+      }
+      
+      // Usar las funciones protegidas para evitar cambiar animaciones de jugadores muertos
+      setPlayer1Animation(animationToUse);
+      setPlayer2Animation(animationToUse);
+      setAnimationIndex(animationToUse);
     }
-    
-    // Usar las funciones protegidas para evitar cambiar animaciones de jugadores muertos
-    setPlayer1Animation(animationToUse);
-    setPlayer2Animation(animationToUse);
-    setAnimationIndex(animationToUse);
   };
 
   // Función para inicializar combate en idle
@@ -737,6 +796,53 @@ export const CharacterAnimationsProvider = (props) => {
     const combatIdleIndex = findAnimationIndex("idleFight");
     setPlayer1AnimationIndex(combatIdleIndex);
     setPlayer2AnimationIndex(combatIdleIndex);
+  };
+
+  // Función para limpiar completamente el estado de combate
+  const cleanCombatState = () => {
+    console.log("Cleaning combat state completely");
+    
+    // Limpiar todos los timeouts e intervals
+    if (attackTimeoutRef.current) {
+      clearTimeout(attackTimeoutRef.current);
+      attackTimeoutRef.current = null;
+    }
+    if (player1BlockTimeoutRef.current) {
+      clearTimeout(player1BlockTimeoutRef.current);
+      player1BlockTimeoutRef.current = null;
+    }
+    if (player2BlockTimeoutRef.current) {
+      clearTimeout(player2BlockTimeoutRef.current);
+      player2BlockTimeoutRef.current = null;
+    }
+    if (player1StaminaRegenRef.current) {
+      clearInterval(player1StaminaRegenRef.current);
+      player1StaminaRegenRef.current = null;
+    }
+    if (player2StaminaRegenRef.current) {
+      clearInterval(player2StaminaRegenRef.current);
+      player2StaminaRegenRef.current = null;
+    }
+    if (player1BlockStaminaRef.current) {
+      clearInterval(player1BlockStaminaRef.current);
+      player1BlockStaminaRef.current = null;
+    }
+    if (player2BlockStaminaRef.current) {
+      clearInterval(player2BlockStaminaRef.current);
+      player2BlockStaminaRef.current = null;
+    }
+    
+    // Resetear todos los estados
+    setPlayer1IsDead(false);
+    setPlayer2IsDead(false);
+    setPlayer1IsBlocking(false);
+    setPlayer2IsBlocking(false);
+    setPlayer1Health(maxHealth);
+    setPlayer2Health(maxHealth);
+    setPlayer1Stamina(MAX_STAMINA);
+    setPlayer2Stamina(MAX_STAMINA);
+    
+    console.log("Combat state cleaned");
   };
 
   // Limpiar timeouts al desmontar el componente
@@ -751,6 +857,33 @@ export const CharacterAnimationsProvider = (props) => {
       if (player2BlockStaminaRef.current) clearInterval(player2BlockStaminaRef.current);
     };
   }, []);
+
+  // Manejar cambios de modo entre combate y baile
+  useEffect(() => {
+    if (animations.length === 0) return; // Esperar a que las animaciones estén cargadas
+    
+    if (isCombatMode) {
+      // Inicializar modo combate
+      const combatIdleIndex = findAnimationIndex("idleFight");
+      setPlayer1AnimationIndex(combatIdleIndex);
+      setPlayer2AnimationIndex(combatIdleIndex);
+    } else {
+      // Limpiar completamente el estado de combate al cambiar a modo baile
+      cleanCombatState();
+      
+      // Resetear animationIndex para que ningún botón aparezca activo inicialmente
+      setAnimationIndex(-1);
+      
+      // En modo baile, mantener ambos jugadores en idle normal
+      // No activar automáticamente ningún baile específico
+      setTimeout(() => {
+        const idleIndex = findAnimationIndex("idle");
+        setPlayer1AnimationIndex(idleIndex);
+        setPlayer2AnimationIndex(idleIndex);
+        console.log("Both players set to idle for dance mode");
+      }, 100); // Pequeño delay para asegurar que el estado se limpie primero
+    }
+  }, [isCombatMode, animations]);
 
   return (
     <CharacterAnimationsContext.Provider

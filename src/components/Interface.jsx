@@ -42,14 +42,12 @@ const Interface = () => {
 
   // Animaciones de baile - solo estas en modo sincronizado
   const danceAnimations = [
-    "celebration",
     "dance1", 
     "dance2",
     "dance3",
     "dance4",
     "dance5",
-    "dance6",
-    "intro"
+    "dance6"
   ];
 
   // Función para verificar si una animación es de baile
@@ -113,95 +111,84 @@ const Interface = () => {
       {/* Mensaje de Victoria - Overlay cuando termina el combate */}
       {isCombatOver && isCombatMode && (
         <Affix position={{ 
-          top: "50%", 
+          bottom: isMobile ? 35 : 55, 
           left: "50%",
-          transform: "translate(-50%, -50%)"
+          transform: "translateX(-50%)"
         }}>
           <Box style={{
-            backgroundColor: "rgba(0, 0, 0, 0.95)",
+            backgroundColor: "transparent",
             padding: isMobile ? "20px" : "40px",
             borderRadius: "16px",
-            border: "4px solid #fc3f31",
+            border: "3px solid #fc3f31",
             boxShadow: "0 0 30px rgba(252, 63, 49, 0.8)",
             textAlign: "center",
-            minWidth: isMobile ? "280px" : "400px"
+            width: "94vw",
+            maxWidth: isMobile ? "94vw" : "400px"
           }}>
             <Stack spacing="md" align="center">
-              <Text size={isMobile ? "xl" : "2xl"} weight={700} style={{ color: "#fc3f31" }}>
-                🏆 ¡VICTORIA! 🏆
-              </Text>
-              <Text size={isMobile ? "lg" : "xl"} weight={600} color="white">
-                {player1IsDead ? "PLAYER 2 WINS!" : "PLAYER 1 WINS!"}
+              <Text size={isMobile ? "xl" : "2xl"} weight={700} style={{ color: player1IsDead ? "#fc3f31" : "#04cbee" }}>
+                🏆 {player1IsDead ? "PLAYER 2 WINS!" : "PLAYER 1 WINS!"} 🏆
               </Text>
               
-              {/* Toggle de modo - Solo aparece en el modal de victoria */}
-              <Box style={{ 
-                backgroundColor: "rgba(255, 255, 255, 0.1)",
-                padding: isMobile ? "12px" : "16px",
-                borderRadius: "8px",
-                border: "2px solid rgba(255, 255, 255, 0.3)",
-                marginTop: "16px"
-              }}>
-                <Stack spacing="md" align="center">
-                  <Text size={isMobile ? "sm" : "md"} color="gray">
-                    ¿Qué quieres hacer ahora?
-                  </Text>
-                  
-                  {/* Botones de acción */}
-                  <Group spacing="md" position="center">
-                    {/* Botón Volver a Pelear */}
-                    <Button
-                      variant="outline"
-                      size={isMobile ? "sm" : "md"}
-                      onClick={() => {
-                        resetHealth();
-                        initializeCombat();
-                      }}
-                      style={{
-                        fontSize: isMobile ? "11px" : "13px",
-                        fontWeight: 700,
-                        padding: isMobile ? "8px 12px" : "12px 16px",
-                        backgroundColor: "transparent",
-                        borderColor: "#fc3f31",
-                        color: "#fc3f31"
-                      }}
-                    >
-                      <Stack spacing={2} align="center">
-                        <Text size={isMobile ? "md" : "lg"}>⚔️</Text>
-                        <Text size={isMobile ? "xs" : "sm"}>
-                          VOLVER A PELEAR
-                        </Text>
-                      </Stack>
-                    </Button>
+              {/* Botones de acción */}
+              <Group spacing="md" position="center" style={{ width: "100%" }}>
+                {/* Botón Volver a Pelear */}
+                <Button
+                  variant="outline"
+                  size={isMobile ? "sm" : "md"}
+                  onClick={() => {
+                    resetHealth();
+                    initializeCombat();
+                  }}
+                  style={{
+                    fontSize: isMobile ? "11px" : "13px",
+                    fontWeight: 700,
+                    padding: isMobile ? "8px 12px" : "12px 16px",
+                    backgroundColor: "transparent",
+                    borderColor: "#fc3f31",
+                    color: "#fc3f31",
+                    textTransform: "uppercase",
+                    borderWidth: "3px",
+                    flex: 1
+                  }}
+                >
+                  <Stack spacing={2} align="center">
+                    <Text size={isMobile ? "md" : "lg"} style={{ color: "#fc3f31" }}>⚔️</Text>
+                    <Text size={isMobile ? "xs" : "sm"} style={{ color: "#fc3f31" }}>
+                      VOLVER A PELEAR
+                    </Text>
+                  </Stack>
+                </Button>
 
-                    {/* Botón Modo Baile */}
-                    <Button
-                      variant="outline"
-                      size={isMobile ? "sm" : "md"}
-                      onClick={() => setIsCombatMode(false)}
-                      style={{
-                        fontSize: isMobile ? "11px" : "13px",
-                        fontWeight: 700,
-                        padding: isMobile ? "8px 12px" : "12px 16px",
-                        backgroundColor: "transparent",
-                        borderColor: "violet",
-                        color: "violet"
-                      }}
-                    >
-                      <Stack spacing={2} align="center">
-                        <Text size={isMobile ? "md" : "lg"}>🕺</Text>
-                        <Text size={isMobile ? "xs" : "sm"}>
-                          CELEBRAR BAILANDO
-                        </Text>
-                      </Stack>
-                    </Button>
-                  </Group>
-                  
-                  <Text size="xs" color="gray" align="center">
-                    Elige tu próxima acción
-                  </Text>
-                </Stack>
-              </Box>
+                {/* Botón Modo Baile */}
+                <Button
+                  variant="outline"
+                  size={isMobile ? "sm" : "md"}
+                  onClick={() => setIsCombatMode(false)}
+                  style={{
+                    fontSize: isMobile ? "11px" : "13px",
+                    fontWeight: 700,
+                    padding: isMobile ? "8px 12px" : "12px 16px",
+                    backgroundColor: "transparent",
+                    borderColor: "#04cbee",
+                    color: "#04cbee",
+                    textTransform: "uppercase",
+                    borderWidth: "3px",
+                    flex: 1
+                  }}
+                >
+                  <Stack spacing={2} align="center">
+                    <Text size={isMobile ? "md" : "lg"} style={{ color: "#04cbee" }}>🕺</Text>
+                    <Text size={isMobile ? "xs" : "sm"} style={{ color: "#04cbee" }}>
+                      CELEBRAR BAILANDO
+                    </Text>
+                  </Stack>
+                </Button>
+              </Group>
+
+              <Text size={isMobile ? "sm" : "md"} color="white">
+                ¿Qué quieres hacer ahora?
+              </Text>
             </Stack>
           </Box>
         </Affix>
@@ -210,9 +197,45 @@ const Interface = () => {
       {/* Controles de animación de baile - Solo en modo sincronizado - CENTRO ARRIBA */}
       {!isCombatMode && (
         <>
+          {/* Título Fight Club - ARRIBA CENTRO */}
+          <Affix position={{ 
+            top: isMobile ? 25 : 35, 
+            left: "50%",
+            transform: "translateX(-50%)"
+          }}>
+            <div style={{ 
+              color: "#fc3f31",
+              textShadow: `
+                0 0 3px #fc3f31,
+                0 0 6px #fc3f31,
+                2px 2px 4px rgba(0,0,0,0.8)
+              `,
+              textTransform: "uppercase",
+              letterSpacing: "2px",
+              fontFamily: "Anton, sans-serif",
+              fontSize: "50px",
+              fontWeight: 700,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center"
+            }}>
+              {"FIGHT CLUB".split("").map((letter, index) => (
+                <span 
+                  key={index}
+                  style={{
+                    display: "inline-block",
+                    margin: letter === " " ? "0 8px" : "0"
+                  }}
+                >
+                  {letter === " " ? "\u00A0" : letter}
+                </span>
+              ))}
+            </div>
+          </Affix>
+
           {/* Botones de baile - ABAJO CENTRO */}
           <Affix position={{ 
-            bottom: isMobile ? 20 : 30, 
+            bottom: isMobile ? 35 : 45, 
             left: "50%",
             transform: "translateX(-50%)"
           }}>
@@ -224,77 +247,45 @@ const Interface = () => {
               margin: "0 auto"
             }}>
               <Stack spacing="xs">
-                <Text size={isMobile ? "xs" : "sm"} weight={500} color="violet">
-                  🕺 Animaciones de Baile 💃
-                </Text>
-                
-                {/* Organizar botones en 2 filas */}
-                <Stack spacing="xs" style={{ width: "100vw", margin: "auto" }}>
-                  {/* Primera fila - 4 botones */}
-                  <Group spacing={isMobile ? "xs" : "sm"} position="center">
-                    {filteredAnimations.slice(0, 4).map((animation, index) => {
+                {/* Organizar botones en 1 fila */}
+                <Stack spacing="xs" style={{ width: "100vw", margin: "auto", padding: "15px 15px 0 15px" }}>
+                  {/* Una sola fila - 6 botones */}
+                  <Group spacing={isMobile ? "xs" : "sm"} position="center" style={{ width: "100%" }}>
+                    {filteredAnimations.map((animation, index) => {
                       // Encontrar el índice original en el array completo de animaciones
                       const originalIndex = animations.findIndex(anim => anim === animation);
+                      const isActive = originalIndex === animationIndex;
                       
                       return (
                         <Button
                           key={animation}
-                          variant={originalIndex === animationIndex ? "filled" : "outline"}
-                          color="violet"
+                          variant={isActive ? "filled" : "outline"}
+                          color="#04cbee"
                           size="sm"
-                          onClick={() => setAnimationIndex(originalIndex)}
+                          onClick={() => triggerSyncAnimation(originalIndex)}
                           style={{
                             fontSize: isMobile ? "9px" : "11px",
-                            fontWeight: 600,
+                            fontWeight: "bold",
                             padding: "0px",
-                            minWidth: isMobile ? "65px" : "80px",
-                            width: isMobile ? "65px" : "80px",
                             height: isMobile ? "30px" : "36px",
                             display: "flex",
                             alignItems: "center",
                             justifyContent: "center",
                             textAlign: "center",
                             lineHeight: 1,
-                            backgroundColor: originalIndex === animationIndex ? "violet" : "transparent"
-                          }}
-                        >
-                          {isMobile 
-                            ? animation.substring(0, 5) + (animation.length > 5 ? "..." : "")
-                            : animation.length > 8 
-                              ? animation.substring(0, 8) + "..."
-                              : animation
-                          }
-                        </Button>
-                      );
-                    })}
-                  </Group>
-                  
-                  {/* Segunda fila - 4 botones */}
-                  <Group spacing={isMobile ? "xs" : "sm"} position="center">
-                    {filteredAnimations.slice(4, 8).map((animation, index) => {
-                      // Encontrar el índice original en el array completo de animaciones
-                      const originalIndex = animations.findIndex(anim => anim === animation);
-                      
-                      return (
-                        <Button
-                          key={animation}
-                          variant={originalIndex === animationIndex ? "filled" : "outline"}
-                          color="violet"
-                          size="sm"
-                          onClick={() => setAnimationIndex(originalIndex)}
-                          style={{
-                            fontSize: isMobile ? "9px" : "11px",
-                            fontWeight: 600,
-                            padding: "0px",
-                            minWidth: isMobile ? "65px" : "80px",
-                            width: isMobile ? "65px" : "80px",
-                            height: isMobile ? "30px" : "36px",
-                            display: "flex",
-                            alignItems: "center",
-                            justifyContent: "center",
-                            textAlign: "center",
-                            lineHeight: 1,
-                            backgroundColor: originalIndex === animationIndex ? "violet" : "transparent"
+                            backgroundColor: "transparent",
+                            textTransform: "uppercase",
+                            flex: 1,
+                            borderWidth: "3px",
+                            borderRadius: "6px",
+                            borderColor: isActive ? "#fc3f31" : "#04cbee",
+                            color: isActive ? "#fc3f31" : "#04cbee",
+                            textShadow: isActive 
+                              ? `0 0 3px #fc3f31, 0 0 6px #fc3f31`
+                              : `0 0 2px #04cbee, 0 0 4px #04cbee`,
+                            boxShadow: isActive
+                              ? `0 0 3px #fc3f31, 0 0 6px rgba(252, 63, 49, 0.3)`
+                              : `0 0 3px #04cbee, 0 0 6px rgba(4, 203, 238, 0.2)`
                           }}
                         >
                           {isMobile 
@@ -313,23 +304,36 @@ const Interface = () => {
                 <Button
                   variant="outline"
                   size={isMobile ? "md" : "lg"}
-                  onClick={() => setIsCombatMode(true)}
+                  onClick={() => {
+                    setIsCombatMode(true);
+                    initializeCombat();
+                  }}
                   style={{
                     fontSize: isMobile ? "14px" : "16px",
                     fontWeight: 700,
-                    padding: isMobile ? "12px 20px" : "16px 24px",
-                    boxShadow: "0 4px 12px rgba(252, 63, 49, 0.3)",
-                    width: "100%",
+                    padding: "10px",
+                    minHeight: "60px",
+                    boxShadow: `
+                      0 4px 12px rgba(252, 63, 49, 0.3),
+                      0 0 5px #fc3f31,
+                      0 0 10px #fc3f31
+                    `,
+                    textShadow: `
+                      0 0 3px #fc3f31,
+                      0 0 6px #fc3f31
+                    `,
+                    width: "90%",
+                    margin: "auto",
                     marginTop: "12px",
                     backgroundColor: "transparent",
                     borderColor: "#fc3f31",
-                    color: "#fc3f31"
+                    border: "3px solid #fc3f31",
+                    borderRadius: "8px",
+                    color: "#fc3f31",
+                    textTransform: "uppercase"
                   }}
                 >
-                  <Stack spacing={4} align="center">
-                    <Text size={isMobile ? "lg" : "xl"}>⚔️</Text>
-                    <Text size={isMobile ? "sm" : "md"}>INICIAR COMBATE</Text>
-                  </Stack>
+                  👊 INICIAR COMBATE
                 </Button>
               </Stack>
             </Box>
@@ -342,7 +346,7 @@ const Interface = () => {
         <>
           {/* Botones de ataque - CENTRO HORIZONTAL */}
           <Affix position={{ 
-            bottom: isMobile ? 40 : 60, 
+            bottom: isMobile ? 55 : 75, 
             left: "50%",
             transform: "translateX(-50%)"
           }}>
@@ -374,7 +378,8 @@ const Interface = () => {
                           borderWidth: "2px",
                           display: "flex",
                           alignItems: "center",
-                          justifyContent: "center"
+                          justifyContent: "center",
+                          textTransform: "uppercase"
                         }}
                       >
                         <Stack spacing={4} align="center">
@@ -397,8 +402,8 @@ const Interface = () => {
 
           {/* Botón de bloqueo - IZQUIERDA */}
           <Affix position={{ 
-            bottom: isMobile ? 100 : 140, 
-            left: isMobile ? 10 : 20 
+            bottom: isMobile ? 115 : 155, 
+            left: isMobile ? 20 : 30 
           }}>
             <Box>
               <Button
@@ -413,7 +418,8 @@ const Interface = () => {
                   opacity: !canBlock(player1Stamina, player1IsDead) ? 0.5 : 1,
                   backgroundColor: player1IsBlocking ? "#04cbee" : "transparent",
                   borderColor: "#04cbee",
-                  color: player1IsBlocking ? "white" : "#04cbee"
+                  color: player1IsBlocking ? "white" : "#04cbee",
+                  textTransform: "uppercase"
                 }}
               >
                 <Stack spacing={2} align="center">
@@ -438,8 +444,8 @@ const Interface = () => {
 
           {/* Estado del combate y Reset - DERECHA */}
           <Affix position={{ 
-            bottom: isMobile ? 100 : 140, 
-            right: isMobile ? 10 : 20
+            bottom: isMobile ? 115 : 155, 
+            right: isMobile ? 20 : 30
           }}>
             <Box>
               <Stack spacing="xs" align="center">
@@ -462,7 +468,8 @@ const Interface = () => {
                     padding: isMobile ? "8px 12px" : "12px 16px",
                     backgroundColor: "transparent",
                     borderColor: "#04cbee",
-                    color: "#04cbee"
+                    color: "#04cbee",
+                    textTransform: "uppercase"
                   }}
                 >
                   <Stack spacing={2} align="center">

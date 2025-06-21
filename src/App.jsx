@@ -2,8 +2,11 @@ import { Canvas } from "@react-three/fiber";
 import Experience from "./components/Experience";
 import Interface from "./components/Interface";
 import HealthBars from "./components/HealthBars";
+import { useCharacterAnimations } from "./contexts/CharacterAnimations";
 
 function App() {
+  const { isCombatMode } = useCharacterAnimations();
+
   return (
     <>
       <div style={{
@@ -12,7 +15,7 @@ function App() {
         left: 0,
         width: '100%',
         height: '100%',
-        background: 'linear-gradient(135deg, #000000 0%, #001122 100%)',
+        background: '#000000',
         zIndex: -1
       }} />
       <Canvas

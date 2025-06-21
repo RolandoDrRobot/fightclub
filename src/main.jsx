@@ -12,6 +12,47 @@ ReactDOM.createRoot(document.getElementById("root")).render(
       theme={{
         fontFamily: '"Exo 2", sans-serif',
         headings: { fontFamily: '"Exo 2", sans-serif' },
+        colors: {
+          // Override the default blue color with our custom palette
+          blue: [
+            '#e6f7ff',
+            '#b3ebff',
+            '#80dfff',
+            '#4dd3ff',
+            '#1ac7ff',
+            '#04cbee', // Our main blue color
+            '#03a8c7',
+            '#0285a0',
+            '#016279',
+            '#003f52'
+          ],
+          // Add our custom colors
+          playerBlue: [
+            '#e6f7ff',
+            '#b3ebff',
+            '#80dfff',
+            '#4dd3ff',
+            '#1ac7ff',
+            '#04cbee',
+            '#03a8c7',
+            '#0285a0',
+            '#016279',
+            '#003f52'
+          ],
+          playerRed: [
+            '#ffe6e6',
+            '#ffb3b3',
+            '#ff8080',
+            '#ff4d4d',
+            '#ff1a1a',
+            '#fc3f31',
+            '#d9362a',
+            '#b62d23',
+            '#93241c',
+            '#701b15'
+          ]
+        },
+        primaryColor: 'playerBlue',
         globalStyles: (_theme) => ({
           body: {
             width: "100vw",

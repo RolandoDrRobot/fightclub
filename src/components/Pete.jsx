@@ -25,11 +25,9 @@ function Pete({ player = 1, ...props }) {
 
   // Determinar qué índice de animación usar
   const currentAnimationIndex = useMemo(() => {
-    if (isCombatMode) {
-      return player === 1 ? player1AnimationIndex : player2AnimationIndex;
-    }
-    return animationIndex;
-  }, [isCombatMode, player, player1AnimationIndex, player2AnimationIndex, animationIndex]);
+    // Siempre usar los índices específicos de cada jugador
+    return player === 1 ? player1AnimationIndex : player2AnimationIndex;
+  }, [player, player1AnimationIndex, player2AnimationIndex]);
 
   useEffect(() => {
     if (contextAnimations.length === 0) {
