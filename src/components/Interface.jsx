@@ -58,15 +58,69 @@ const Interface = () => {
     "dance6"
   ];
 
-  // Función para verificar si una animación es de baile
-  const isDanceAnimation = (animationName) => {
-    return danceAnimations.some(dance => 
-      animationName.toLowerCase().includes(dance.toLowerCase())
-    );
+  // Combinaciones de bailes predefinidas
+  const danceCombinations = [
+    { name: "COMBO 1", dances: ["dance1", "dance3", "dance5"] },
+    { name: "COMBO 2", dances: ["dance2", "dance4", "dance6"] },
+    { name: "COMBO 3", dances: ["dance1", "dance2", "dance3"] },
+    { name: "COMBO 4", dances: ["dance4", "dance5", "dance6"] },
+    { name: "COMBO 5", dances: ["dance6", "dance1", "dance4"] },
+    { name: "COMBO 6", dances: ["dance3", "dance5", "dance2"] }
+  ];
+
+  // Estado para el combo actual y el baile dentro del combo
+  const [currentComboIndex, setCurrentComboIndex] = React.useState(0);
+  const [currentDanceInCombo, setCurrentDanceInCombo] = React.useState(0);
+  const [isPlayingCombo, setIsPlayingCombo] = React.useState(false);
+
+  // Función para alternar entre combinaciones de bailes
+  const toggleDanceCombination = () => {
+    if (!isPlayingCombo) {
+      // Iniciar combo
+      setIsPlayingCombo(true);
+      setCurrentDanceInCombo(0);
+      const currentCombo = danceCombinations[currentComboIndex];
+      const firstDance = currentCombo.dances[0];
+      const danceIndex = animations.findIndex(anim => anim === firstDance);
+      if (danceIndex !== -1) {
+        triggerSyncAnimation(danceIndex);
+      }
+    } else {
+      // Continuar con el siguiente baile en el combo o siguiente combo
+      const currentCombo = danceCombinations[currentComboIndex];
+      const nextDanceIndex = (currentDanceInCombo + 1) % currentCombo.dances.length;
+      
+      if (nextDanceIndex === 0) {
+        // Terminó el combo actual, pasar al siguiente
+        const nextComboIndex = (currentComboIndex + 1) % danceCombinations.length;
+        setCurrentComboIndex(nextComboIndex);
+        setCurrentDanceInCombo(0);
+        
+        const nextCombo = danceCombinations[nextComboIndex];
+        const nextDance = nextCombo.dances[0];
+        const danceIndex = animations.findIndex(anim => anim === nextDance);
+        if (danceIndex !== -1) {
+          triggerSyncAnimation(danceIndex);
+        }
+      } else {
+        // Siguiente baile en el mismo combo
+        setCurrentDanceInCombo(nextDanceIndex);
+        const nextDance = currentCombo.dances[nextDanceIndex];
+        const danceIndex = animations.findIndex(anim => anim === nextDance);
+        if (danceIndex !== -1) {
+          triggerSyncAnimation(danceIndex);
+        }
+      }
+    }
   };
 
-  // Filtrar solo animaciones de baile para el modo sincronizado
-  const filteredAnimations = animations.filter(isDanceAnimation);
+  // Función para detener el combo (click derecho o botón secundario)
+  const stopDanceCombo = () => {
+    setIsPlayingCombo(false);
+    setAnimationIndex(-1);
+    setCurrentComboIndex(0);
+    setCurrentDanceInCombo(0);
+  };
 
   // Manejar cambio de modo
   const handleModeChange = (event) => {
@@ -259,33 +313,52 @@ const Interface = () => {
             left: "50%",
             transform: "translateX(-50%)"
           }}>
-            <div style={{ 
-              color: "#fc3f31",
-              textShadow: `
-                0 0 3px #fc3f31,
-                0 0 6px #fc3f31,
-                2px 2px 4px rgba(0,0,0,0.8)
-              `,
-              textTransform: "uppercase",
-              letterSpacing: "2px",
-              fontFamily: "Anton, sans-serif",
-              fontSize: "50px",
-              fontWeight: 700,
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center"
-            }}>
-              {"FIGHT CLUB".split("").map((letter, index) => (
-                <span 
-                  key={index}
-                  style={{
-                    display: "inline-block",
-                    margin: letter === " " ? "0 8px" : "0"
-                  }}
-                >
-                  {letter === " " ? "\u00A0" : letter}
-                </span>
-              ))}
+            <div style={{ textAlign: "center" }}>
+              <div style={{ 
+                color: "#fc3f31",
+                textShadow: `
+                  0 0 3px #fc3f31,
+                  0 0 6px #fc3f31,
+                  2px 2px 4px rgba(0,0,0,0.8)
+                `,
+                textTransform: "uppercase",
+                letterSpacing: "2px",
+                fontFamily: "Anton, sans-serif",
+                fontSize: "50px",
+                fontWeight: 700,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center"
+              }}>
+                {"FIGHT CLUB".split("").map((letter, index) => (
+                  <span 
+                    key={index}
+                    style={{
+                      display: "inline-block",
+                      margin: letter === " " ? "0 8px" : "0"
+                    }}
+                  >
+                    {letter === " " ? "\u00A0" : letter}
+                  </span>
+                ))}
+              </div>
+              
+              {/* Subtítulo con la primera regla */}
+              <div style={{
+                color: "#F5F5DC",
+                textShadow: `
+                  0 0 2px #F5F5DC,
+                  0 0 4px rgba(245, 245, 220, 0.6),
+                  1px 1px 2px rgba(0,0,0,0.8)
+                `,
+                fontFamily: "Anton, sans-serif",
+                fontSize: "14px",
+                fontWeight: 400,
+                marginTop: "8px",
+                letterSpacing: "1px"
+              }}>
+                You do not talk about fight club
+              </div>
             </div>
           </Affix>
 
@@ -303,72 +376,63 @@ const Interface = () => {
               margin: "0 auto"
             }}>
               <Stack spacing="xs">
-                {/* Organizar botones en 1 fila */}
+                {/* Botón único para combinaciones de bailes */}
                 <Stack spacing="xs" style={{ width: "100vw", margin: "auto", padding: "15px 15px 0 15px" }}>
-                  {/* Una sola fila - 6 botones */}
-                  <Group spacing={isMobile ? "xs" : "sm"} position="center" style={{ width: "100%" }}>
-                    {filteredAnimations.map((animation, index) => {
-                      // Encontrar el índice original en el array completo de animaciones
-                      const originalIndex = animations.findIndex(anim => anim === animation);
-                      const isActive = originalIndex === animationIndex;
-                      
-                      return (
-                        <Button
-                          key={animation}
-                          variant={isActive ? "filled" : "outline"}
-                          color="#F5F5DC"
-                          size="sm"
-                          onClick={() => triggerSyncAnimation(originalIndex)}
-                          style={{
-                            fontSize: isMobile ? "9px" : "11px",
-                            fontWeight: "bold",
-                            padding: "0px",
-                            height: isMobile ? "30px" : "36px",
-                            display: "flex",
-                            alignItems: "center",
-                            justifyContent: "center",
-                            textAlign: "center",
-                            lineHeight: 1,
-                            backgroundColor: "transparent",
-                            textTransform: "uppercase",
-                            flex: 1,
-                            borderWidth: "3px",
-                            borderRadius: "10px",
-                            borderColor: isActive ? "#fc3f31" : "#F5F5DC",
-                            color: isActive ? "#fc3f31" : "#F5F5DC",
-                            textShadow: isActive 
-                              ? `
-                                0 0 5px #fc3f31, 
-                                0 0 10px #fc3f31,
-                                0 0 15px rgba(252, 63, 49, 0.8)
-                              `
-                              : `
-                                0 0 5px #F5F5DC, 
-                                0 0 10px #F5F5DC,
-                                0 0 15px rgba(245, 245, 220, 0.6)
-                              `,
-                            boxShadow: isActive
-                              ? `
-                                0 0 10px #fc3f31, 
-                                0 0 20px rgba(252, 63, 49, 0.5),
-                                inset 0 0 10px rgba(252, 63, 49, 0.1)
-                              `
-                              : `
-                                0 0 8px #F5F5DC, 
-                                0 0 16px rgba(245, 245, 220, 0.4),
-                                inset 0 0 8px rgba(245, 245, 220, 0.1)
-                              `
-                          }}
-                        >
-                          {isMobile 
-                            ? animation.substring(0, 5) + (animation.length > 5 ? "..." : "")
-                            : animation.length > 8 
-                              ? animation.substring(0, 8) + "..."
-                              : animation
-                          }
-                        </Button>
-                      );
-                    })}
+                  <Group spacing="md" position="center" style={{ width: "100%" }}>
+                    <Button
+                      variant="unstyled"
+                      size="lg"
+                      onClick={toggleDanceCombination}
+                      onContextMenu={(e) => {
+                        e.preventDefault();
+                        stopDanceCombo();
+                      }}
+                      style={{
+                        padding: "0",
+                        backgroundColor: "transparent",
+                        border: "none",
+                        width: isMobile ? "60px" : "80px",
+                        height: isMobile ? "60px" : "80px",
+                        cursor: "pointer",
+                        transition: "all 0.2s ease"
+                      }}
+                      onMouseEnter={(e) => {
+                        if (!isMobile) {
+                          e.target.style.transform = "scale(1.1)";
+                        }
+                      }}
+                      onMouseLeave={(e) => {
+                        if (!isMobile) {
+                          e.target.style.transform = "scale(1)";
+                        }
+                      }}
+                    >
+                      <img 
+                        src={danceImg}
+                        alt="Dance"
+                        style={{
+                          width: "100%",
+                          height: "100%",
+                          objectFit: "contain",
+                          pointerEvents: "none",
+                          filter: isPlayingCombo 
+                            ? `
+                              drop-shadow(0 0 3px #fc3f31)
+                              drop-shadow(0 0 6px #fc3f31)
+                              drop-shadow(0 0 9px #fc3f31)
+                              drop-shadow(0 0 12px rgba(252, 63, 49, 0.8))
+                              drop-shadow(0 0 15px rgba(252, 63, 49, 0.6))
+                            `
+                            : `
+                              drop-shadow(0 0 2px #F5F5DC)
+                              drop-shadow(0 0 4px #F5F5DC)
+                              drop-shadow(0 0 6px #F5F5DC)
+                              drop-shadow(0 0 8px rgba(245, 245, 220, 0.6))
+                              drop-shadow(0 0 10px rgba(245, 245, 220, 0.4))
+                            `
+                        }}
+                      />
+                    </Button>
                   </Group>
                 </Stack>
 
