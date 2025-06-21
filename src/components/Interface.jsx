@@ -23,6 +23,7 @@ const Interface = () => {
     triggerSyncAnimation,
     initializeCombat,
     resetHealth,
+    reviveLosingPlayer,
     player1Health,
     player2Health,
     player1Stamina,
@@ -690,6 +691,38 @@ const Interface = () => {
                   }}
                 />
               </Button>
+              
+              {/* Botón para revivir solo al jugador perdedor - Solo visible cuando hay un ganador */}
+              {isCombatOver && (
+                <Button
+                  variant="outline"
+                  size={isMobile ? "xs" : "lg"}
+                  onClick={reviveLosingPlayer}
+                  style={{ 
+                    padding: isMobile ? "4px 8px" : "8px 12px",
+                    backgroundColor: "transparent",
+                    border: `3px solid #04cbee`,
+                    borderRadius: isMobile ? "10px" : "15px",
+                    transition: "all 0.2s ease",
+                    minWidth: isMobile ? "60px" : "120px",
+                    height: isMobile ? "40px" : "80px",
+                    cursor: "pointer",
+                    overflow: "hidden",
+                    boxShadow: `
+                      0 0 10px #04cbee,
+                      0 0 20px rgba(4, 203, 238, 0.4),
+                      inset 0 0 10px rgba(4, 203, 238, 0.1)
+                    `,
+                    fontSize: isMobile ? "8px" : "12px",
+                    fontWeight: 700,
+                    color: "#04cbee",
+                    textTransform: "uppercase",
+                    textShadow: "0 0 5px #04cbee"
+                  }}
+                >
+                  {isMobile ? "REVIVE" : "REVIVE LOSER"}
+                </Button>
+              )}
             </Stack>
           </Affix>
         </>

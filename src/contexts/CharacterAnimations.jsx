@@ -98,6 +98,7 @@ export const CharacterAnimationsProvider = (props) => {
   
   // Referencias para timeouts y intervals
   const attackTimeoutRef = useRef(null);
+  const introTimeoutRef = useRef(null);
   const player1BlockTimeoutRef = useRef(null);
   const player2BlockTimeoutRef = useRef(null);
   const player1StaminaRegenRef = useRef(null);
@@ -787,15 +788,32 @@ export const CharacterAnimationsProvider = (props) => {
     }
   };
 
-  // Función para inicializar combate en idle
+  // Función para inicializar combate con animación intro
   const initializeCombat = () => {
-    console.log("Initializing combat mode");
+    console.log("Initializing combat mode with intro animation");
     resetHealth(); // Resetear vida y stamina al iniciar combate (esto revive a todos)
     
-    // Poner ambos jugadores en idle de combate
-    const combatIdleIndex = findAnimationIndex("idleFight");
-    setPlayer1AnimationIndex(combatIdleIndex);
-    setPlayer2AnimationIndex(combatIdleIndex);
+    // Limpiar timeout anterior del intro si existe
+    if (introTimeoutRef.current) {
+      clearTimeout(introTimeoutRef.current);
+      introTimeoutRef.current = null;
+    }
+    
+    // Primero mostrar la animación intro para ambos jugadores
+    const introIndex = findAnimationIndex("intro");
+    setPlayer1AnimationIndex(introIndex);
+    setPlayer2AnimationIndex(introIndex);
+    
+    console.log("Playing intro animation for both players");
+    
+    // Después de 3 segundos, cambiar a idle de combate
+    introTimeoutRef.current = setTimeout(() => {
+      const combatIdleIndex = findAnimationIndex("idleFight");
+      setPlayer1AnimationIndex(combatIdleIndex);
+      setPlayer2AnimationIndex(combatIdleIndex);
+      console.log("Intro finished - both players now in combat idle, ready to fight!");
+      introTimeoutRef.current = null; // Limpiar la referencia
+    }, 3000); // 3 segundos para la animación intro
   };
 
   // Función para limpiar completamente el estado de combate
@@ -806,6 +824,10 @@ export const CharacterAnimationsProvider = (props) => {
     if (attackTimeoutRef.current) {
       clearTimeout(attackTimeoutRef.current);
       attackTimeoutRef.current = null;
+    }
+    if (introTimeoutRef.current) {
+      clearTimeout(introTimeoutRef.current);
+      introTimeoutRef.current = null;
     }
     if (player1BlockTimeoutRef.current) {
       clearTimeout(player1BlockTimeoutRef.current);
@@ -849,6 +871,7 @@ export const CharacterAnimationsProvider = (props) => {
   useEffect(() => {
     return () => {
       if (attackTimeoutRef.current) clearTimeout(attackTimeoutRef.current);
+      if (introTimeoutRef.current) clearTimeout(introTimeoutRef.current);
       if (player1BlockTimeoutRef.current) clearTimeout(player1BlockTimeoutRef.current);
       if (player2BlockTimeoutRef.current) clearTimeout(player2BlockTimeoutRef.current);
       if (player1StaminaRegenRef.current) clearInterval(player1StaminaRegenRef.current);
@@ -863,10 +886,9 @@ export const CharacterAnimationsProvider = (props) => {
     if (animations.length === 0) return; // Esperar a que las animaciones estén cargadas
     
     if (isCombatMode) {
-      // Inicializar modo combate
-      const combatIdleIndex = findAnimationIndex("idleFight");
-      setPlayer1AnimationIndex(combatIdleIndex);
-      setPlayer2AnimationIndex(combatIdleIndex);
+      // En modo combate, no hacer nada aquí ya que initializeCombat() maneja la secuencia intro
+      // La función initializeCombat() se llama explícitamente desde la UI cuando se inicia combate
+      console.log("Combat mode activated - waiting for initializeCombat() call");
     } else {
       // Limpiar completamente el estado de combate al cambiar a modo baile
       cleanCombatState();
