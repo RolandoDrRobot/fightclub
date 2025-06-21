@@ -13,20 +13,18 @@ ReactDOM.createRoot(document.getElementById("root")).render(
         fontFamily: '"Exo 2", sans-serif',
         headings: { fontFamily: '"Exo 2", sans-serif' },
         colors: {
-          // Override the default blue color with our custom palette
           blue: [
-            '#e6f7ff',
-            '#b3ebff',
-            '#80dfff',
-            '#4dd3ff',
-            '#1ac7ff',
-            '#04cbee', // Our main blue color
-            '#03a8c7',
-            '#0285a0',
-            '#016279',
-            '#003f52'
+            '#E7F5FF',
+            '#D0EBFF',
+            '#A5D8FF',
+            '#74C0FC',
+            '#339AF0',
+            '#228BE6',
+            '#1C7ED6',
+            '#1971C2',
+            '#1864AB',
+            '#F5F5DC', // Our main bone white color
           ],
-          // Add our custom colors
           playerBlue: [
             '#e6f7ff',
             '#b3ebff',
@@ -52,7 +50,11 @@ ReactDOM.createRoot(document.getElementById("root")).render(
             '#701b15'
           ]
         },
-        primaryColor: 'playerBlue',
+        primaryColor: 'blue',
+        primaryShade: 9,
+        other: {
+          primaryColor: '#F5F5DC',
+        },
         globalStyles: (_theme) => ({
           body: {
             width: "100vw",

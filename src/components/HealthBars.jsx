@@ -1,6 +1,8 @@
 import { Box, Progress, Text, Group } from "@mantine/core";
 import { useCharacterAnimations } from "../contexts/CharacterAnimations";
 import { useMediaQuery } from "@mantine/hooks";
+import hpIcon from "../assets/HP.png";
+import staminaIcon from "../assets/stamina.png";
 
 const HealthBars = () => {
   const { 
@@ -31,7 +33,7 @@ const HealthBars = () => {
     zIndex: 1000,
     padding: isMobile ? "8px" : "12px",
     backgroundColor: "rgba(0, 0, 0, 0.9)",
-    border: "2px solid rgba(255, 255, 255, 0.3)",
+    border: "none",
     borderRadius: "8px",
     backdropFilter: "blur(4px)",
     width: isMobile ? "160px" : isTablet ? "200px" : "250px",
@@ -45,33 +47,39 @@ const HealthBars = () => {
           ...barStyle,
           top: isMobile ? 25 : 35,
           left: isMobile ? 20 : 30,
-          border: "2px solid #04cbee",
         }}
       >
-        {/* Nombre del jugador */}
-        <Text 
-          weight={700}
-          size={isMobile ? "sm" : "md"}
-          mb={4}
-          style={{ textShadow: "1px 1px 2px black", color: "#04cbee" }}
-        >
-          PLAYER 1
-        </Text>
-        
         {/* Barra de vida */}
         <Box mb={6}>
           <Group position="apart" mb={2} spacing={4}>
-            <Text size="xs" color="white" weight={600}>❤️ HP</Text>
+            <Group spacing={4} align="center">
+              <img 
+                src={hpIcon} 
+                alt="HP" 
+                style={{ 
+                  width: isMobile ? "14px" : "16px", 
+                  height: isMobile ? "14px" : "16px",
+                  objectFit: "contain"
+                }} 
+              />
+              <Text size="xs" color="white" weight={600}>PLAYER 1</Text>
+            </Group>
             <Text size="xs" color="white">{player1Health}</Text>
           </Group>
           <Progress
             value={(player1Health / maxHealth) * 100}
-            color="#04cbee"
-            size={isMobile ? "md" : "lg"}
-            radius={2}
-            style={{
-              border: "1px solid rgba(255,255,255,0.4)",
-              backgroundColor: "transparent"
+            size="lg"
+            radius="md"
+            color="#F5F5DC"
+            styles={{
+              root: {
+                backgroundColor: 'rgba(0, 0, 0, 0.3)',
+                border: '2px solid rgba(255, 255, 255, 0.2)',
+              },
+              bar: {
+                background: `linear-gradient(90deg, #F5F5DC 0%, rgba(245, 245, 220, 0.8) 100%)`,
+                boxShadow: '0 0 10px rgba(245, 245, 220, 0.5)',
+              }
             }}
           />
         </Box>
@@ -79,17 +87,34 @@ const HealthBars = () => {
         {/* Barra de stamina */}
         <Box>
           <Group position="apart" mb={2} spacing={4}>
-            <Text size="xs" weight={600} style={{ color: "#04cbee" }}>⚡ SP</Text>
-            <Text size="xs" style={{ color: "#04cbee" }}>{Math.round(player1Stamina)}</Text>
+            <Group spacing={4} align="center">
+              <img 
+                src={staminaIcon} 
+                alt="SP" 
+                style={{ 
+                  width: isMobile ? "14px" : "16px", 
+                  height: isMobile ? "14px" : "16px",
+                  objectFit: "contain"
+                }} 
+              />
+              <Text size="xs" weight={600} style={{ color: "#F5F5DC" }}>SP</Text>
+            </Group>
+            <Text size="xs" style={{ color: "#F5F5DC" }}>{Math.round(player1Stamina)}</Text>
           </Group>
           <Progress
             value={(player1Stamina / maxStamina) * 100}
-            color="#04cbee"
-            size={isMobile ? "sm" : "md"}
-            radius={2}
-            style={{
-              border: `1px solid rgba(4, 203, 238, 0.4)`,
-              backgroundColor: "transparent"
+            size="lg"
+            radius="md"
+            color="#F5F5DC"
+            styles={{
+              root: {
+                backgroundColor: 'rgba(0, 0, 0, 0.3)',
+                border: '2px solid rgba(255, 255, 255, 0.2)',
+              },
+              bar: {
+                background: `linear-gradient(90deg, #F5F5DC 0%, rgba(245, 245, 220, 0.8) 100%)`,
+                boxShadow: '0 0 10px rgba(245, 245, 220, 0.5)',
+              }
             }}
           />
         </Box>
@@ -101,35 +126,39 @@ const HealthBars = () => {
           ...barStyle,
           top: isMobile ? 25 : 35,
           right: isMobile ? 20 : 30,
-          border: "2px solid #fc3f31",
         }}
       >
-        {/* Nombre del jugador */}
-        <Text 
-          weight={700}
-          size={isMobile ? "sm" : "md"}
-          mb={4}
-          align="right"
-          style={{ textShadow: "1px 1px 2px black", color: "#fc3f31" }}
-        >
-          PLAYER 2
-        </Text>
-        
         {/* Barra de vida */}
         <Box mb={6}>
           <Group position="apart" mb={2} spacing={4}>
-            <Text size="xs" color="white">{player2Health}</Text>
-            <Text size="xs" color="white" weight={600}>❤️ HP</Text>
+            <Text size="xs" style={{ color: "#fc3f31" }}>{player2Health}</Text>
+            <Group spacing={4} align="center">
+              <Text size="xs" weight={600} style={{ color: "#fc3f31" }}>PLAYER 2</Text>
+              <img 
+                src={hpIcon} 
+                alt="HP" 
+                style={{ 
+                  width: isMobile ? "14px" : "16px", 
+                  height: isMobile ? "14px" : "16px",
+                  objectFit: "contain"
+                }} 
+              />
+            </Group>
           </Group>
           <Progress
             value={(player2Health / maxHealth) * 100}
-            color="#fc3f31"
-            size={isMobile ? "md" : "lg"}
-            radius={2}
-            style={{
-              border: "1px solid rgba(255,255,255,0.4)",
-              transform: "scaleX(-1)", // Invertir dirección para Player 2
-              backgroundColor: "transparent"
+            size="lg"
+            radius="md"
+            color="#F5F5DC"
+            styles={{
+              root: {
+                backgroundColor: 'rgba(0, 0, 0, 0.3)',
+                border: '2px solid rgba(255, 255, 255, 0.2)',
+              },
+              bar: {
+                background: `linear-gradient(90deg, #fc3f31 0%, rgba(252, 63, 49, 0.8) 100%)`,
+                boxShadow: '0 0 10px rgba(252, 63, 49, 0.5)',
+              }
             }}
           />
         </Box>
@@ -138,17 +167,33 @@ const HealthBars = () => {
         <Box>
           <Group position="apart" mb={2} spacing={4}>
             <Text size="xs" style={{ color: "#fc3f31" }}>{Math.round(player2Stamina)}</Text>
-            <Text size="xs" weight={600} style={{ color: "#fc3f31" }}>⚡ SP</Text>
+            <Group spacing={4} align="center">
+              <Text size="xs" weight={600} style={{ color: "#fc3f31" }}>SP</Text>
+              <img 
+                src={staminaIcon} 
+                alt="SP" 
+                style={{ 
+                  width: isMobile ? "14px" : "16px", 
+                  height: isMobile ? "14px" : "16px",
+                  objectFit: "contain"
+                }} 
+              />
+            </Group>
           </Group>
           <Progress
             value={(player2Stamina / maxStamina) * 100}
-            color="#fc3f31"
-            size={isMobile ? "sm" : "md"}
-            radius={2}
-            style={{
-              border: `1px solid rgba(252, 63, 49, 0.4)`,
-              transform: "scaleX(-1)", // Invertir dirección para Player 2
-              backgroundColor: "transparent"
+            size="lg"
+            radius="md"
+            color="#F5F5DC"
+            styles={{
+              root: {
+                backgroundColor: 'rgba(0, 0, 0, 0.3)',
+                border: '2px solid rgba(255, 255, 255, 0.2)',
+              },
+              bar: {
+                background: `linear-gradient(90deg, #fc3f31 0%, rgba(252, 63, 49, 0.8) 100%)`,
+                boxShadow: '0 0 10px rgba(252, 63, 49, 0.5)',
+              }
             }}
           />
         </Box>

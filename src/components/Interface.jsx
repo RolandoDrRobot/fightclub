@@ -3,6 +3,13 @@ import { useCharacterAnimations } from "../contexts/CharacterAnimations";
 import { useMediaQuery } from "@mantine/hooks";
 import React from "react";
 import MusicPlayer from "./MusicPlayer";
+import punchImg from "../assets/punch.png";
+import kickImg from "../assets/kick.png";
+import comboImg from "../assets/combo.png";
+import coverImg from "../assets/cover.png";
+import resetImg from "../assets/reset.png";
+import danceImg from "../assets/dance.png";
+import fightImg from "../assets/fight.png";
 
 const Interface = () => {
   const { 
@@ -36,9 +43,9 @@ const Interface = () => {
 
   // Botones de ataque para modo combate - usando las animaciones reales de Pete
   const attackButtons = [
-    { name: "punch", label: "Puñetazo", emoji: "👊", shortcut: "Q" },
-    { name: "kick", label: "Patada", emoji: "🦵", shortcut: "W" },
-    { name: "punches", label: "Combo", emoji: "💥", shortcut: "E" }
+    { name: "punch", label: "Puñetazo", image: punchImg, shortcut: "Q" },
+    { name: "kick", label: "Patada", image: kickImg, shortcut: "W" },
+    { name: "punches", label: "Combo", image: comboImg, shortcut: "E" }
   ];
 
   // Animaciones de baile - solo estas en modo sincronizado
@@ -146,12 +153,7 @@ const Interface = () => {
   return (
     <>
       {/* Reproductor de Música - Siempre visible en esquina superior derecha */}
-      <Affix position={{ 
-        top: isMobile ? 5 : 10, 
-        right: isMobile ? 5 : 10 
-      }}>
-        <MusicPlayer />
-      </Affix>
+      <MusicPlayer />
 
       {/* Mensaje de Victoria - Overlay cuando termina el combate */}
       {isCombatOver && isCombatMode && (
@@ -164,19 +166,50 @@ const Interface = () => {
             backgroundColor: "transparent",
             padding: isMobile ? "20px" : "40px",
             borderRadius: "16px",
-            border: "3px solid #fc3f31",
-            boxShadow: "0 0 30px rgba(252, 63, 49, 0.8)",
+            border: "none",
+            boxShadow: "none",
             textAlign: "center",
             width: "94vw",
             maxWidth: isMobile ? "94vw" : "400px"
           }}>
             <Stack spacing="md" align="center">
-              <Text size={isMobile ? "xl" : "2xl"} weight={700} style={{ color: player1IsDead ? "#fc3f31" : "#04cbee" }}>
+              <Text size={isMobile ? "xl" : "2xl"} weight={700} style={{ color: player1IsDead ? "#fc3f31" : "#F5F5DC" }}>
                 🏆 {player1IsDead ? "PLAYER 2 WINS!" : "PLAYER 1 WINS!"} 🏆
               </Text>
               
               {/* Botones de acción */}
               <Group spacing="md" position="center" style={{ width: "100%" }}>
+                {/* Botón Modo Baile */}
+                <Button
+                  variant="outline"
+                  size={isMobile ? "sm" : "md"}
+                  onClick={() => setIsCombatMode(false)}
+                  style={{
+                    fontSize: isMobile ? "11px" : "13px",
+                    fontWeight: 700,
+                    padding: isMobile ? "8px 12px" : "12px 16px",
+                    backgroundColor: "transparent",
+                    borderColor: "#fc3f31",
+                    color: "#fc3f31",
+                    textTransform: "uppercase",
+                    borderWidth: "3px",
+                    borderRadius: "12px",
+                    boxShadow: `
+                      0 0 10px #fc3f31,
+                      0 0 20px rgba(252, 63, 49, 0.5),
+                      inset 0 0 10px rgba(252, 63, 49, 0.1)
+                    `,
+                    textShadow: `
+                      0 0 5px #fc3f31,
+                      0 0 10px #fc3f31,
+                      0 0 15px rgba(252, 63, 49, 0.8)
+                    `,
+                    flex: 1
+                  }}
+                >
+                  DANCE
+                </Button>
+
                 {/* Botón Volver a Pelear */}
                 <Button
                   variant="outline"
@@ -194,46 +227,24 @@ const Interface = () => {
                     color: "#fc3f31",
                     textTransform: "uppercase",
                     borderWidth: "3px",
+                    borderRadius: "12px",
+                    boxShadow: `
+                      0 0 10px #fc3f31,
+                      0 0 20px rgba(252, 63, 49, 0.5),
+                      inset 0 0 10px rgba(252, 63, 49, 0.1)
+                    `,
+                    textShadow: `
+                      0 0 5px #fc3f31,
+                      0 0 10px #fc3f31,
+                      0 0 15px rgba(252, 63, 49, 0.8)
+                    `,
                     flex: 1
                   }}
                 >
-                  <Stack spacing={2} align="center">
-                    <Text size={isMobile ? "md" : "lg"} style={{ color: "#fc3f31" }}>⚔️</Text>
-                    <Text size={isMobile ? "xs" : "sm"} style={{ color: "#fc3f31" }}>
-                      VOLVER A PELEAR
-                    </Text>
-                  </Stack>
-                </Button>
-
-                {/* Botón Modo Baile */}
-                <Button
-                  variant="outline"
-                  size={isMobile ? "sm" : "md"}
-                  onClick={() => setIsCombatMode(false)}
-                  style={{
-                    fontSize: isMobile ? "11px" : "13px",
-                    fontWeight: 700,
-                    padding: isMobile ? "8px 12px" : "12px 16px",
-                    backgroundColor: "transparent",
-                    borderColor: "#04cbee",
-                    color: "#04cbee",
-                    textTransform: "uppercase",
-                    borderWidth: "3px",
-                    flex: 1
-                  }}
-                >
-                  <Stack spacing={2} align="center">
-                    <Text size={isMobile ? "md" : "lg"} style={{ color: "#04cbee" }}>🕺</Text>
-                    <Text size={isMobile ? "xs" : "sm"} style={{ color: "#04cbee" }}>
-                      CELEBRAR BAILANDO
-                    </Text>
-                  </Stack>
+                  FIGHT
                 </Button>
               </Group>
 
-              <Text size={isMobile ? "sm" : "md"} color="white">
-                ¿Qué quieres hacer ahora?
-              </Text>
             </Stack>
           </Box>
         </Affix>
@@ -305,7 +316,7 @@ const Interface = () => {
                         <Button
                           key={animation}
                           variant={isActive ? "filled" : "outline"}
-                          color="#04cbee"
+                          color="#F5F5DC"
                           size="sm"
                           onClick={() => triggerSyncAnimation(originalIndex)}
                           style={{
@@ -322,15 +333,31 @@ const Interface = () => {
                             textTransform: "uppercase",
                             flex: 1,
                             borderWidth: "3px",
-                            borderRadius: "6px",
-                            borderColor: isActive ? "#fc3f31" : "#04cbee",
-                            color: isActive ? "#fc3f31" : "#04cbee",
+                            borderRadius: "10px",
+                            borderColor: isActive ? "#fc3f31" : "#F5F5DC",
+                            color: isActive ? "#fc3f31" : "#F5F5DC",
                             textShadow: isActive 
-                              ? `0 0 3px #fc3f31, 0 0 6px #fc3f31`
-                              : `0 0 2px #04cbee, 0 0 4px #04cbee`,
+                              ? `
+                                0 0 5px #fc3f31, 
+                                0 0 10px #fc3f31,
+                                0 0 15px rgba(252, 63, 49, 0.8)
+                              `
+                              : `
+                                0 0 5px #F5F5DC, 
+                                0 0 10px #F5F5DC,
+                                0 0 15px rgba(245, 245, 220, 0.6)
+                              `,
                             boxShadow: isActive
-                              ? `0 0 3px #fc3f31, 0 0 6px rgba(252, 63, 49, 0.3)`
-                              : `0 0 3px #04cbee, 0 0 6px rgba(4, 203, 238, 0.2)`
+                              ? `
+                                0 0 10px #fc3f31, 
+                                0 0 20px rgba(252, 63, 49, 0.5),
+                                inset 0 0 10px rgba(252, 63, 49, 0.1)
+                              `
+                              : `
+                                0 0 8px #F5F5DC, 
+                                0 0 16px rgba(245, 245, 220, 0.4),
+                                inset 0 0 8px rgba(245, 245, 220, 0.1)
+                              `
                           }}
                         >
                           {isMobile 
@@ -359,13 +386,15 @@ const Interface = () => {
                     padding: "10px",
                     minHeight: "60px",
                     boxShadow: `
+                      0 0 15px #fc3f31,
+                      0 0 30px rgba(252, 63, 49, 0.5),
                       0 4px 12px rgba(252, 63, 49, 0.3),
-                      0 0 5px #fc3f31,
-                      0 0 10px #fc3f31
+                      inset 0 0 15px rgba(252, 63, 49, 0.1)
                     `,
                     textShadow: `
-                      0 0 3px #fc3f31,
-                      0 0 6px #fc3f31
+                      0 0 5px #fc3f31,
+                      0 0 10px #fc3f31,
+                      0 0 20px rgba(252, 63, 49, 0.8)
                     `,
                     width: "90%",
                     margin: "auto",
@@ -373,7 +402,7 @@ const Interface = () => {
                     backgroundColor: "transparent",
                     borderColor: "#fc3f31",
                     border: "3px solid #fc3f31",
-                    borderRadius: "8px",
+                    borderRadius: "15px",
                     color: "#fc3f31",
                     textTransform: "uppercase"
                   }}
@@ -426,29 +455,6 @@ const Interface = () => {
                           flex: isMobile ? "1" : "none"
                         }}
                       >
-                        {/* Efecto de brillo cuando está disponible */}
-                        {canUseAttack && (
-                          <Box
-                            style={{
-                              position: "absolute",
-                              top: "-3px",
-                              left: "-3px",
-                              right: "-3px",
-                              bottom: "-3px",
-                              background: `linear-gradient(45deg, 
-                                transparent, 
-                                rgba(4, 203, 238, 0.3), 
-                                transparent, 
-                                rgba(4, 203, 238, 0.3), 
-                                transparent
-                              )`,
-                              borderRadius: isMobile ? "10px" : "15px",
-                              animation: "pulse 2s infinite",
-                              zIndex: 0
-                            }}
-                          />
-                        )}
-                        
                         <Button
                           variant="outline"
                           size={isMobile ? "md" : "xl"}
@@ -457,121 +463,65 @@ const Interface = () => {
                           style={{
                             position: "relative",
                             zIndex: 1,
-                            fontSize: isMobile ? "11px" : "16px",
-                            fontWeight: 700,
-                            padding: isMobile ? "10px 8px" : "25px",
+                            padding: "0",
                             minWidth: isMobile ? "90px" : "150px",
                             width: isMobile ? "90px" : "150px",
                             height: isMobile ? "75px" : "120px",
-                            backgroundColor: canUseAttack 
-                              ? "transparent" 
-                              : "transparent",
-                            borderColor: canUseAttack ? "#04cbee" : "#666",
-                            color: canUseAttack ? "#04cbee" : "#666",
-                            borderWidth: isMobile ? "2px" : "3px",
-                            borderRadius: isMobile ? "8px" : "12px",
-                            textTransform: "uppercase",
+                            backgroundColor: "transparent",
+                            border: canUseAttack ? `3px solid #fc3f31` : `3px solid #666`,
+                            borderRadius: isMobile ? "12px" : "15px",
                             cursor: canUseAttack ? "pointer" : "not-allowed",
-                            boxShadow: canUseAttack 
-                              ? `
-                                0 ${isMobile ? "2px" : "4px"} ${isMobile ? "8px" : "15px"} rgba(4, 203, 238, 0.3),
-                                0 0 ${isMobile ? "10px" : "20px"} rgba(4, 203, 238, 0.2),
-                                inset 0 ${isMobile ? "1px" : "2px"} ${isMobile ? "5px" : "10px"} rgba(4, 203, 238, 0.1)
-                              `
-                              : "0 2px 5px rgba(0, 0, 0, 0.3)",
+                            opacity: canUseAttack ? 1 : 0.5,
                             transition: "all 0.2s ease",
-                            transform: canUseAttack ? "translateY(0)" : "translateY(2px)"
+                            overflow: "hidden",
+                            boxShadow: canUseAttack ? `
+                              0 0 10px #fc3f31,
+                              0 0 20px rgba(252, 63, 49, 0.4),
+                              inset 0 0 10px rgba(252, 63, 49, 0.1)
+                            ` : "none"
                           }}
                           onTouchStart={(e) => {
                             if (canUseAttack && isMobile) {
-                              e.target.style.transform = "translateY(-2px) scale(1.02)";
-                              e.target.style.boxShadow = `
-                                0 4px 15px rgba(4, 203, 238, 0.4),
-                                0 0 20px rgba(4, 203, 238, 0.3)
-                              `;
+                              e.target.style.transform = "scale(0.95)";
                             }
                           }}
                           onTouchEnd={(e) => {
                             if (canUseAttack && isMobile) {
-                              e.target.style.transform = "translateY(0) scale(1)";
-                              e.target.style.boxShadow = `
-                                0 2px 8px rgba(4, 203, 238, 0.3),
-                                0 0 10px rgba(4, 203, 238, 0.2)
-                              `;
+                              e.target.style.transform = "scale(1)";
                             }
                           }}
                           onMouseEnter={(e) => {
                             if (canUseAttack && !isMobile) {
-                              e.target.style.transform = "translateY(-3px) scale(1.05)";
+                              e.target.style.transform = "scale(1.05)";
                               e.target.style.boxShadow = `
-                                0 8px 25px rgba(4, 203, 238, 0.4),
-                                0 0 30px rgba(4, 203, 238, 0.3)
+                                0 0 15px #fc3f31,
+                                0 0 30px rgba(252, 63, 49, 0.6),
+                                inset 0 0 15px rgba(252, 63, 49, 0.2)
                               `;
                             }
                           }}
                           onMouseLeave={(e) => {
                             if (canUseAttack && !isMobile) {
-                              e.target.style.transform = "translateY(0) scale(1)";
+                              e.target.style.transform = "scale(1)";
                               e.target.style.boxShadow = `
-                                0 4px 15px rgba(4, 203, 238, 0.3),
-                                0 0 20px rgba(4, 203, 238, 0.2)
+                                0 0 10px #fc3f31,
+                                0 0 20px rgba(252, 63, 49, 0.4),
+                                inset 0 0 10px rgba(252, 63, 49, 0.1)
                               `;
                             }
                           }}
                         >
-                          <Stack spacing={isMobile ? 2 : 6} align="center">
-                            {/* Emoji del ataque */}
-                            <Text size={isMobile ? "lg" : "2xl"} style={{ 
+                          <img 
+                            src={attack.image}
+                            alt={attack.label}
+                            style={{
+                              width: "100%",
+                              height: "100%",
+                              objectFit: "contain",
                               filter: canUseAttack ? "none" : "grayscale(1)",
-                              textShadow: canUseAttack ? "0 0 10px rgba(4, 203, 238, 0.5)" : "none"
-                            }}>
-                              {attack.emoji}
-                            </Text>
-                            
-                            {/* Nombre del ataque - Más corto en móvil */}
-                            <Text size={isMobile ? "xs" : "md"} weight={700} align="center" style={{
-                              lineHeight: 1.1
-                            }}>
-                              {isMobile && attack.name === "punches" ? "COMBO" : attack.label}
-                            </Text>
-                            
-                            {/* Tecla de acceso rápido */}
-                            <Box style={{
-                              backgroundColor: "transparent",
-                              padding: isMobile ? "1px 4px" : "2px 8px",
-                              borderRadius: "3px",
-                              border: `1px solid ${canUseAttack ? "#04cbee" : "#666"}`
-                            }}>
-                              <Text size="xs" weight={600}>
-                                {attack.shortcut}
-                              </Text>
-                            </Box>
-                            
-                            {/* Costo de stamina */}
-                            {staminaCost > 0 && (
-                              <Text 
-                                size="xs" 
-                                color={player1Stamina < staminaCost ? "#fc3f31" : "#04cbee"} 
-                                weight={700}
-                                style={{
-                                  textShadow: player1Stamina < staminaCost 
-                                    ? "0 0 5px #fc3f31" 
-                                    : "0 0 5px #04cbee"
-                                }}
-                              >
-                                ⚡{staminaCost}
-                              </Text>
-                            )}
-                            
-                            {/* Indicador de stamina insuficiente - Más compacto en móvil */}
-                            {!canUseAttack && player1Stamina < staminaCost && (
-                              <Text size="xs" color="#fc3f31" weight={600} style={{
-                                fontSize: isMobile ? "8px" : "12px"
-                              }}>
-                                {isMobile ? "SIN ⚡" : "SIN STAMINA"}
-                              </Text>
-                            )}
-                          </Stack>
+                              pointerEvents: "none"
+                            }}
+                          />
                         </Button>
                       </Box>
                     );
@@ -587,26 +537,6 @@ const Interface = () => {
             left: isMobile ? 10 : 40
           }}>
             <Box style={{ position: "relative" }}>
-              {/* Efecto de brillo para bloqueo */}
-              {player1IsBlocking && (
-                <Box
-                  style={{
-                    position: "absolute",
-                    top: isMobile ? "-4px" : "-8px",
-                    left: isMobile ? "-4px" : "-8px",
-                    right: isMobile ? "-4px" : "-8px",
-                    bottom: isMobile ? "-4px" : "-8px",
-                    background: `radial-gradient(circle, 
-                      rgba(4, 203, 238, 0.4) 0%, 
-                      transparent 70%
-                    )`,
-                    borderRadius: isMobile ? "12px" : "20px",
-                    animation: "pulse 1s infinite",
-                    zIndex: 0
-                  }}
-                />
-              )}
-              
               <Button
                 variant="outline"
                 size={isMobile ? "sm" : "xl"}
@@ -615,75 +545,34 @@ const Interface = () => {
                 style={{
                   position: "relative",
                   zIndex: 1,
-                  fontSize: isMobile ? "10px" : "14px",
-                  fontWeight: 700,
-                  padding: isMobile ? "8px 12px" : "20px 25px",
+                  padding: "0",
                   minWidth: isMobile ? "70px" : "120px",
                   height: isMobile ? "60px" : "100px",
-                  backgroundColor: player1IsBlocking 
-                    ? "transparent" 
-                    : canBlock(player1Stamina, player1IsDead)
-                      ? "transparent"
-                      : "transparent",
-                  borderColor: player1IsBlocking ? "#04cbee" : canBlock(player1Stamina, player1IsDead) ? "#04cbee" : "#666",
-                  color: player1IsBlocking ? "white" : canBlock(player1Stamina, player1IsDead) ? "#04cbee" : "#666",
-                  borderWidth: isMobile ? "2px" : "3px",
-                  borderRadius: isMobile ? "10px" : "15px",
-                  textTransform: "uppercase",
-                  boxShadow: player1IsBlocking 
-                    ? `
-                      0 0 ${isMobile ? "10px" : "20px"} rgba(4, 203, 238, 0.6),
-                      0 0 ${isMobile ? "20px" : "40px"} rgba(4, 203, 238, 0.4),
-                      inset 0 0 ${isMobile ? "10px" : "20px"} rgba(4, 203, 238, 0.2)
-                    `
-                    : canBlock(player1Stamina, player1IsDead)
-                      ? `0 ${isMobile ? "2px" : "4px"} ${isMobile ? "8px" : "15px"} rgba(4, 203, 238, 0.3)`
-                      : "0 2px 5px rgba(0, 0, 0, 0.3)",
-                  transition: "all 0.2s ease"
+                  backgroundColor: "transparent",
+                  border: canBlock(player1Stamina, player1IsDead) ? `3px solid #fc3f31` : `3px solid #666`,
+                  borderRadius: isMobile ? "12px" : "15px",
+                  cursor: canBlock(player1Stamina, player1IsDead) ? "pointer" : "not-allowed",
+                  opacity: canBlock(player1Stamina, player1IsDead) ? 1 : 0.5,
+                  transition: "all 0.2s ease",
+                  overflow: "hidden",
+                  boxShadow: canBlock(player1Stamina, player1IsDead) ? `
+                    0 0 10px #fc3f31,
+                    0 0 20px rgba(252, 63, 49, 0.4),
+                    inset 0 0 10px rgba(252, 63, 49, 0.1)
+                  ` : "none"
                 }}
               >
-                <Stack spacing={isMobile ? 2 : 4} align="center">
-                  <Text size={isMobile ? "md" : "xl"} style={{
+                <img 
+                  src={coverImg}
+                  alt="Block"
+                  style={{
+                    width: "100%",
+                    height: "100%",
+                    objectFit: "contain",
                     filter: canBlock(player1Stamina, player1IsDead) ? "none" : "grayscale(1)",
-                    textShadow: player1IsBlocking ? "0 0 10px rgba(255, 255, 255, 0.8)" : "none"
-                  }}>
-                    🛡️
-                  </Text>
-                  <Text size="xs" weight={700} style={{
-                    fontSize: isMobile ? "8px" : "12px"
-                  }}>
-                    {player1IsBlocking ? (isMobile ? "ON" : "BLOQUEANDO") : (isMobile ? "BLOCK" : "BLOQUEAR")}
-                  </Text>
-                  {player1IsBlocking && (
-                    <Text size="xs" color="yellow" weight={700} style={{
-                      textShadow: "0 0 5px yellow",
-                      fontSize: isMobile ? "7px" : "10px"
-                    }}>
-                      {isMobile ? "●" : "ACTIVO"}
-                    </Text>
-                  )}
-                  {!canBlock(player1Stamina, player1IsDead) && (
-                    <Text size="xs" style={{ 
-                      color: "#fc3f31",
-                      fontSize: isMobile ? "7px" : "10px"
-                    }}>
-                      {isMobile ? "NO ⚡" : "SIN STAMINA"}
-                    </Text>
-                  )}
-                  {/* Indicador de tecla */}
-                  <Box style={{
-                    backgroundColor: "transparent",
-                    padding: isMobile ? "1px 3px" : "2px 6px",
-                    borderRadius: "2px",
-                    border: "1px solid #04cbee"
-                  }}>
-                    <Text size="xs" weight={600} style={{
-                      fontSize: isMobile ? "7px" : "10px"
-                    }}>
-                      {isMobile ? "SPC" : "SPACE"}
-                    </Text>
-                  </Box>
-                </Stack>
+                    pointerEvents: "none"
+                  }}
+                />
               </Button>
             </Box>
           </Affix>
@@ -710,43 +599,32 @@ const Interface = () => {
                 size={isMobile ? "xs" : "lg"}
                 onClick={resetHealth}
                 style={{ 
-                  fontSize: isMobile ? "9px" : "13px",
-                  fontWeight: 700,
-                  padding: isMobile ? "6px 8px" : "15px 20px",
+                  padding: "0",
                   backgroundColor: "transparent",
-                  borderColor: "#04cbee",
-                  color: "#04cbee",
-                  borderWidth: isMobile ? "1px" : "2px",
-                  borderRadius: isMobile ? "6px" : "10px",
-                  textTransform: "uppercase",
-                  boxShadow: `0 ${isMobile ? "2px" : "4px"} ${isMobile ? "5px" : "10px"} rgba(4, 203, 238, 0.3)`,
+                  border: `3px solid #42cf52`,
+                  borderRadius: isMobile ? "10px" : "15px",
                   transition: "all 0.2s ease",
-                  minWidth: isMobile ? "60px" : "auto",
-                  height: isMobile ? "50px" : "auto"
+                  minWidth: isMobile ? "60px" : "120px",
+                  height: isMobile ? "50px" : "100px",
+                  cursor: "pointer",
+                  overflow: "hidden",
+                  boxShadow: `
+                    0 0 10px #42cf52,
+                    0 0 20px rgba(66, 207, 82, 0.4),
+                    inset 0 0 10px rgba(66, 207, 82, 0.1)
+                  `
                 }}
               >
-                <Stack spacing={isMobile ? 1 : 3} align="center">
-                  <Text size={isMobile ? "sm" : "xl"}>
-                    {isCombatOver ? "🔄" : "💚"}
-                  </Text>
-                  <Text size="xs" style={{
-                    fontSize: isMobile ? "7px" : "12px",
-                    lineHeight: 1
-                  }}>
-                    {isCombatOver ? (isMobile ? "NEW" : "NUEVO COMBATE") : (isMobile ? "RESET" : "RESET VIDA")}
-                  </Text>
-                  {/* Indicador de tecla */}
-                  <Box style={{
-                    backgroundColor: "transparent",
-                    padding: isMobile ? "0px 2px" : "1px 4px",
-                    borderRadius: "1px",
-                    border: "1px solid #04cbee"
-                  }}>
-                    <Text size="xs" weight={600} style={{
-                      fontSize: isMobile ? "6px" : "10px"
-                    }}>R</Text>
-                  </Box>
-                </Stack>
+                <img 
+                  src={resetImg}
+                  alt="Reset"
+                  style={{
+                    width: "100%",
+                    height: "100%",
+                    objectFit: "contain",
+                    pointerEvents: "none"
+                  }}
+                />
               </Button>
             </Stack>
           </Affix>

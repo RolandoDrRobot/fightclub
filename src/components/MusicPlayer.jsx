@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Button, Group, Text, Box } from '@mantine/core';
+import musicIcon from '../assets/music.png';
 
 const MusicPlayer = () => {
   // Lista de canciones (usando los archivos reales del directorio music)
@@ -97,6 +98,10 @@ const MusicPlayer = () => {
 
   return (
     <Box style={{
+      position: 'absolute',
+      zIndex: 200,
+      top: '65%',
+      right: '2%',
       backgroundColor: 'rgba(0, 0, 0, 0.8)',
       borderRadius: '8px',
       boxShadow: '0 0 10px rgba(4, 203, 238, 0.3)',
@@ -137,22 +142,29 @@ const MusicPlayer = () => {
       <Group spacing="sm" position="center" style={{ alignItems: 'center' }}>
         {/* Icono de Música */}
         <Button
-          variant="outline"
+          variant="unstyled"
           size="xs"
           onClick={nextSong}
           style={{
             backgroundColor: 'transparent',
-            borderColor: '#04cbee',
-            color: '#04cbee',
-            borderWidth: '2px',
+            border: 'none',
             width: '28px',
             height: '28px',
-            fontSize: '12px',
             padding: '0',
-            minWidth: 'unset'
+            minWidth: 'unset',
+            cursor: 'pointer'
           }}
         >
-          🎶
+          <img 
+            src={musicIcon} 
+            alt="Music" 
+            style={{ 
+              width: "28px",
+              height: "28px",
+              objectFit: "cover",
+              pointerEvents: "none"
+            }} 
+          />
         </Button>
       </Group>
     </Box>
