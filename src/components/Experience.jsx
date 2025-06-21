@@ -2,6 +2,7 @@ import { CameraControls } from "./CameraControls";
 import Pete from "./Pete";
 import ParticleEffect from "./ParticleEffect";
 import BloodFloor from "./BloodFloor";
+import Audience from "./Audience";
 import { useCharacterAnimations } from "../contexts/CharacterAnimations";
 
 const Experience = () => {
@@ -52,6 +53,9 @@ const Experience = () => {
       {/* Efectos de sangre - En ambos modos */}
       <ParticleEffect />
       <BloodFloor />
+      
+      {/* Audiencia - Personajes bailando alrededor */}
+      <Audience />
       
       <group position={[0, -1, 0]}>
         <Pete 
