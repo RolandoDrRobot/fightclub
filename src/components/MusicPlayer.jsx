@@ -17,7 +17,7 @@ const MusicPlayer = () => {
     { id: 6, name: "Another", artist: "Full On The Mouth", file: "/music/Full On The Mouth - Another.mp3" }
   ];
 
-  const [currentSongIndex, setCurrentSongIndex] = useState(5);
+  const [currentSongIndex, setCurrentSongIndex] = useState(1);
   const [isPlaying, setIsPlaying] = useState(false);
   const audioRef = useRef(null);
 
@@ -99,42 +99,63 @@ const MusicPlayer = () => {
   useEffect(() => {
     if (songs[currentSongIndex].file && audioRef.current) {
       audioRef.current.load();
-      // Auto-reproducir "Nine Thou" al cargar el componente
-      if (currentSongIndex === 5) {
-        setTimeout(() => {
-          if (audioRef.current) {
-            // Configurar volumen inicial
-            audioRef.current.volume = isCombatMode ? 0.6 : 0.5;
-            audioRef.current.play().catch(console.error);
-            setIsPlaying(true);
+      
+      // Auto-reproducir cualquier canción que tenga archivo
+      setTimeout(() => {
+        if (audioRef.current) {
+          // Configurar volumen inicial
+          audioRef.current.volume = isCombatMode ? 0.6 : 0.5;
+          
+          const playPromise = audioRef.current.play();
+          if (playPromise !== undefined) {
+            playPromise
+              .then(() => {
+                setIsPlaying(true);
+                console.log(`Auto-reproduciendo: ${songs[currentSongIndex].name}`);
+              })
+              .catch(error => {
+                console.log('Auto-play bloqueado:', error);
+                setIsPlaying(false);
+              });
           }
-        }, 500);
-      }
+        }
+      }, 300);
     }
-  }, [currentSongIndex]);
+  }, [currentSongIndex, isCombatMode]);
 
-  // Auto-reproducir al montar el componente
+  // Auto-reproducir al montar el componente - MEJORADO
   useEffect(() => {
-    // Reproducir "Nine Thou" automáticamente al cargar
+    // Reproducir la primera canción automáticamente al cargar
     const timer = setTimeout(() => {
-      if (audioRef.current && songs[5].file) {
+      if (audioRef.current && songs[1].file && currentSongIndex === 1) {
         // Configurar volumen inicial
         audioRef.current.volume = isCombatMode ? 0.6 : 0.5;
         
-        const playPromise = audioRef.current.play();
-        if (playPromise !== undefined) {
-          playPromise
-            .then(() => {
-              setIsPlaying(true);
-            })
-            .catch(error => {
-              console.log('Auto-play inicial bloqueado por el navegador:', error);
-              // Si el auto-play es bloqueado, mostrar un mensaje o botón de play
-              setIsPlaying(false);
-            });
-        }
+        // Intentar múltiples veces si es necesario
+        const attemptPlay = (attempts = 0) => {
+          if (attempts >= 3) {
+            console.log('Auto-play falló después de 3 intentos');
+            return;
+          }
+          
+          const playPromise = audioRef.current.play();
+          if (playPromise !== undefined) {
+            playPromise
+              .then(() => {
+                setIsPlaying(true);
+                console.log('Auto-play inicial exitoso');
+              })
+              .catch(error => {
+                console.log(`Auto-play intento ${attempts + 1} falló:`, error);
+                // Reintentar después de un breve delay
+                setTimeout(() => attemptPlay(attempts + 1), 500);
+              });
+          }
+        };
+        
+        attemptPlay();
       }
-    }, 1000);
+    }, 1500); // Aumentar delay inicial para asegurar que todo esté cargado
 
     return () => clearTimeout(timer);
   }, []); // Solo al montar, sin dependencias de modo
@@ -166,10 +187,32 @@ const MusicPlayer = () => {
           src={currentSong.file}
           onEnded={handleSongEnd}
           loop={false}
-          preload="metadata"
+          preload="auto"
           autoPlay={true}
-          onPlay={() => setIsPlaying(true)}
+          muted={false}
+          onPlay={() => {
+            setIsPlaying(true);
+            console.log(`Reproduciendo: ${currentSong.name}`);
+          }}
           onPause={() => setIsPlaying(false)}
+          onCanPlay={() => {
+            // Intentar reproducir cuando el audio esté listo
+            if (audioRef.current && !isPlaying) {
+              audioRef.current.volume = isCombatMode ? 0.6 : 0.5;
+              
+              const playPromise = audioRef.current.play();
+              if (playPromise !== undefined) {
+                playPromise
+                  .then(() => {
+                    setIsPlaying(true);
+                    console.log('Auto-play desde onCanPlay exitoso');
+                  })
+                  .catch(error => {
+                    console.log('Auto-play desde onCanPlay falló:', error);
+                  });
+              }
+            }
+          }}
           onLoadedData={() => {
             // Intentar reproducir cuando los datos estén cargados
             if (audioRef.current) {
@@ -181,13 +224,18 @@ const MusicPlayer = () => {
                 playPromise
                   .then(() => {
                     setIsPlaying(true);
+                    console.log('Auto-play desde onLoadedData exitoso');
                   })
                   .catch(error => {
-                    console.log('Auto-play bloqueado por el navegador:', error);
+                    console.log('Auto-play desde onLoadedData falló:', error);
                     setIsPlaying(false);
                   });
               }
             }
+          }}
+          onError={(e) => {
+            console.error('Error cargando audio:', e);
+            setIsPlaying(false);
           }}
         />
       )}
@@ -202,8 +250,8 @@ const MusicPlayer = () => {
           style={{
             backgroundColor: 'transparent',
             border: 'none',
-            width: '28px',
-            height: '28px',
+            width: '20px',
+            height: '20px',
             padding: '0',
             minWidth: 'unset',
             cursor: 'pointer'
@@ -213,10 +261,11 @@ const MusicPlayer = () => {
             src={musicIcon} 
             alt="Music" 
             style={{ 
-              width: "28px",
-              height: "28px",
+              width: "20px",
+              height: "20px",
               objectFit: "cover",
-              pointerEvents: "none"
+              pointerEvents: "none",
+              borderRadius: "50%"
             }} 
           />
         </Button>

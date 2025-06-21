@@ -204,7 +204,7 @@ const Interface = () => {
       document.head.removeChild(style);
     };
   }, []);
-
+  
   return (
     <>
       {/* Reproductor de Música - Siempre visible en esquina superior derecha */}
@@ -266,14 +266,14 @@ const Interface = () => {
                 </Button>
 
                 {/* Botón Volver a Pelear */}
-                <Button
+                  <Button
                   variant="outline"
                   size={isMobile ? "sm" : "md"}
                   onClick={() => {
                     resetHealth();
                     initializeCombat();
                   }}
-                  style={{
+                    style={{
                     fontSize: isMobile ? "11px" : "13px",
                     fontWeight: 700,
                     padding: isMobile ? "8px 12px" : "12px 16px",
@@ -297,7 +297,7 @@ const Interface = () => {
                   }}
                 >
                   FIGHT
-                </Button>
+                  </Button>
               </Group>
 
             </Stack>
@@ -379,7 +379,7 @@ const Interface = () => {
               <Stack spacing="xs">
                 {/* Botón único para combinaciones de bailes */}
                 <Stack spacing="xs" style={{ width: "100vw", margin: "auto", padding: "15px 15px 0 15px" }}>
-                  <Group spacing="md" position="center" style={{ width: "100%" }}>
+                  <Group spacing="md" position="right" style={{ width: "100%" }}>
                     <Button
                       variant="unstyled"
                       size="lg"
@@ -395,7 +395,13 @@ const Interface = () => {
                         width: isMobile ? "60px" : "80px",
                         height: isMobile ? "60px" : "80px",
                         cursor: "pointer",
-                        transition: "all 0.2s ease"
+                        transition: "all 0.2s ease",
+                        borderRadius: "10px"
+                      }}
+                      styles={{
+                        label: {
+                          borderRadius: "10px"
+                        }
                       }}
                       onMouseEnter={(e) => {
                         if (!isMobile) {
@@ -416,6 +422,14 @@ const Interface = () => {
                           height: "100%",
                           objectFit: "contain",
                           pointerEvents: "none",
+                          borderRadius: "10px",
+                          border: "2px solid #fc3f31",
+                          boxShadow: `
+                            0 0 5px #fc3f31,
+                            0 0 10px #fc3f31,
+                            0 0 15px rgba(252, 63, 49, 0.8),
+                            0 0 20px rgba(252, 63, 49, 0.6)
+                          `,
                           filter: isPlayingCombo 
                             ? `
                               drop-shadow(0 0 3px #fc3f31)
@@ -587,7 +601,7 @@ const Interface = () => {
                               pointerEvents: "none"
                             }}
                           />
-                        </Button>
+                      </Button>
                       </Box>
                     );
                   })}
@@ -602,7 +616,7 @@ const Interface = () => {
             left: isMobile ? 10 : 40
           }}>
             <Box style={{ position: "relative" }}>
-              <Button
+                <Button
                 variant="outline"
                 size={isMobile ? "sm" : "xl"}
                 disabled={!canBlock(player1Stamina, player1IsDead)}
@@ -638,7 +652,7 @@ const Interface = () => {
                     pointerEvents: "none"
                   }}
                 />
-              </Button>
+                      </Button>
             </Box>
           </Affix>
 
@@ -648,16 +662,16 @@ const Interface = () => {
             right: isMobile ? 10 : 40
           }}>
             <Stack spacing={isMobile ? "xs" : "md"} align="center">
-              {/* Estado del combate */}
-              {isCombatOver && (
+                {/* Estado del combate */}
+                {isCombatOver && (
                 <Text size={isMobile ? "xs" : "md"} color="yellow" weight={700} align="center" style={{
                   textShadow: "0 0 10px yellow",
                   fontSize: isMobile ? "10px" : "16px"
                 }}>
                   {player1IsDead ? "💀" : "🏆"}
-                </Text>
-              )}
-              
+                  </Text>
+                )}
+                
               {/* Botón de Reset mejorado */}
               <Button
                 variant="outline"
@@ -723,7 +737,7 @@ const Interface = () => {
                   {isMobile ? "REVIVE" : "REVIVE LOSER"}
                 </Button>
               )}
-            </Stack>
+              </Stack>
           </Affix>
         </>
       )}
