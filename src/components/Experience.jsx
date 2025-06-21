@@ -1,5 +1,6 @@
 import { CameraControls } from "./CameraControls";
 import Pete from "./Pete";
+import ParticleEffect from "./ParticleEffect";
 import { useCharacterAnimations } from "../contexts/CharacterAnimations";
 
 const Experience = () => {
@@ -46,6 +47,10 @@ const Experience = () => {
         shadow-mapSize-width={2048}
         shadow-mapSize-height={2048}
       />
+      
+      {/* Efecto de gotas de sangre - Solo en modo sincronizado (baile) */}
+      {!isCombatMode && <ParticleEffect />}
+      
       <group position={[0, -1, 0]}>
         <Pete 
           player={1} 
