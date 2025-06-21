@@ -2,6 +2,7 @@ import { Canvas } from "@react-three/fiber";
 import Experience from "./components/Experience";
 import Interface from "./components/Interface";
 import HealthBars from "./components/HealthBars";
+import CrowdSound from "./components/CrowdSound";
 import { useCharacterAnimations } from "./contexts/CharacterAnimations";
 
 function App() {
@@ -28,6 +29,7 @@ function App() {
       </Canvas>
       <Interface />
       <HealthBars />
+      <CrowdSound />
     </>
   );
 }

@@ -1,8 +1,11 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Button, Group, Text, Box } from '@mantine/core';
+import { useCharacterAnimations } from '../contexts/CharacterAnimations';
 import musicIcon from '../assets/music.png';
 
 const MusicPlayer = () => {
+  const { isCombatMode } = useCharacterAnimations();
+  
   // Lista de canciones (usando los archivos reales del directorio music)
   const songs = [
     { id: 0, name: "Sin Música", artist: "", file: null },
@@ -17,6 +20,46 @@ const MusicPlayer = () => {
   const [currentSongIndex, setCurrentSongIndex] = useState(5);
   const [isPlaying, setIsPlaying] = useState(false);
   const audioRef = useRef(null);
+
+  // Configurar volumen según el modo - CORREGIDO
+  useEffect(() => {
+    if (audioRef.current && songs[currentSongIndex].file) {
+      // Balancear volumen con el crowd sound
+      const targetVolume = isCombatMode ? 0.6 : 0.5;
+      
+      console.log(`Cambiando volumen de música a ${targetVolume} (Modo: ${isCombatMode ? 'Combate' : 'Baile'})`);
+      
+      // Aplicar volumen inmediatamente
+      audioRef.current.volume = targetVolume;
+      
+      // Asegurar que esté reproduciéndose si no es "Sin Música"
+      if (audioRef.current.paused && isPlaying) {
+        audioRef.current.play()
+          .then(() => setIsPlaying(true))
+          .catch(console.error);
+      }
+      
+      // También hacer transición suave
+      const currentVolume = audioRef.current.volume;
+      const volumeStep = (targetVolume - currentVolume) / 10;
+      
+      let step = 0;
+      const volumeInterval = setInterval(() => {
+        if (step < 10 && audioRef.current) {
+          const newVolume = Math.max(0, Math.min(1, currentVolume + (volumeStep * step)));
+          audioRef.current.volume = newVolume;
+          step++;
+        } else {
+          clearInterval(volumeInterval);
+          if (audioRef.current) {
+            audioRef.current.volume = targetVolume; // Asegurar volumen final
+          }
+        }
+      }, 50);
+      
+      return () => clearInterval(volumeInterval);
+    }
+  }, [isCombatMode, currentSongIndex]); // Agregar currentSongIndex como dependencia
 
   // Función para siguiente canción
   const nextSong = () => {
@@ -33,6 +76,9 @@ const MusicPlayer = () => {
     if (songs[nextIndex].file) {
       setTimeout(() => {
         if (audioRef.current) {
+          // Configurar volumen inicial
+          audioRef.current.volume = isCombatMode ? 0.6 : 0.5;
+          
           const playPromise = audioRef.current.play();
           if (playPromise !== undefined) {
             playPromise
@@ -57,6 +103,8 @@ const MusicPlayer = () => {
       if (currentSongIndex === 5) {
         setTimeout(() => {
           if (audioRef.current) {
+            // Configurar volumen inicial
+            audioRef.current.volume = isCombatMode ? 0.6 : 0.5;
             audioRef.current.play().catch(console.error);
             setIsPlaying(true);
           }
@@ -70,6 +118,9 @@ const MusicPlayer = () => {
     // Reproducir "Nine Thou" automáticamente al cargar
     const timer = setTimeout(() => {
       if (audioRef.current && songs[5].file) {
+        // Configurar volumen inicial
+        audioRef.current.volume = isCombatMode ? 0.6 : 0.5;
+        
         const playPromise = audioRef.current.play();
         if (playPromise !== undefined) {
           playPromise
@@ -86,7 +137,7 @@ const MusicPlayer = () => {
     }, 1000);
 
     return () => clearTimeout(timer);
-  }, []);
+  }, []); // Solo al montar, sin dependencias de modo
 
   // Manejar cuando termina una canción (pasar a la siguiente)
   const handleSongEnd = () => {
@@ -122,6 +173,9 @@ const MusicPlayer = () => {
           onLoadedData={() => {
             // Intentar reproducir cuando los datos estén cargados
             if (audioRef.current) {
+              // Configurar volumen inicial
+              audioRef.current.volume = isCombatMode ? 0.6 : 0.5;
+              
               const playPromise = audioRef.current.play();
               if (playPromise !== undefined) {
                 playPromise
