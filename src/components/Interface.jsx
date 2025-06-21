@@ -2,6 +2,7 @@ import { Affix, Button, Group, Switch, Text, Stack, Box } from "@mantine/core";
 import { useCharacterAnimations } from "../contexts/CharacterAnimations";
 import { useMediaQuery } from "@mantine/hooks";
 import React from "react";
+import MusicPlayer from "./MusicPlayer";
 
 const Interface = () => {
   const { 
@@ -108,6 +109,14 @@ const Interface = () => {
 
   return (
     <>
+      {/* Reproductor de Música - Siempre visible en esquina superior derecha */}
+      <Affix position={{ 
+        top: isMobile ? 5 : 10, 
+        right: isMobile ? 5 : 10 
+      }}>
+        <MusicPlayer />
+      </Affix>
+
       {/* Mensaje de Victoria - Overlay cuando termina el combate */}
       {isCombatOver && isCombatMode && (
         <Affix position={{ 
@@ -199,7 +208,7 @@ const Interface = () => {
         <>
           {/* Título Fight Club - ARRIBA CENTRO */}
           <Affix position={{ 
-            top: isMobile ? 25 : 35, 
+            top: isMobile ? 40 : 50, 
             left: "50%",
             transform: "translateX(-50%)"
           }}>
