@@ -96,6 +96,10 @@ export const CharacterAnimationsProvider = (props) => {
   const [player1IsBlocking, setPlayer1IsBlocking] = useState(false);
   const [player2IsBlocking, setPlayer2IsBlocking] = useState(false);
   
+  // Sistema de IA para Player 2
+  const [isAIEnabled, setIsAIEnabled] = useState(false);
+  const [aiDifficulty, setAIDifficulty] = useState('easy'); // 'easy', 'medium', 'hard'
+  
   // Referencias para timeouts y intervals
   const attackTimeoutRef = useRef(null);
   const introTimeoutRef = useRef(null);
@@ -105,6 +109,7 @@ export const CharacterAnimationsProvider = (props) => {
   const player2StaminaRegenRef = useRef(null);
   const player1BlockStaminaRef = useRef(null);
   const player2BlockStaminaRef = useRef(null);
+  const aiActionTimeoutRef = useRef(null);
 
   // Función para encontrar índice de animación por nombre exacto
   const findAnimationIndex = (animationName) => {
@@ -615,6 +620,227 @@ export const CharacterAnimationsProvider = (props) => {
     console.log("All players revived and returned to idle");
   };
 
+  // Función para revivir solo al jugador que perdió
+  const reviveLosingPlayer = () => {
+    console.log("Reviving losing player");
+    
+    if (player1IsDead && !player2IsDead) {
+      console.log("Reviving Player 1");
+      setPlayer1IsDead(false);
+      setPlayer1Health(maxHealth);
+      setPlayer1Stamina(MAX_STAMINA);
+      setPlayer1IsBlocking(false);
+      
+      // Volver a idle de combate
+      const combatIdleIndex = findAnimationIndex("idleFight");
+      setPlayer1AnimationIndex(combatIdleIndex);
+      
+      // Reiniciar IA si estaba habilitada
+      if (isAIEnabled && isCombatMode) {
+        setTimeout(() => {
+          startAI();
+        }, 1000);
+      }
+      
+    } else if (player2IsDead && !player1IsDead) {
+      console.log("Reviving Player 2");
+      setPlayer2IsDead(false);
+      setPlayer2Health(maxHealth);
+      setPlayer2Stamina(MAX_STAMINA);
+      setPlayer2IsBlocking(false);
+      
+      // Volver a idle de combate
+      const combatIdleIndex = findAnimationIndex("idleFight");
+      setPlayer2AnimationIndex(combatIdleIndex);
+      
+      // Reiniciar IA si estaba habilitada
+      if (isAIEnabled && isCombatMode) {
+        setTimeout(() => {
+          startAI();
+        }, 1000);
+      }
+    }
+    
+    console.log("Losing player revived");
+  };
+
+  // ========== SISTEMA DE IA PARA PLAYER 2 ==========
+  
+  // Función para que la IA tome decisiones
+  const makeAIDecision = () => {
+    console.log("=== AI DECISION MAKING ===");
+    console.log(`isAIEnabled: ${isAIEnabled}`);
+    console.log(`isCombatMode: ${isCombatMode}`);
+    console.log(`player1IsDead: ${player1IsDead}`);
+    console.log(`player2IsDead: ${player2IsDead}`);
+    console.log(`player2IsBlocking: ${player2IsBlocking}`);
+    console.log(`player2Stamina: ${player2Stamina}`);
+    
+    // VERIFICACIÓN PRIORITARIA: Si el combate terminó, detener IA inmediatamente
+    const combatEnded = player1IsDead || player2IsDead;
+    if (combatEnded) {
+      console.log("COMBAT ENDED - AI stopping all actions immediately");
+      stopAI();
+      return;
+    }
+    
+    // Solo actuar si la IA está habilitada, en modo combate, y ningún jugador está muerto
+    if (!isAIEnabled || !isCombatMode || player1IsDead || player2IsDead) {
+      console.log("AI decision cancelled - conditions not met");
+      return;
+    }
+
+    // Si Player 2 está bloqueando, decidir si continuar o no
+    if (player2IsBlocking) {
+      // 30% de probabilidad de dejar de bloquear en modo fácil
+      if (Math.random() < 0.3) {
+        console.log("AI decides to stop blocking");
+        togglePlayer2Block();
+      } else {
+        console.log("AI decides to continue blocking");
+      }
+      return;
+    }
+
+    // Configuración de dificultad
+    const difficultyConfig = {
+      easy: {
+        reactionTime: { min: 1500, max: 3000 }, // 1.5-3 segundos
+        attackChance: 0.4, // 40% de probabilidad de atacar
+        blockChance: 0.3,  // 30% de probabilidad de bloquear
+        smartBlockChance: 0.1, // 10% de bloqueo inteligente
+        staminaAwareness: 0.2 // 20% de consciencia de stamina
+      }
+    };
+
+    const config = difficultyConfig[aiDifficulty];
+    const action = Math.random();
+    
+    console.log(`AI random action value: ${action}`);
+    console.log(`Attack threshold: ${config.attackChance}`);
+    console.log(`Block threshold: ${config.attackChance + config.blockChance}`);
+
+    // Decidir acción basada en probabilidades
+    if (action < config.attackChance) {
+      console.log("AI decides to attack");
+      // Decidir qué ataque usar
+      const attackTypes = ['punch', 'kick', 'punches'];
+      const availableAttacks = attackTypes.filter(attack => {
+        const cost = staminaCosts[attack] || 0;
+        return player2Stamina >= cost;
+      });
+      
+      console.log(`Available attacks: ${availableAttacks.join(', ')}`);
+
+      if (availableAttacks.length > 0) {
+        // En modo fácil, preferir ataques más simples
+        let selectedAttack;
+        if (aiDifficulty === 'easy') {
+          // 60% punch, 30% kick, 10% punches
+          const rand = Math.random();
+          if (rand < 0.6 && availableAttacks.includes('punch')) {
+            selectedAttack = 'punch';
+          } else if (rand < 0.9 && availableAttacks.includes('kick')) {
+            selectedAttack = 'kick';
+          } else {
+            selectedAttack = availableAttacks[Math.floor(Math.random() * availableAttacks.length)];
+          }
+        } else {
+          selectedAttack = availableAttacks[Math.floor(Math.random() * availableAttacks.length)];
+        }
+
+        console.log(`AI selected attack: ${selectedAttack}`);
+        console.log("Calling triggerPlayer2Attack...");
+        triggerPlayer2Attack(selectedAttack);
+      } else {
+        console.log("AI wanted to attack but no attacks available due to stamina");
+      }
+    } else if (action < config.attackChance + config.blockChance) {
+      console.log("AI decides to block");
+      // Decidir si bloquear
+      if (player2Stamina > 20) { // Solo bloquear si tiene suficiente stamina
+        console.log("AI has enough stamina to block");
+        togglePlayer2Block();
+      } else {
+        console.log("AI wanted to block but not enough stamina");
+      }
+    } else {
+      console.log("AI decides to wait/do nothing");
+    }
+    // Si no hace nada, simplemente espera
+  };
+
+  // Función para iniciar el comportamiento de IA
+  const startAI = () => {
+    if (!isAIEnabled || !isCombatMode) return;
+
+    console.log("Starting AI behavior");
+    scheduleNextAIAction();
+  };
+
+  // Función para programar la próxima acción de IA
+  const scheduleNextAIAction = () => {
+    console.log("=== SCHEDULING NEXT AI ACTION ===");
+    console.log(`isAIEnabled: ${isAIEnabled}`);
+    console.log(`isCombatMode: ${isCombatMode}`);
+    console.log(`player1IsDead: ${player1IsDead}`);
+    console.log(`player2IsDead: ${player2IsDead}`);
+    
+    // VERIFICACIÓN PRIORITARIA: Si el combate terminó, no programar más acciones
+    const combatEnded = player1IsDead || player2IsDead;
+    if (combatEnded) {
+      console.log("COMBAT ENDED - AI not scheduling any more actions");
+      return;
+    }
+    
+    if (!isAIEnabled || !isCombatMode || player1IsDead || player2IsDead) {
+      console.log("AI scheduling cancelled - conditions not met");
+      return;
+    }
+
+    // Limpiar timeout anterior
+    if (aiActionTimeoutRef.current) {
+      console.log("Clearing previous AI timeout");
+      clearTimeout(aiActionTimeoutRef.current);
+    }
+
+    const difficultyConfig = {
+      easy: { min: 1500, max: 3000 }
+    };
+
+    const config = difficultyConfig[aiDifficulty];
+    const delay = Math.random() * (config.max - config.min) + config.min;
+    
+    console.log(`AI will act in ${delay}ms`);
+
+    aiActionTimeoutRef.current = setTimeout(() => {
+      console.log("AI timeout triggered - making decision");
+      makeAIDecision();
+      scheduleNextAIAction(); // Programar la siguiente acción
+    }, delay);
+    
+    console.log("AI action scheduled successfully");
+  };
+
+  // Función para detener la IA
+  const stopAI = () => {
+    console.log("=== STOPPING AI BEHAVIOR ===");
+    
+    if (aiActionTimeoutRef.current) {
+      console.log("Clearing AI action timeout");
+      clearTimeout(aiActionTimeoutRef.current);
+      aiActionTimeoutRef.current = null;
+    }
+    
+    // Si Player 2 está bloqueando cuando se detiene la IA, detener el bloqueo
+    if (player2IsBlocking) {
+      console.log("AI was blocking when stopped - stopping block");
+      stopPlayer2Block();
+    }
+    
+    console.log("AI behavior completely stopped");
+  };
+
   // Función para obtener animaciones según el tipo de ataque usando Pete
   const getAttackAnimations = (attackAnimationName) => {
     // Obtener animación de ataque
@@ -812,6 +1038,14 @@ export const CharacterAnimationsProvider = (props) => {
       setPlayer1AnimationIndex(combatIdleIndex);
       setPlayer2AnimationIndex(combatIdleIndex);
       console.log("Intro finished - both players now in combat idle, ready to fight!");
+      
+      // Iniciar IA después de que termine la intro
+      if (isAIEnabled) {
+        setTimeout(() => {
+          startAI();
+        }, 1000); // Esperar 1 segundo adicional antes de que la IA empiece a actuar
+      }
+      
       introTimeoutRef.current = null; // Limpiar la referencia
     }, 3000); // 3 segundos para la animación intro
   };
@@ -819,6 +1053,9 @@ export const CharacterAnimationsProvider = (props) => {
   // Función para limpiar completamente el estado de combate
   const cleanCombatState = () => {
     console.log("Cleaning combat state completely");
+    
+    // Detener IA
+    stopAI();
     
     // Limpiar todos los timeouts e intervals
     if (attackTimeoutRef.current) {
@@ -878,6 +1115,7 @@ export const CharacterAnimationsProvider = (props) => {
       if (player2StaminaRegenRef.current) clearInterval(player2StaminaRegenRef.current);
       if (player1BlockStaminaRef.current) clearInterval(player1BlockStaminaRef.current);
       if (player2BlockStaminaRef.current) clearInterval(player2BlockStaminaRef.current);
+      if (aiActionTimeoutRef.current) clearTimeout(aiActionTimeoutRef.current);
     };
   }, []);
 
@@ -906,6 +1144,30 @@ export const CharacterAnimationsProvider = (props) => {
       }, 100); // Pequeño delay para asegurar que el estado se limpie primero
     }
   }, [isCombatMode, animations]);
+
+  // useEffect para manejar cambios en el estado de IA
+  useEffect(() => {
+    console.log(`AI State Changed: isAIEnabled=${isAIEnabled}, isCombatMode=${isCombatMode}`);
+    
+    if (isAIEnabled && isCombatMode && !player1IsDead && !player2IsDead) {
+      console.log("AI enabled during combat - starting AI behavior");
+      // Pequeño delay para asegurar que el combate esté completamente inicializado
+      setTimeout(() => {
+        startAI();
+      }, 500);
+    } else if (!isAIEnabled) {
+      console.log("AI disabled - stopping AI behavior");
+      stopAI();
+    }
+  }, [isAIEnabled, isCombatMode, player1IsDead, player2IsDead]);
+
+  // useEffect para detener IA cuando el combate termina (algún jugador muere)
+  useEffect(() => {
+    if (player1IsDead || player2IsDead) {
+      console.log("Combat ended - stopping AI automatically");
+      stopAI();
+    }
+  }, [player1IsDead, player2IsDead]);
 
   return (
     <CharacterAnimationsContext.Provider
@@ -936,6 +1198,7 @@ export const CharacterAnimationsProvider = (props) => {
         setPlayer1Health,
         setPlayer2Health,
         resetHealth,
+        reviveLosingPlayer,
         
         // Sistema de stamina
         player1Stamina,
@@ -951,6 +1214,15 @@ export const CharacterAnimationsProvider = (props) => {
         player2IsBlocking,
         togglePlayer1Block,
         togglePlayer2Block,
+        
+        // Sistema de IA para Player 2
+        isAIEnabled,
+        setIsAIEnabled,
+        aiDifficulty,
+        setAIDifficulty,
+        startAI,
+        stopAI,
+        makeAIDecision, // Para debug
         
         // Constantes para la UI
         staminaCosts,
