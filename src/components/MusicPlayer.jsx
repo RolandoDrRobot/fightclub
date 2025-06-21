@@ -59,7 +59,7 @@ const MusicPlayer = () => {
       
       return () => clearInterval(volumeInterval);
     }
-  }, [isCombatMode, currentSongIndex]); // Agregar currentSongIndex como dependencia
+  }, [isCombatMode]); // Remover currentSongIndex de las dependencias
 
   // Función para siguiente canción
   const nextSong = () => {
@@ -121,7 +121,7 @@ const MusicPlayer = () => {
         }
       }, 300);
     }
-  }, [currentSongIndex, isCombatMode]);
+  }, [currentSongIndex]); // Remover isCombatMode de las dependencias
 
   // Auto-reproducir al montar el componente - MEJORADO
   useEffect(() => {
