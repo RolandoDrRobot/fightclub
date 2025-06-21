@@ -3,6 +3,7 @@ import Experience from "./components/Experience";
 import Interface from "./components/Interface";
 import HealthBars from "./components/HealthBars";
 import CrowdSound from "./components/CrowdSound";
+import PunchSound from "./components/PunchSound";
 import { useCharacterAnimations } from "./contexts/CharacterAnimations";
 
 function App() {
@@ -30,6 +31,7 @@ function App() {
       <Interface />
       <HealthBars />
       <CrowdSound />
+      <PunchSound />
     </>
   );
 }
