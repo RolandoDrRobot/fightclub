@@ -35,14 +35,7 @@ const Interface = () => {
     player2IsBlocking,
     togglePlayer1Block,
     togglePlayer2Block,
-    staminaCosts,
-    // Sistema de IA
-    isAIEnabled,
-    setIsAIEnabled,
-    aiDifficulty,
-    setAIDifficulty,
-    startAI,
-    stopAI
+    staminaCosts
   } = useCharacterAnimations();
 
   // Media queries para responsive design
@@ -664,42 +657,6 @@ const Interface = () => {
                   {player1IsDead ? "💀" : "🏆"}
                 </Text>
               )}
-              
-              {/* Botón para activar/desactivar IA */}
-              <Button
-                variant="outline"
-                size={isMobile ? "xs" : "md"}
-                onClick={() => setIsAIEnabled(!isAIEnabled)}
-                style={{
-                  fontSize: isMobile ? "8px" : "12px",
-                  fontWeight: 600,
-                  padding: isMobile ? "4px 6px" : "8px 12px",
-                  minHeight: isMobile ? "35px" : "50px",
-                  boxShadow: isAIEnabled ? `
-                    0 0 8px #04cbee,
-                    0 0 16px rgba(4, 203, 238, 0.4),
-                    0 2px 6px rgba(4, 203, 238, 0.2),
-                    inset 0 0 8px rgba(4, 203, 238, 0.1)
-                  ` : `
-                    0 0 4px #666,
-                    0 2px 3px rgba(102, 102, 102, 0.3)
-                  `,
-                  textShadow: isAIEnabled ? `
-                    0 0 2px #04cbee,
-                    0 0 4px #04cbee
-                  ` : "none",
-                  minWidth: isMobile ? "60px" : "120px",
-                  backgroundColor: "transparent",
-                  borderColor: isAIEnabled ? "#04cbee" : "#666",
-                  border: `2px solid ${isAIEnabled ? "#04cbee" : "#666"}`,
-                  borderRadius: isMobile ? "8px" : "12px",
-                  color: isAIEnabled ? "#04cbee" : "#666",
-                  textTransform: "uppercase",
-                  transition: "all 0.3s ease"
-                }}
-              >
-                🤖 IA {isMobile ? (isAIEnabled ? "ON" : "OFF") : (isAIEnabled ? "ACTIVADA" : "DESACTIVADA")}
-              </Button>
               
               {/* Botón de Reset mejorado */}
               <Button

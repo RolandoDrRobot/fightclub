@@ -97,7 +97,7 @@ export const CharacterAnimationsProvider = (props) => {
   const [player2IsBlocking, setPlayer2IsBlocking] = useState(false);
   
   // Sistema de IA para Player 2
-  const [isAIEnabled, setIsAIEnabled] = useState(false);
+  const [isAIEnabled, setIsAIEnabled] = useState(true); // IA siempre activada
   const [aiDifficulty, setAIDifficulty] = useState('easy'); // 'easy', 'medium', 'hard'
   
   // Referencias para timeouts y intervals
