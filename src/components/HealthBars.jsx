@@ -13,7 +13,9 @@ const HealthBars = () => {
     player1IsDead,
     player2IsDead,
     isCombatMode,
-    player1Wins
+    player1Wins,
+    player1IsBlocking,
+    player2IsBlocking
   } = useCharacterAnimations();
 
   // Log para debug del contador
@@ -41,6 +43,36 @@ const HealthBars = () => {
     backdropFilter: "blur(4px)",
     width: isMobile ? "160px" : isTablet ? "200px" : "250px",
   };
+
+  // Componente de icono de escudo
+  const ShieldIcon = ({ color = "#F5F5DC", size = 16 }) => (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      style={{
+        filter: `drop-shadow(0 0 4px ${color})`,
+        animation: "shieldPulse 1.5s ease-in-out infinite alternate"
+      }}
+    >
+      <path
+        d="M12 2L4 6V11C4 16.55 7.84 21.74 12 22C16.16 21.74 20 16.55 20 11V6L12 2Z"
+        fill={color}
+        stroke={color}
+        strokeWidth="1"
+      />
+      <style>
+        {`
+          @keyframes shieldPulse {
+            0% { opacity: 0.7; transform: scale(1); }
+            100% { opacity: 1; transform: scale(1.1); }
+          }
+        `}
+      </style>
+    </svg>
+  );
 
   return (
     <>
@@ -152,6 +184,11 @@ const HealthBars = () => {
             <Group spacing={4} align="center">
               <Text size="xs" color="white" weight={700}>HP</Text>
               <Text size="xs" color="white" weight={700}>PLAYER 1</Text>
+              {player1IsBlocking && (
+                <div style={{ display: 'flex', alignItems: 'center', marginLeft: '4px' }}>
+                  <ShieldIcon color="#F5F5DC" size={14} />
+                </div>
+              )}
             </Group>
             <Text size="xs" color="white" weight={700}>{player1Health}</Text>
           </Group>
@@ -213,6 +250,11 @@ const HealthBars = () => {
           <Group position="apart" mb={2} spacing={4}>
             <Text size="xs" weight={700} style={{ color: "#fc3f31" }}>{player2Health}</Text>
             <Group spacing={4} align="center">
+              {player2IsBlocking && (
+                <div style={{ display: 'flex', alignItems: 'center', marginRight: '4px' }}>
+                  <ShieldIcon color="#fc3f31" size={14} />
+                </div>
+              )}
               <Text size="xs" weight={700} style={{ color: "#fc3f31" }}>PLAYER 2</Text>
               <Text size="xs" weight={700} style={{ color: "#fc3f31" }}>HP</Text>
             </Group>
