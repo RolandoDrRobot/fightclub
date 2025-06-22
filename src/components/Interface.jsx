@@ -590,7 +590,7 @@ const Interface = () => {
                   position: "relative",
                   zIndex: 1,
                   padding: "0",
-                  minWidth: isMobile ? "70px" : "120px",
+                  width: isMobile ? "70px" : "120px",
                   height: isMobile ? "60px" : "100px",
                   backgroundColor: "transparent",
                   border: "none",
@@ -599,7 +599,8 @@ const Interface = () => {
                   opacity: canBlock(player1Stamina, player1IsDead) ? 1 : 0.5,
                   transition: "all 0.2s ease",
                   overflow: "hidden",
-                  boxShadow: "none"
+                  boxShadow: "none",
+                  flexShrink: 0
                 }}
               >
                 <img 
@@ -644,11 +645,12 @@ const Interface = () => {
                   border: `2px solid #42cf52`,
                   borderRadius: isMobile ? "10px" : "15px",
                   transition: "all 0.2s ease",
-                  minWidth: isMobile ? "60px" : "120px",
+                  width: isMobile ? "60px" : "120px",
                   height: isMobile ? "50px" : "100px",
                   cursor: "pointer",
                   overflow: "hidden",
-                  boxShadow: "none"
+                  boxShadow: "none",
+                  flexShrink: 0
                 }}
               >
                 <img 
