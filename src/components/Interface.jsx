@@ -213,20 +213,16 @@ const Interface = () => {
       {/* Mensaje de Victoria - Overlay cuando termina el combate */}
       {isCombatOver && isCombatMode && (
         <Affix position={{ 
-          top: "50%", 
+          top: "75%", 
           left: "50%",
           transform: "translate(-50%, -50%)"
         }}>
           <Box style={{
-            backgroundColor: "rgba(0, 0, 0, 0.8)",
-            padding: isMobile ? "30px" : "50px",
+            backgroundColor: "transparent",
+            padding: isMobile ? "30px 60px" : "50px 80px",
             borderRadius: "20px",
-            border: "3px solid #fc3f31",
-            boxShadow: `
-              0 0 20px #fc3f31,
-              0 0 40px rgba(252, 63, 49, 0.5),
-              inset 0 0 20px rgba(252, 63, 49, 0.1)
-            `,
+            border: "none",
+            boxShadow: "none",
             textAlign: "center",
             width: isMobile ? "90vw" : "400px",
             maxWidth: isMobile ? "90vw" : "400px"
@@ -244,71 +240,37 @@ const Interface = () => {
               </Text>
               
               {/* Botones de acción */}
-              <Group spacing="md" position="center" style={{ width: "100%" }}>
+              <Group spacing="xs" position="center" style={{ width: "100%" }}>
                 {/* Botón Modo Baile */}
-                <Button
-                  variant="outline"
-                  size={isMobile ? "sm" : "md"}
+                <img 
+                  src={danceImg}
+                  alt="Dance"
                   onClick={() => setIsCombatMode(false)}
                   style={{
-                    fontSize: isMobile ? "11px" : "13px",
-                    fontWeight: 700,
-                    padding: isMobile ? "8px 12px" : "12px 16px",
-                    backgroundColor: "transparent",
-                    borderColor: "#fc3f31",
-                    color: "#fc3f31",
-                    textTransform: "uppercase",
-                    borderWidth: "3px",
-                    borderRadius: "12px",
-                    boxShadow: `
-                      0 0 10px #fc3f31,
-                      0 0 20px rgba(252, 63, 49, 0.5),
-                      inset 0 0 10px rgba(252, 63, 49, 0.1)
-                    `,
-                    textShadow: `
-                      0 0 5px #fc3f31,
-                      0 0 10px #fc3f31,
-                      0 0 15px rgba(252, 63, 49, 0.8)
-                    `,
+                    width: "80px",
+                    height: "80px",
+                    objectFit: "contain",
+                    cursor: "pointer",
                     flex: 1
                   }}
-                >
-                  DANCE
-                </Button>
+                />
 
                 {/* Botón Volver a Pelear */}
-                  <Button
-                  variant="outline"
-                  size={isMobile ? "sm" : "md"}
+                <img 
+                  src={fightImg}
+                  alt="Fight"
                   onClick={() => {
                     resetHealth();
                     initializeCombat();
                   }}
-                    style={{
-                    fontSize: isMobile ? "11px" : "13px",
-                    fontWeight: 700,
-                    padding: isMobile ? "8px 12px" : "12px 16px",
-                    backgroundColor: "transparent",
-                    borderColor: "#fc3f31",
-                    color: "#fc3f31",
-                    textTransform: "uppercase",
-                    borderWidth: "3px",
-                    borderRadius: "12px",
-                    boxShadow: `
-                      0 0 10px #fc3f31,
-                      0 0 20px rgba(252, 63, 49, 0.5),
-                      inset 0 0 10px rgba(252, 63, 49, 0.1)
-                    `,
-                    textShadow: `
-                      0 0 5px #fc3f31,
-                      0 0 10px #fc3f31,
-                      0 0 15px rgba(252, 63, 49, 0.8)
-                    `,
+                  style={{
+                    width: "80px",
+                    height: "80px",
+                    objectFit: "contain",
+                    cursor: "pointer",
                     flex: 1
                   }}
-                >
-                  FIGHT
-                  </Button>
+                />
               </Group>
 
             </Stack>
@@ -430,32 +392,8 @@ const Interface = () => {
                         alt="Dance"
                         style={{
                           width: "100%",
-                          height: "100%",
                           objectFit: "contain",
-                          pointerEvents: "none",
-                          borderRadius: "10px",
-                          border: "2px solid #fc3f31",
-                          boxShadow: `
-                            0 0 5px #fc3f31,
-                            0 0 10px #fc3f31,
-                            0 0 15px rgba(252, 63, 49, 0.8),
-                            0 0 20px rgba(252, 63, 49, 0.6)
-                          `,
-                          filter: isPlayingCombo 
-                            ? `
-                              drop-shadow(0 0 3px #fc3f31)
-                              drop-shadow(0 0 6px #fc3f31)
-                              drop-shadow(0 0 9px #fc3f31)
-                              drop-shadow(0 0 12px rgba(252, 63, 49, 0.8))
-                              drop-shadow(0 0 15px rgba(252, 63, 49, 0.6))
-                            `
-                            : `
-                              drop-shadow(0 0 2px #F5F5DC)
-                              drop-shadow(0 0 4px #F5F5DC)
-                              drop-shadow(0 0 6px #F5F5DC)
-                              drop-shadow(0 0 8px rgba(245, 245, 220, 0.6))
-                              drop-shadow(0 0 10px rgba(245, 245, 220, 0.4))
-                            `
+                          pointerEvents: "none"
                         }}
                       />
                     </Button>
