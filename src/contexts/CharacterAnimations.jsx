@@ -75,9 +75,9 @@ const danceMapping = {
 
 // Daño por tipo de ataque
 const attackDamage = {
-  "punch": 15,    // Puñetazo básico
-  "kick": 20,     // Patada
-  "punches": 35,  // Combo de puñetazos (más daño)
+  "punch": 10,    // Puñetazo básico (reducido de 15 a 10)
+  "kick": 15,     // Patada (reducido de 20 a 15)
+  "punches": 25,  // Combo de puñetazos (reducido de 35 a 25)
 };
 
 // Costo de stamina por acción
@@ -89,8 +89,8 @@ const staminaCosts = {
 
 // Constantes de stamina
 const MAX_STAMINA = 100;
-const STAMINA_REGEN_RATE = 20; // Stamina que se regenera por segundo
-const STAMINA_REGEN_DELAY = 1000; // Tiempo antes de empezar a regenerar (ms)
+const STAMINA_REGEN_RATE = 15; // Stamina que se regenera por segundo (reducido de 20 a 15)
+const STAMINA_REGEN_DELAY = 1500; // Tiempo antes de empezar a regenerar (aumentado de 1000ms a 1500ms)
 const BLOCK_DURATION = 5000; // Máximo tiempo de bloqueo (5 segundos)
 const BLOCK_STAMINA_DRAIN_RATE = 20; // Stamina que se drena por segundo mientras bloquea
 const STAMINA_UPDATE_INTERVAL = 50; // Actualizar cada 50ms para animación suave
@@ -105,9 +105,9 @@ export const CharacterAnimationsProvider = (props) => {
   const [isCombatMode, setIsCombatMode] = useState(false);
   
   // Sistema de vida
-  const [player1Health, setPlayer1Health] = useState(100);
-  const [player2Health, setPlayer2Health] = useState(100);
-  const [maxHealth] = useState(100);
+  const [player1Health, setPlayer1Health] = useState(150);
+  const [player2Health, setPlayer2Health] = useState(150);
+  const [maxHealth] = useState(150);
   
   // Sistema de stamina
   const [player1Stamina, setPlayer1Stamina] = useState(MAX_STAMINA);
