@@ -1,8 +1,6 @@
 import { Box, Progress, Text, Group } from "@mantine/core";
 import { useCharacterAnimations } from "../contexts/CharacterAnimations";
 import { useMediaQuery } from "@mantine/hooks";
-import hpIcon from "../assets/HP.png";
-import staminaIcon from "../assets/stamina.png";
 
 const HealthBars = () => {
   const { 
@@ -53,15 +51,7 @@ const HealthBars = () => {
         <Box mb={6}>
           <Group position="apart" mb={2} spacing={4}>
             <Group spacing={4} align="center">
-              <img 
-                src={hpIcon} 
-                alt="HP" 
-                style={{ 
-                  width: isMobile ? "14px" : "16px", 
-                  height: isMobile ? "14px" : "16px",
-                  objectFit: "contain"
-                }} 
-              />
+              <Text size="xs" color="white" weight={600}>HP</Text>
               <Text size="xs" color="white" weight={600}>PLAYER 1</Text>
             </Group>
             <Text size="xs" color="white">{player1Health}</Text>
@@ -88,15 +78,6 @@ const HealthBars = () => {
         <Box>
           <Group position="apart" mb={2} spacing={4}>
             <Group spacing={4} align="center">
-              <img 
-                src={staminaIcon} 
-                alt="SP" 
-                style={{ 
-                  width: isMobile ? "14px" : "16px", 
-                  height: isMobile ? "14px" : "16px",
-                  objectFit: "contain"
-                }} 
-              />
               <Text size="xs" weight={600} style={{ color: "#F5F5DC" }}>SP</Text>
             </Group>
             <Text size="xs" style={{ color: "#F5F5DC" }}>{Math.round(player1Stamina)}</Text>
@@ -134,15 +115,7 @@ const HealthBars = () => {
             <Text size="xs" style={{ color: "#fc3f31" }}>{player2Health}</Text>
             <Group spacing={4} align="center">
               <Text size="xs" weight={600} style={{ color: "#fc3f31" }}>PLAYER 2</Text>
-              <img 
-                src={hpIcon} 
-                alt="HP" 
-                style={{ 
-                  width: isMobile ? "14px" : "16px", 
-                  height: isMobile ? "14px" : "16px",
-                  objectFit: "contain"
-                }} 
-              />
+              <Text size="xs" weight={600} style={{ color: "#fc3f31" }}>HP</Text>
             </Group>
           </Group>
           <Progress
@@ -169,15 +142,6 @@ const HealthBars = () => {
             <Text size="xs" style={{ color: "#fc3f31" }}>{Math.round(player2Stamina)}</Text>
             <Group spacing={4} align="center">
               <Text size="xs" weight={600} style={{ color: "#fc3f31" }}>SP</Text>
-              <img 
-                src={staminaIcon} 
-                alt="SP" 
-                style={{ 
-                  width: isMobile ? "14px" : "16px", 
-                  height: isMobile ? "14px" : "16px",
-                  objectFit: "contain"
-                }} 
-              />
             </Group>
           </Group>
           <Progress
