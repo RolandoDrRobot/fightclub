@@ -250,8 +250,8 @@ const MusicPlayer = () => {
           style={{
             backgroundColor: 'transparent',
             border: 'none',
-            width: '20px',
-            height: '20px',
+            width: '35px',
+            height: '35px',
             padding: '0',
             minWidth: 'unset',
             cursor: 'pointer'
@@ -261,11 +261,10 @@ const MusicPlayer = () => {
             src={musicIcon} 
             alt="Music" 
             style={{ 
-              width: "20px",
-              height: "20px",
+              width: "35px",
+              height: "35px",
               objectFit: "cover",
-              pointerEvents: "none",
-              borderRadius: "50%"
+              pointerEvents: "none"
             }} 
           />
         </Button>
