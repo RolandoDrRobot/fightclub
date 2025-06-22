@@ -213,6 +213,56 @@ const Interface = () => {
         }
       }
       
+      @keyframes redNeonText {
+        0% {
+          text-shadow: 
+            0 0 3px #fc3f31,
+            0 0 6px #fc3f31,
+            0 0 9px rgba(252, 63, 49, 0.4),
+            2px 2px 4px rgba(0,0,0,0.8);
+        }
+        50% {
+          text-shadow: 
+            0 0 5px #fc3f31,
+            0 0 10px #fc3f31,
+            0 0 15px rgba(252, 63, 49, 0.6),
+            0 0 20px rgba(252, 63, 49, 0.3),
+            2px 2px 4px rgba(0,0,0,0.8);
+        }
+        100% {
+          text-shadow: 
+            0 0 3px #fc3f31,
+            0 0 6px #fc3f31,
+            0 0 9px rgba(252, 63, 49, 0.4),
+            2px 2px 4px rgba(0,0,0,0.8);
+        }
+      }
+      
+      @keyframes goldNeonText {
+        0% {
+          text-shadow: 
+            0 0 3px #F5F5DC,
+            0 0 6px #F5F5DC,
+            0 0 9px rgba(245, 245, 220, 0.4),
+            1px 1px 2px rgba(0,0,0,0.8);
+        }
+        50% {
+          text-shadow: 
+            0 0 5px #F5F5DC,
+            0 0 10px #F5F5DC,
+            0 0 15px rgba(245, 245, 220, 0.6),
+            0 0 20px rgba(245, 245, 220, 0.3),
+            1px 1px 2px rgba(0,0,0,0.8);
+        }
+        100% {
+          text-shadow: 
+            0 0 3px #F5F5DC,
+            0 0 6px #F5F5DC,
+            0 0 9px rgba(245, 245, 220, 0.4),
+            1px 1px 2px rgba(0,0,0,0.8);
+        }
+      }
+      
       @keyframes shimmer {
         0% {
           background-position: -200% 0;
@@ -253,12 +303,7 @@ const Interface = () => {
           }}>
             <Stack spacing="lg" align="center">
               <Text size={isMobile ? "xl" : "2xl"} weight={700} style={{ 
-                color: player1IsDead ? "#fc3f31" : "#F5F5DC",
-                textShadow: `
-                  0 0 5px ${player1IsDead ? "#fc3f31" : "#F5F5DC"},
-                  0 0 10px ${player1IsDead ? "#fc3f31" : "#F5F5DC"},
-                  0 0 15px ${player1IsDead ? "rgba(252, 63, 49, 0.8)" : "rgba(245, 245, 220, 0.8)"}
-                `
+                color: player1IsDead ? "#fc3f31" : "#F5F5DC"
               }}>
                 🏆 {player1IsDead ? "PLAYER 2 WINS!" : "PLAYER 1 WINS!"} 🏆
               </Text>
@@ -314,11 +359,6 @@ const Interface = () => {
             <div style={{ textAlign: "center" }}>
               <div style={{ 
                 color: "#fc3f31",
-                textShadow: `
-                  0 0 3px #fc3f31,
-                  0 0 6px #fc3f31,
-                  2px 2px 4px rgba(0,0,0,0.8)
-                `,
                 textTransform: "uppercase",
                 letterSpacing: "2px",
                 fontFamily: "Anton, sans-serif",
@@ -326,7 +366,8 @@ const Interface = () => {
                 fontWeight: 700,
                 display: "flex",
                 alignItems: "center",
-                justifyContent: "center"
+                justifyContent: "center",
+                animation: "redNeonText 2s ease-in-out infinite"
               }}>
                 {"FIGHT CLUB".split("").map((letter, index) => (
                   <span 
@@ -344,16 +385,16 @@ const Interface = () => {
               {/* Subtítulo con la primera regla */}
               <div style={{
                 color: "#F5F5DC",
-                textShadow: `
-                  0 0 2px #F5F5DC,
-                  0 0 4px rgba(245, 245, 220, 0.6),
-                  1px 1px 2px rgba(0,0,0,0.8)
-                `,
                 fontFamily: "Anton, sans-serif",
                 fontSize: "14px",
                 fontWeight: 400,
                 marginTop: "8px",
-                letterSpacing: "1px"
+                letterSpacing: "1px",
+                textShadow: `
+                  0 0 2px #F5F5DC,
+                  0 0 4px rgba(245, 245, 220, 0.6),
+                  1px 1px 2px rgba(0,0,0,0.8)
+                `
               }}>
                 You do not talk about fight club
               </div>
@@ -442,11 +483,6 @@ const Interface = () => {
                       0 0 30px rgba(252, 63, 49, 0.5),
                       0 4px 12px rgba(252, 63, 49, 0.3),
                       inset 0 0 15px rgba(252, 63, 49, 0.1)
-                    `,
-                    textShadow: `
-                      0 0 5px #fc3f31,
-                      0 0 10px #fc3f31,
-                      0 0 20px rgba(252, 63, 49, 0.8)
                     `,
                     width: "90%",
                     margin: "auto",
