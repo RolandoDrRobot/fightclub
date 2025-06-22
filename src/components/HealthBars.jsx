@@ -39,11 +39,76 @@ const HealthBars = () => {
 
   return (
     <>
+      {/* TÍTULO FIGHT CLUB - CENTRO SUPERIOR SUPERPUESTO */}
+      <Box
+        style={{
+          position: "fixed",
+          top: 20,
+          left: "50%",
+          transform: "translateX(-50%)",
+          zIndex: 1001, // Más alto que las barras para estar superpuesto
+          textAlign: "center",
+          pointerEvents: "none", // Para que no interfiera con otros elementos
+        }}
+      >
+        <div style={{
+          color: "#fc3f31",
+          textShadow: `
+            0 0 2px #fc3f31,
+            0 0 4px rgba(252, 63, 49, 0.6),
+            2px 2px 4px rgba(0,0,0,0.8)
+          `,
+          textTransform: "uppercase",
+          letterSpacing: isMobile ? "1px" : "3px",
+          fontFamily: "Anton, Impact, sans-serif",
+          fontSize: isMobile ? "24px" : isTablet ? "32px" : "42px",
+          fontWeight: 900,
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          position: "relative"
+        }}>
+          {/* Efecto de fondo sutil */}
+          <div style={{
+            position: "absolute",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+            width: "110%",
+            height: "110%",
+            background: `radial-gradient(ellipse, 
+              rgba(252, 63, 49, 0.05) 0%, 
+              transparent 60%
+            )`,
+            borderRadius: "50%",
+            zIndex: -1
+          }} />
+          
+          {/* Letras individuales con efectos sutiles */}
+          {"FIGHT CLUB".split("").map((letter, index) => (
+            <span 
+              key={index}
+              style={{
+                display: "inline-block",
+                margin: letter === " " ? (isMobile ? "0 4px" : "0 8px") : "0",
+                textShadow: `
+                  0 0 3px #fc3f31,
+                  0 0 6px rgba(252, 63, 49, 0.4),
+                  1px 1px 2px rgba(0,0,0,0.8)
+                `
+              }}
+            >
+              {letter === " " ? "\u00A0" : letter}
+            </span>
+          ))}
+        </div>
+      </Box>
+
       {/* Player 1 - Esquina superior izquierda */}
       <Box
         style={{
           ...barStyle,
-          top: isMobile ? 25 : 35,
+          top: 50,
           left: isMobile ? 20 : 30,
         }}
       >
@@ -51,10 +116,10 @@ const HealthBars = () => {
         <Box mb={6}>
           <Group position="apart" mb={2} spacing={4}>
             <Group spacing={4} align="center">
-              <Text size="xs" color="white" weight={600}>HP</Text>
-              <Text size="xs" color="white" weight={600}>PLAYER 1</Text>
+              <Text size="xs" color="white" weight={700}>HP</Text>
+              <Text size="xs" color="white" weight={700}>PLAYER 1</Text>
             </Group>
-            <Text size="xs" color="white">{player1Health}</Text>
+            <Text size="xs" color="white" weight={700}>{player1Health}</Text>
           </Group>
           <Progress
             value={(player1Health / maxHealth) * 100}
@@ -78,9 +143,9 @@ const HealthBars = () => {
         <Box>
           <Group position="apart" mb={2} spacing={4}>
             <Group spacing={4} align="center">
-              <Text size="xs" weight={600} style={{ color: "#F5F5DC" }}>SP</Text>
+              <Text size="xs" weight={700} style={{ color: "#F5F5DC" }}>SP</Text>
             </Group>
-            <Text size="xs" style={{ color: "#F5F5DC" }}>{Math.round(player1Stamina)}</Text>
+            <Text size="xs" weight={700} style={{ color: "#F5F5DC" }}>{Math.round(player1Stamina)}</Text>
           </Group>
           <Progress
             value={(player1Stamina / maxStamina) * 100}
@@ -105,17 +170,17 @@ const HealthBars = () => {
       <Box
         style={{
           ...barStyle,
-          top: isMobile ? 25 : 35,
+          top: 50,
           right: isMobile ? 20 : 30,
         }}
       >
         {/* Barra de vida */}
         <Box mb={6}>
           <Group position="apart" mb={2} spacing={4}>
-            <Text size="xs" style={{ color: "#fc3f31" }}>{player2Health}</Text>
+            <Text size="xs" weight={700} style={{ color: "#fc3f31" }}>{player2Health}</Text>
             <Group spacing={4} align="center">
-              <Text size="xs" weight={600} style={{ color: "#fc3f31" }}>PLAYER 2</Text>
-              <Text size="xs" weight={600} style={{ color: "#fc3f31" }}>HP</Text>
+              <Text size="xs" weight={700} style={{ color: "#fc3f31" }}>PLAYER 2</Text>
+              <Text size="xs" weight={700} style={{ color: "#fc3f31" }}>HP</Text>
             </Group>
           </Group>
           <Progress
@@ -139,9 +204,9 @@ const HealthBars = () => {
         {/* Barra de stamina */}
         <Box>
           <Group position="apart" mb={2} spacing={4}>
-            <Text size="xs" style={{ color: "#fc3f31" }}>{Math.round(player2Stamina)}</Text>
+            <Text size="xs" weight={700} style={{ color: "#fc3f31" }}>{Math.round(player2Stamina)}</Text>
             <Group spacing={4} align="center">
-              <Text size="xs" weight={600} style={{ color: "#fc3f31" }}>SP</Text>
+              <Text size="xs" weight={700} style={{ color: "#fc3f31" }}>SP</Text>
             </Group>
           </Group>
           <Progress
@@ -166,4 +231,4 @@ const HealthBars = () => {
   );
 };
 
-export default HealthBars; 
+export default HealthBars;
