@@ -32,14 +32,14 @@ const preloadAudio = (src) => {
     const audio = new Audio();
     
     const handleLoad = () => {
-      console.log(`🎵 Audio cargado: ${src.split('/').pop()}`);
+      console.log(`🎵 Audio loaded: ${src.split('/').pop()}`);
       audio.removeEventListener('canplaythrough', handleLoad);
       audio.removeEventListener('error', handleError);
       resolve(audio);
     };
     
     const handleError = (error) => {
-      console.error(`❌ Error cargando audio: ${src}`, error);
+      console.error(`❌ Error loading audio: ${src}`, error);
       audio.removeEventListener('canplaythrough', handleLoad);
       audio.removeEventListener('error', handleError);
       resolve(null); // Resolver con null para continuar aunque falle
@@ -56,26 +56,26 @@ const preloadAudio = (src) => {
 export const useModelLoader = () => {
   const [loadingProgress, setLoadingProgress] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
-  const [loadingStatus, setLoadingStatus] = useState('Iniciando...');
+  const [loadingStatus, setLoadingStatus] = useState('Starting...');
 
   useEffect(() => {
-    console.log('🎮 Iniciando carga completa de assets...');
+    console.log('🎮 Starting complete asset loading...');
     
     const loadAllAssets = async () => {
       try {
-        // Fase 1: Precargar modelos GLB (0-60%)
-        setLoadingStatus('Cargando modelos 3D...');
+        // Phase 1: Preload GLB models (0-60%)
+        setLoadingStatus('Loading 3D models...');
         modelPaths.forEach((path, index) => {
-          console.log(`📦 Precargando modelo ${index + 1}/${modelPaths.length}: ${path}`);
+          console.log(`📦 Preloading model ${index + 1}/${modelPaths.length}: ${path}`);
           useGLTF.preload(path);
         });
         
-        // Simular progreso de modelos
+        // Simulate model progress
         const modelSteps = [
-          { progress: 10, delay: 400, status: 'Cargando personajes principales...' },
-          { progress: 25, delay: 500, status: 'Cargando audiencia...' },
-          { progress: 40, delay: 600, status: 'Optimizando modelos...' },
-          { progress: 60, delay: 400, status: 'Modelos listos!' }
+          { progress: 10, delay: 400, status: 'Loading main characters...' },
+          { progress: 25, delay: 500, status: 'Loading audience...' },
+          { progress: 40, delay: 600, status: 'Optimizing models...' },
+          { progress: 60, delay: 400, status: 'Models ready!' }
         ];
         
         for (const step of modelSteps) {
@@ -85,21 +85,21 @@ export const useModelLoader = () => {
           console.log(`⏳ ${step.status} (${step.progress}%)`);
         }
         
-        // Fase 2: Precargar archivos de música (60-95%)
-        setLoadingStatus('Cargando música y efectos de sonido...');
-        console.log('🎵 Iniciando precarga de archivos de audio...');
+        // Phase 2: Preload music files (60-95%)
+        setLoadingStatus('Loading music and sound effects...');
+        console.log('🎵 Starting audio file preload...');
         
         const audioPromises = musicPaths.map((path, index) => {
-          console.log(`🎶 Preparando audio ${index + 1}/${musicPaths.length}: ${path.split('/').pop()}`);
+          console.log(`🎶 Preparing audio ${index + 1}/${musicPaths.length}: ${path.split('/').pop()}`);
           return preloadAudio(path);
         });
         
-        // Simular progreso de audio mientras se cargan
+        // Simulate audio progress while loading
         const audioSteps = [
-          { progress: 70, delay: 600, status: 'Cargando música de combate...' },
-          { progress: 80, delay: 700, status: 'Cargando efectos de sonido...' },
-          { progress: 90, delay: 500, status: 'Cargando sonidos de audiencia...' },
-          { progress: 95, delay: 400, status: 'Audio listo!' }
+          { progress: 70, delay: 600, status: 'Loading combat music...' },
+          { progress: 80, delay: 700, status: 'Loading sound effects...' },
+          { progress: 90, delay: 500, status: 'Loading crowd sounds...' },
+          { progress: 95, delay: 400, status: 'Audio ready!' }
         ];
         
         let audioStepIndex = 0;
@@ -115,31 +115,31 @@ export const useModelLoader = () => {
           }
         }, 600);
         
-        // Esperar a que todos los audios se carguen
+        // Wait for all audios to load
         const loadedAudios = await Promise.all(audioPromises);
         clearInterval(audioProgressInterval);
         
         const successfulAudios = loadedAudios.filter(audio => audio !== null);
-        console.log(`✅ ${successfulAudios.length}/${musicPaths.length} archivos de audio cargados exitosamente`);
+        console.log(`✅ ${successfulAudios.length}/${musicPaths.length} audio files loaded successfully`);
         
-        // Fase 3: Finalización (95-100%)
+        // Phase 3: Finalization (95-100%)
         setLoadingProgress(98);
-        setLoadingStatus('Preparando experiencia...');
+        setLoadingStatus('Preparing experience...');
         await new Promise(resolve => setTimeout(resolve, 500));
         
         setLoadingProgress(100);
-        setLoadingStatus('¡Todo listo!');
-        console.log('✅ Carga completa de todos los assets');
+        setLoadingStatus('Ready to fight!');
+        console.log('✅ Complete loading of all assets');
         
-        // Delay final antes de iniciar el juego
+        // Final delay before starting the game
         setTimeout(() => {
           setIsLoading(false);
-          console.log('🚀 Iniciando juego con todos los assets precargados');
+          console.log('🚀 Starting game with all assets preloaded');
         }, 800);
         
       } catch (error) {
-        console.error('❌ Error durante la carga de assets:', error);
-        setLoadingStatus('Error en la carga, iniciando de todos modos...');
+        console.error('❌ Error during asset loading:', error);
+        setLoadingStatus('Loading error, starting anyway...');
         setTimeout(() => {
           setIsLoading(false);
         }, 1000);
@@ -150,7 +150,7 @@ export const useModelLoader = () => {
 
     // Cleanup function
     return () => {
-      console.log('🧹 Limpiando hook de carga completa');
+      console.log('🧹 Cleaning up complete loading hook');
     };
   }, []);
 
