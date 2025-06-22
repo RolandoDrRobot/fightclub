@@ -12,8 +12,13 @@ const HealthBars = () => {
     maxStamina,
     player1IsDead,
     player2IsDead,
-    isCombatMode
+    isCombatMode,
+    player1Wins
   } = useCharacterAnimations();
+
+  // Log para debug del contador
+  console.log(`HealthBars - Player 1 Wins: ${player1Wins}`);
+  console.log(`HealthBars - Combat Mode: ${isCombatMode}, Players Dead: P1=${player1IsDead}, P2=${player2IsDead}`);
 
   // Media queries para responsive design
   const isMobile = useMediaQuery("(max-width: 768px)");
@@ -43,7 +48,7 @@ const HealthBars = () => {
       <Box
         style={{
           position: "fixed",
-          top: 20,
+          top: 25,
           left: "50%",
           transform: "translateX(-50%)",
           zIndex: 1001, // Más alto que las barras para estar superpuesto
@@ -61,7 +66,7 @@ const HealthBars = () => {
           textTransform: "uppercase",
           letterSpacing: isMobile ? "1px" : "3px",
           fontFamily: "Anton, Impact, sans-serif",
-          fontSize: isMobile ? "24px" : isTablet ? "32px" : "42px",
+          fontSize: "30px",
           fontWeight: 900,
           display: "flex",
           alignItems: "center",
@@ -104,11 +109,40 @@ const HealthBars = () => {
         </div>
       </Box>
 
+      {/* CONTADOR DE VICTORIAS - Debajo del título */}
+      <Box
+        style={{
+          position: "absolute",
+          top: 70,
+          left: "50%",
+          transform: "translateX(-50%)",
+          zIndex: 1001,
+          textAlign: "center",
+          pointerEvents: "none",
+        }}
+      >
+        <Text
+          style={{
+            borderRadius: "15px",
+            backgroundColor: "rgba(0, 0, 0, 0.6)",
+            padding: "0",
+            fontSize: "55px",
+            color: "rgb(245, 245, 220)",
+            textShadow: "rgba(245, 245, 220, 0.3) 0px 0px 2px, rgba(0, 0, 0, 0.8) 1px 1px 2px",
+            textTransform: "uppercase",
+            letterSpacing: "1px",
+            fontFamily: "Anton, Impact, sans-serif",
+          }}
+        >
+          {player1Wins}
+        </Text>
+      </Box>
+
       {/* Player 1 - Esquina superior izquierda */}
       <Box
         style={{
           ...barStyle,
-          top: 50,
+          top: 65,
           left: isMobile ? 20 : 30,
         }}
       >
@@ -170,7 +204,7 @@ const HealthBars = () => {
       <Box
         style={{
           ...barStyle,
-          top: 50,
+          top: 65,
           right: isMobile ? 20 : 30,
         }}
       >

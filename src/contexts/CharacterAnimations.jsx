@@ -117,6 +117,12 @@ export const CharacterAnimationsProvider = (props) => {
   const [player1IsDead, setPlayer1IsDead] = useState(false);
   const [player2IsDead, setPlayer2IsDead] = useState(false);
   
+  // Contador de victorias del Player 1
+  const [player1Wins, setPlayer1Wins] = useState(0);
+  
+  // Flag para evitar contar victorias duplicadas en la misma ronda
+  const [victoryCountedThisRound, setVictoryCountedThisRound] = useState(false);
+  
   // Estados de defensa/bloqueo
   const [player1IsBlocking, setPlayer1IsBlocking] = useState(false);
   const [player2IsBlocking, setPlayer2IsBlocking] = useState(false);
@@ -583,6 +589,12 @@ export const CharacterAnimationsProvider = (props) => {
 
   // Función para aplicar daño al jugador 2
   const applyDamageToPlayer2 = (attackType) => {
+    console.log(`=== APPLYING DAMAGE TO PLAYER 2 ===`);
+    console.log(`Attack type: ${attackType}`);
+    console.log(`Player 2 current health: ${player2Health}`);
+    console.log(`Player 2 is blocking: ${player2IsBlocking}`);
+    console.log(`Player 2 is dead: ${player2IsDead}`);
+    
     // Si Player 2 está bloqueando, no recibe daño
     if (player2IsBlocking) {
       console.log("Player 2 is blocking - no damage taken!");
@@ -590,18 +602,35 @@ export const CharacterAnimationsProvider = (props) => {
     }
 
     const damage = attackDamage[attackType] || 10;
+    console.log(`Damage to be applied: ${damage}`);
+    
     setPlayer2Health(prevHealth => {
       const newHealth = Math.max(0, prevHealth - damage);
       console.log(`Player 2 receives ${damage} damage. Health: ${newHealth}/${maxHealth}`);
       
       // Verificar si Player 2 muere
       if (newHealth <= 0 && !player2IsDead) {
-        console.log("Player 2 has died! Setting permanent death animation");
+        console.log("🔥 PLAYER 2 HAS DIED! Setting permanent death animation");
         setPlayer2IsDead(true);
         setPlayer2IsBlocking(false); // No puede bloquear si está muerto
         stopPlayer2Block(); // Detener bloqueo si estaba activo
         // Activar animación de muerte inmediatamente y de forma permanente
         setPlayer2AnimationIndex(getDeathAnimationIndex(2));
+        
+        // Incrementar contador de victorias del Player 1 SOLO si no se ha contado ya
+        if (!victoryCountedThisRound) {
+          console.log(`🏆 PLAYER 1 WINS! Incrementing counter (First time this round)`);
+          setVictoryCountedThisRound(true);
+          setPlayer1Wins(prevWins => {
+            const newWins = prevWins + 1;
+            console.log(`🎉 Total victories: ${newWins}`);
+            return newWins;
+          });
+        } else {
+          console.log(`⚠️ VICTORY ALREADY COUNTED THIS ROUND - Skipping increment`);
+        }
+      } else if (newHealth <= 0) {
+        console.log("Player 2 health is 0 but player2IsDead is already true");
       }
       
       return newHealth;
@@ -619,6 +648,10 @@ export const CharacterAnimationsProvider = (props) => {
     setPlayer2IsDead(false);
     setPlayer1IsBlocking(false);
     setPlayer2IsBlocking(false);
+    
+    // Resetear flag de victoria contada para nueva ronda
+    setVictoryCountedThisRound(false);
+    console.log("🔄 Victory flag reset for new round");
     
     // Limpiar todos los timeouts e intervals
     if (player1BlockTimeoutRef.current) clearTimeout(player1BlockTimeoutRef.current);
@@ -640,6 +673,10 @@ export const CharacterAnimationsProvider = (props) => {
   // Función para revivir solo al jugador que perdió
   const reviveLosingPlayer = () => {
     console.log("Reviving losing player");
+    
+    // Resetear flag de victoria para nueva ronda
+    setVictoryCountedThisRound(false);
+    console.log("🔄 Victory flag reset for new round after revive");
     
     if (player1IsDead && !player2IsDead) {
       console.log("Reviving Player 1 (Pete)");
@@ -1036,6 +1073,10 @@ export const CharacterAnimationsProvider = (props) => {
     console.log("Initializing combat mode with intro animation - Pete vs Tyler");
     resetHealth(); // Resetear vida y stamina al iniciar combate (esto revive a todos)
     
+    // Resetear flag de victoria para nueva sesión de combate
+    setVictoryCountedThisRound(false);
+    console.log("🔄 Victory flag reset for new combat session");
+    
     // Limpiar timeout anterior del intro si existe
     if (introTimeoutRef.current) {
       clearTimeout(introTimeoutRef.current);
@@ -1194,6 +1235,11 @@ export const CharacterAnimationsProvider = (props) => {
     }
   }, [player1IsDead, player2IsDead]);
 
+  // useEffect para debuggear cambios en el contador de victorias
+  useEffect(() => {
+    console.log(`🎯 PLAYER 1 WINS COUNTER CHANGED: ${player1Wins}`);
+  }, [player1Wins]);
+
   return (
     <CharacterAnimationsContext.Provider
       value={{
@@ -1233,6 +1279,12 @@ export const CharacterAnimationsProvider = (props) => {
         // Estados de muerte
         player1IsDead,
         player2IsDead,
+        
+        // Contador de victorias
+        player1Wins,
+        
+        // Flag para debug (temporal)
+        victoryCountedThisRound,
         
         // Sistema de bloqueo/defensa
         player1IsBlocking,

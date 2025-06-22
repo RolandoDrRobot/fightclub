@@ -10,8 +10,8 @@ ReactDOM.createRoot(document.getElementById("root")).render(
       withGlobalStyles
       withNormalizeCSS
       theme={{
-        fontFamily: '"Exo 2", sans-serif',
-        headings: { fontFamily: '"Exo 2", sans-serif' },
+        fontFamily: 'Anton, Impact, sans-serif',
+        headings: { fontFamily: 'Anton, Impact, sans-serif' },
         colors: {
           blue: [
             '#E7F5FF',
@@ -59,23 +59,37 @@ ReactDOM.createRoot(document.getElementById("root")).render(
           body: {
             width: "100vw",
             height: "100vh",
-            fontFamily: '"Exo 2", sans-serif',
+            fontFamily: 'Anton, Impact, sans-serif',
           },
           "#root": {
             width: "100%",
             height: "100%",
           },
-          // Ensure all buttons use Exo 2 font with proper settings
+          // Ensure all buttons use Anton font
           ".mantine-Button-root": {
-            fontFamily: '"Exo 2", sans-serif',
-            fontOpticalSizing: 'auto',
-            fontStyle: 'normal',
+            fontFamily: 'Anton, Impact, sans-serif',
+            fontWeight: 400,
+            textTransform: 'uppercase',
+            letterSpacing: '1px',
           },
           // Also target any button elements
           "button": {
-            fontFamily: '"Exo 2", sans-serif',
-            fontOpticalSizing: 'auto',
-            fontStyle: 'normal',
+            fontFamily: 'Anton, Impact, sans-serif',
+            fontWeight: 400,
+            textTransform: 'uppercase',
+            letterSpacing: '1px',
+          },
+          // Ensure all text elements use Anton
+          ".mantine-Text-root": {
+            fontFamily: 'Anton, Impact, sans-serif',
+          },
+          // Ensure all input elements use Anton
+          ".mantine-Input-input": {
+            fontFamily: 'Anton, Impact, sans-serif',
+          },
+          // Global font for all elements
+          "*": {
+            fontFamily: 'Anton, Impact, sans-serif !important',
           },
         }),
       }}
