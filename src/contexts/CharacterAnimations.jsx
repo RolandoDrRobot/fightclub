@@ -562,6 +562,12 @@ export const CharacterAnimationsProvider = (props) => {
 
   // Función para aplicar daño al jugador 1
   const applyDamageToPlayer1 = (attackType) => {
+    console.log(`=== APPLYING DAMAGE TO PLAYER 1 ===`);
+    console.log(`Attack type: ${attackType}`);
+    console.log(`Player 1 current health: ${player1Health}`);
+    console.log(`Player 1 is blocking: ${player1IsBlocking}`);
+    console.log(`Player 1 is dead: ${player1IsDead}`);
+    
     // Si Player 1 está bloqueando, no recibe daño
     if (player1IsBlocking) {
       console.log("Player 1 is blocking - no damage taken!");
@@ -569,18 +575,40 @@ export const CharacterAnimationsProvider = (props) => {
     }
 
     const damage = attackDamage[attackType] || 10;
+    console.log(`Damage to be applied: ${damage}`);
+    
     setPlayer1Health(prevHealth => {
       const newHealth = Math.max(0, prevHealth - damage);
       console.log(`Player 1 receives ${damage} damage. Health: ${newHealth}/${maxHealth}`);
       
       // Verificar si Player 1 muere
       if (newHealth <= 0 && !player1IsDead) {
-        console.log("Player 1 has died! Setting permanent death animation");
+        console.log("💀 PLAYER 1 HAS DIED! Setting permanent death animation");
         setPlayer1IsDead(true);
         setPlayer1IsBlocking(false); // No puede bloquear si está muerto
         stopPlayer1Block(); // Detener bloqueo si estaba activo
         // Activar animación de muerte inmediatamente y de forma permanente
         setPlayer1AnimationIndex(getDeathAnimationIndex(1));
+        
+        // Decrementar contador de victorias del Player 1 SOLO si no se ha contado ya y si tiene victorias
+        if (!victoryCountedThisRound) {
+          console.log(`💔 PLAYER 1 LOSES! Checking if counter should decrease`);
+          setVictoryCountedThisRound(true);
+          setPlayer1Wins(prevWins => {
+            if (prevWins > 0) {
+              const newWins = prevWins - 1;
+              console.log(`📉 Player 1 victories decreased: ${newWins} (was ${prevWins})`);
+              return newWins;
+            } else {
+              console.log(`⚠️ Player 1 victories already at 0 - no decrement`);
+              return prevWins;
+            }
+          });
+        } else {
+          console.log(`⚠️ LOSS ALREADY COUNTED THIS ROUND - Skipping decrement`);
+        }
+      } else if (newHealth <= 0) {
+        console.log("Player 1 health is 0 but player1IsDead is already true");
       }
       
       return newHealth;
