@@ -213,22 +213,33 @@ const Interface = () => {
       {/* Mensaje de Victoria - Overlay cuando termina el combate */}
       {isCombatOver && isCombatMode && (
         <Affix position={{ 
-          bottom: isMobile ? 35 : 55, 
+          top: "50%", 
           left: "50%",
-          transform: "translateX(-50%)"
+          transform: "translate(-50%, -50%)"
         }}>
           <Box style={{
-            backgroundColor: "transparent",
-            padding: isMobile ? "20px" : "40px",
-            borderRadius: "16px",
-            border: "none",
-            boxShadow: "none",
+            backgroundColor: "rgba(0, 0, 0, 0.8)",
+            padding: isMobile ? "30px" : "50px",
+            borderRadius: "20px",
+            border: "3px solid #fc3f31",
+            boxShadow: `
+              0 0 20px #fc3f31,
+              0 0 40px rgba(252, 63, 49, 0.5),
+              inset 0 0 20px rgba(252, 63, 49, 0.1)
+            `,
             textAlign: "center",
-            width: "94vw",
-            maxWidth: isMobile ? "94vw" : "400px"
+            width: isMobile ? "90vw" : "400px",
+            maxWidth: isMobile ? "90vw" : "400px"
           }}>
-            <Stack spacing="md" align="center">
-              <Text size={isMobile ? "xl" : "2xl"} weight={700} style={{ color: player1IsDead ? "#fc3f31" : "#F5F5DC" }}>
+            <Stack spacing="lg" align="center">
+              <Text size={isMobile ? "xl" : "2xl"} weight={700} style={{ 
+                color: player1IsDead ? "#fc3f31" : "#F5F5DC",
+                textShadow: `
+                  0 0 5px ${player1IsDead ? "#fc3f31" : "#F5F5DC"},
+                  0 0 10px ${player1IsDead ? "#fc3f31" : "#F5F5DC"},
+                  0 0 15px ${player1IsDead ? "rgba(252, 63, 49, 0.8)" : "rgba(245, 245, 220, 0.8)"}
+                `
+              }}>
                 🏆 {player1IsDead ? "PLAYER 2 WINS!" : "PLAYER 1 WINS!"} 🏆
               </Text>
               
