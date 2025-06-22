@@ -36,6 +36,31 @@ const peteAnimations = {
   }
 };
 
+// Definir animaciones específicas de Tyler - Tyler tendrá las mismas referencias pero pueden mapear a diferentes nombres
+const tylerAnimations = {
+  // Animaciones de combate (para modo combate)
+  combat: {
+    idle: "idleFight",        // Idle específico para combate
+    kick: "kick",             // Patada
+    punch: "punch",           // Puñetazo simple
+    punches: "punches",       // Combo de puñetazos (ataque fuerte)
+    hurt: "hurt",             // Reacción al recibir daño
+    die: "die",               // Animación de muerte
+    block: "cover"            // Usar cover como bloqueo
+  },
+  // Animaciones de baile y celebración (para modo fuera de combate)
+  dance: {
+    celebration: "celebration",
+    dance1: "dance1",
+    dance2: "dance2", 
+    dance3: "dance3",
+    dance4: "dance4",
+    dance5: "dance5",
+    dance6: "dance6",
+    intro: "intro"
+  }
+};
+
 // Mapeo de bailes para Player 2 - cuando Player 1 hace un baile, Player 2 hace otro
 const danceMapping = {
   "dance1": "dance2",
@@ -111,8 +136,8 @@ export const CharacterAnimationsProvider = (props) => {
   const player2BlockStaminaRef = useRef(null);
   const aiActionTimeoutRef = useRef(null);
 
-  // Función para encontrar índice de animación por nombre exacto
-  const findAnimationIndex = (animationName) => {
+  // Función para encontrar índice de animación por nombre exacto - funciona para ambos personajes
+  const findAnimationIndex = (animationName, player = 1) => {
     const index = animations.findIndex(anim => anim === animationName);
     if (index >= 0) {
       return index;
@@ -123,31 +148,35 @@ export const CharacterAnimationsProvider = (props) => {
       anim.toLowerCase().includes(animationName.toLowerCase())
     );
     
+    console.log(`Animation "${animationName}" for Player ${player}: index ${fallbackIndex >= 0 ? fallbackIndex : 0}`);
     return fallbackIndex >= 0 ? fallbackIndex : 0; // Fallback a la primera animación
   };
 
-  // Función para obtener animación específica según el modo
-  const getAnimationForMode = (animationType) => {
+  // Función para obtener animación específica según el modo y jugador
+  const getAnimationForMode = (animationType, player = 1) => {
+    // Usar las animaciones correspondientes según el jugador
+    const characterAnimations = player === 1 ? peteAnimations : tylerAnimations;
+    
     if (isCombatMode) {
       // En modo combate, usar animaciones de pelea
-      const combatAnim = peteAnimations.combat[animationType];
+      const combatAnim = characterAnimations.combat[animationType];
       if (combatAnim) {
-        return findAnimationIndex(combatAnim);
+        return findAnimationIndex(combatAnim, player);
       }
       // Si no encuentra la animación, usar idleFight como fallback
-      return findAnimationIndex("idleFight");
+      return findAnimationIndex("idleFight", player);
     } else {
       // Fuera de combate, usar animaciones de baile para movimientos básicos
       if (animationType === "idle") {
         // Buscar idle normal primero, si no existe usar la primera animación
-        const idleIndex = findAnimationIndex("idle");
+        const idleIndex = findAnimationIndex("idle", player);
         return idleIndex > 0 ? idleIndex : 0;
       }
       
       // Para otros movimientos, usar animaciones de baile
-      const danceAnimations = Object.values(peteAnimations.dance);
+      const danceAnimations = Object.values(characterAnimations.dance);
       const randomDance = danceAnimations[Math.floor(Math.random() * danceAnimations.length)];
-      return findAnimationIndex(randomDance);
+      return findAnimationIndex(randomDance, player);
     }
   };
 
@@ -280,14 +309,14 @@ export const CharacterAnimationsProvider = (props) => {
     }, STAMINA_REGEN_DELAY);
   };
 
-  // Función para obtener índice de animación de muerte usando Pete
-  const getDeathAnimationIndex = () => {
-    return findAnimationIndex("die");
+  // Función para obtener índice de animación de muerte según el jugador
+  const getDeathAnimationIndex = (player = 1) => {
+    return findAnimationIndex("die", player);
   };
 
-  // Función para obtener índice de animación de bloqueo usando Pete
-  const getBlockAnimationIndex = () => {
-    return findAnimationIndex("cover");
+  // Función para obtener índice de animación de bloqueo según el jugador
+  const getBlockAnimationIndex = (player = 1) => {
+    return findAnimationIndex("cover", player);
   };
 
   // Función para aplicar animación con verificación de muerte
@@ -297,7 +326,7 @@ export const CharacterAnimationsProvider = (props) => {
       console.log("Player 1 is dead - cannot change animation from death");
       return;
     }
-    console.log(`Setting Player 1 animation to index: ${index}`);
+    console.log(`Setting Player 1 (Pete) animation to index: ${index}`);
     setPlayer1AnimationIndex(index);
   };
 
@@ -307,7 +336,7 @@ export const CharacterAnimationsProvider = (props) => {
       console.log("Player 2 is dead - cannot change animation from death");
       return;
     }
-    console.log(`Setting Player 2 animation to index: ${index}`);
+    console.log(`Setting Player 2 (Tyler) animation to index: ${index}`);
     setPlayer2AnimationIndex(index);
   };
 
@@ -315,36 +344,37 @@ export const CharacterAnimationsProvider = (props) => {
   const returnToIdle = () => {
     console.log("Attempting to return players to idle");
     
-    // Determinar qué animación idle usar según el modo
-    const idleIndex = isCombatMode ? findAnimationIndex("idleFight") : findAnimationIndex("idle");
+    // Determinar qué animación idle usar según el modo para cada jugador
+    const player1IdleIndex = isCombatMode ? findAnimationIndex("idleFight", 1) : findAnimationIndex("idle", 1);
+    const player2IdleIndex = isCombatMode ? findAnimationIndex("idleFight", 2) : findAnimationIndex("idle", 2);
     
     // Solo volver a idle si no están muertos y no están bloqueando
     if (!player1IsDead && !player1IsBlocking) {
-      console.log("Player 1 returning to idle");
-      setPlayer1AnimationIndex(idleIndex);
+      console.log("Player 1 (Pete) returning to idle");
+      setPlayer1AnimationIndex(player1IdleIndex);
     } else if (player1IsBlocking) {
-      console.log("Player 1 is blocking - staying in block animation");
+      console.log("Player 1 (Pete) is blocking - staying in block animation");
     } else {
-      console.log("Player 1 is dead - staying in death animation");
+      console.log("Player 1 (Pete) is dead - staying in death animation");
     }
     
     if (!player2IsDead && !player2IsBlocking) {
-      console.log("Player 2 returning to idle");
-      setPlayer2AnimationIndex(idleIndex);
+      console.log("Player 2 (Tyler) returning to idle");
+      setPlayer2AnimationIndex(player2IdleIndex);
     } else if (player2IsBlocking) {
-      console.log("Player 2 is blocking - staying in block animation");
+      console.log("Player 2 (Tyler) is blocking - staying in block animation");
     } else {
-      console.log("Player 2 is dead - staying in death animation");
+      console.log("Player 2 (Tyler) is dead - staying in death animation");
     }
   };
 
   // Función para detener bloqueo del Player 1
   const stopPlayer1Block = () => {
-    console.log("Player 1 stops blocking");
+    console.log("Player 1 (Pete) stops blocking");
     setPlayer1IsBlocking(false);
     
     // Usar la animación idle correcta según el modo
-    const idleIndex = isCombatMode ? findAnimationIndex("idleFight") : findAnimationIndex("idle");
+    const idleIndex = isCombatMode ? findAnimationIndex("idleFight", 1) : findAnimationIndex("idle", 1);
     setPlayer1Animation(idleIndex);
     
     // Limpiar completamente todos los timeouts e intervals del bloqueo
@@ -367,43 +397,29 @@ export const CharacterAnimationsProvider = (props) => {
 
   // Función para detener bloqueo del Player 2
   const stopPlayer2Block = () => {
-    console.log("=== Player 2 STOPPING BLOCK ===");
+    console.log("Player 2 (Tyler) stops blocking");
     setPlayer2IsBlocking(false);
     
     // Usar la animación idle correcta según el modo
-    const idleIndex = isCombatMode ? findAnimationIndex("idleFight") : findAnimationIndex("idle");
+    const idleIndex = isCombatMode ? findAnimationIndex("idleFight", 2) : findAnimationIndex("idle", 2);
     setPlayer2Animation(idleIndex);
     
     // Limpiar completamente todos los timeouts e intervals del bloqueo
     if (player2BlockTimeoutRef.current) {
-      console.log("Player 2 - Clearing block timeout");
       clearTimeout(player2BlockTimeoutRef.current);
       player2BlockTimeoutRef.current = null;
     }
     if (player2BlockStaminaRef.current) {
-      console.log("Player 2 - Clearing stamina drain interval");
       clearInterval(player2BlockStaminaRef.current);
       player2BlockStaminaRef.current = null;
     }
     
-    // VERIFICACIÓN ADICIONAL: Asegurar que no hay regeneración activa
-    if (player2StaminaRegenRef.current) {
-      console.log("Player 2 - FOUND ACTIVE REGEN DURING STOP, clearing it");
-      clearInterval(player2StaminaRegenRef.current);
-      player2StaminaRegenRef.current = null;
-    }
-    
-    console.log("Player 2 - Block stopped, will start regen after delay");
-    
-    // IMPORTANTE: Iniciar regeneración solo después de limpiar todo y verificar estado
+    // IMPORTANTE: Iniciar regeneración solo después de limpiar todo
     setTimeout(() => {
-      console.log(`Player 2 - Checking if can start regen: isBlocking=${player2IsBlocking}`);
       if (!player2IsBlocking) { // Verificar que realmente no esté bloqueando
         startPlayer2StaminaRegen();
-      } else {
-        console.log("Player 2 - CANCELLED regen start, player is blocking again");
       }
-    }, 150); // Aumentar delay para mayor seguridad
+    }, 100); // Pequeño delay para asegurar que el estado se actualice
   };
 
   // Función para activar/desactivar bloqueo del Player 1
@@ -434,7 +450,7 @@ export const CharacterAnimationsProvider = (props) => {
       
       // SEGUNDO: Activar el estado de bloqueo y animación
       setPlayer1IsBlocking(true);
-      setPlayer1Animation(getBlockAnimationIndex());
+      setPlayer1Animation(getBlockAnimationIndex(1));
       
       // TERCERO: Iniciar el gasto gradual de stamina
       player1BlockStaminaRef.current = setInterval(() => {
@@ -498,7 +514,7 @@ export const CharacterAnimationsProvider = (props) => {
       
       // PASO 3: Activar el estado de bloqueo y animación
       setPlayer2IsBlocking(true);
-      setPlayer2Animation(getBlockAnimationIndex());
+      setPlayer2Animation(getBlockAnimationIndex(2));
       console.log("Player 2 - Block state and animation set");
       
       // PASO 4: DELAY ANTES DE INICIAR GASTO (para asegurar que regeneración esté completamente detenida)
@@ -558,7 +574,7 @@ export const CharacterAnimationsProvider = (props) => {
         setPlayer1IsBlocking(false); // No puede bloquear si está muerto
         stopPlayer1Block(); // Detener bloqueo si estaba activo
         // Activar animación de muerte inmediatamente y de forma permanente
-        setPlayer1AnimationIndex(getDeathAnimationIndex());
+        setPlayer1AnimationIndex(getDeathAnimationIndex(1));
       }
       
       return newHealth;
@@ -585,7 +601,7 @@ export const CharacterAnimationsProvider = (props) => {
         setPlayer2IsBlocking(false); // No puede bloquear si está muerto
         stopPlayer2Block(); // Detener bloqueo si estaba activo
         // Activar animación de muerte inmediatamente y de forma permanente
-        setPlayer2AnimationIndex(getDeathAnimationIndex());
+        setPlayer2AnimationIndex(getDeathAnimationIndex(2));
       }
       
       return newHealth;
@@ -612,12 +628,13 @@ export const CharacterAnimationsProvider = (props) => {
     if (player1BlockStaminaRef.current) clearInterval(player1BlockStaminaRef.current);
     if (player2BlockStaminaRef.current) clearInterval(player2BlockStaminaRef.current);
     
-    // Volver ambos a idle usando la animación correcta según el modo
-    const idleIndex = isCombatMode ? findAnimationIndex("idleFight") : findAnimationIndex("idle");
-    setPlayer1AnimationIndex(idleIndex);
-    setPlayer2AnimationIndex(idleIndex);
+    // Volver ambos a idle usando la animación correcta según el modo para cada personaje
+    const player1IdleIndex = isCombatMode ? findAnimationIndex("idleFight", 1) : findAnimationIndex("idle", 1);
+    const player2IdleIndex = isCombatMode ? findAnimationIndex("idleFight", 2) : findAnimationIndex("idle", 2);
+    setPlayer1AnimationIndex(player1IdleIndex);
+    setPlayer2AnimationIndex(player2IdleIndex);
     
-    console.log("All players revived and returned to idle");
+    console.log("All players revived and returned to idle - Pete (Player 1) and Tyler (Player 2)");
   };
 
   // Función para revivir solo al jugador que perdió
@@ -625,14 +642,14 @@ export const CharacterAnimationsProvider = (props) => {
     console.log("Reviving losing player");
     
     if (player1IsDead && !player2IsDead) {
-      console.log("Reviving Player 1");
+      console.log("Reviving Player 1 (Pete)");
       setPlayer1IsDead(false);
       setPlayer1Health(maxHealth);
       setPlayer1Stamina(MAX_STAMINA);
       setPlayer1IsBlocking(false);
       
       // Volver a idle de combate
-      const combatIdleIndex = findAnimationIndex("idleFight");
+      const combatIdleIndex = findAnimationIndex("idleFight", 1);
       setPlayer1AnimationIndex(combatIdleIndex);
       
       // Reiniciar IA si estaba habilitada
@@ -643,14 +660,14 @@ export const CharacterAnimationsProvider = (props) => {
       }
       
     } else if (player2IsDead && !player1IsDead) {
-      console.log("Reviving Player 2");
+      console.log("Reviving Player 2 (Tyler)");
       setPlayer2IsDead(false);
       setPlayer2Health(maxHealth);
       setPlayer2Stamina(MAX_STAMINA);
       setPlayer2IsBlocking(false);
       
       // Volver a idle de combate
-      const combatIdleIndex = findAnimationIndex("idleFight");
+      const combatIdleIndex = findAnimationIndex("idleFight", 2);
       setPlayer2AnimationIndex(combatIdleIndex);
       
       // Reiniciar IA si estaba habilitada
@@ -1016,7 +1033,7 @@ export const CharacterAnimationsProvider = (props) => {
 
   // Función para inicializar combate con animación intro
   const initializeCombat = () => {
-    console.log("Initializing combat mode with intro animation");
+    console.log("Initializing combat mode with intro animation - Pete vs Tyler");
     resetHealth(); // Resetear vida y stamina al iniciar combate (esto revive a todos)
     
     // Limpiar timeout anterior del intro si existe
@@ -1026,18 +1043,20 @@ export const CharacterAnimationsProvider = (props) => {
     }
     
     // Primero mostrar la animación intro para ambos jugadores
-    const introIndex = findAnimationIndex("intro");
-    setPlayer1AnimationIndex(introIndex);
-    setPlayer2AnimationIndex(introIndex);
+    const player1IntroIndex = findAnimationIndex("intro", 1);
+    const player2IntroIndex = findAnimationIndex("intro", 2);
+    setPlayer1AnimationIndex(player1IntroIndex);
+    setPlayer2AnimationIndex(player2IntroIndex);
     
-    console.log("Playing intro animation for both players");
+    console.log("Playing intro animation for both players - Pete and Tyler");
     
     // Después de 3 segundos, cambiar a idle de combate
     introTimeoutRef.current = setTimeout(() => {
-      const combatIdleIndex = findAnimationIndex("idleFight");
-      setPlayer1AnimationIndex(combatIdleIndex);
-      setPlayer2AnimationIndex(combatIdleIndex);
-      console.log("Intro finished - both players now in combat idle, ready to fight!");
+      const player1CombatIdleIndex = findAnimationIndex("idleFight", 1);
+      const player2CombatIdleIndex = findAnimationIndex("idleFight", 2);
+      setPlayer1AnimationIndex(player1CombatIdleIndex);
+      setPlayer2AnimationIndex(player2CombatIdleIndex);
+      console.log("Intro finished - Pete (Player 1) and Tyler (Player 2) now in combat idle, ready to fight!");
       
       // Iniciar IA después de que termine la intro
       if (isAIEnabled) {
@@ -1051,10 +1070,10 @@ export const CharacterAnimationsProvider = (props) => {
   };
 
   // Función para limpiar completamente el estado de combate
-  const cleanCombatState = () => {
-    console.log("Cleaning combat state completely");
+  const cleanupCombatState = () => {
+    console.log("=== CLEANING UP COMBAT STATE ===");
     
-    // Detener IA
+    // Detener IA inmediatamente
     stopAI();
     
     // Limpiar todos los timeouts e intervals
@@ -1091,17 +1110,23 @@ export const CharacterAnimationsProvider = (props) => {
       player2BlockStaminaRef.current = null;
     }
     
-    // Resetear todos los estados
-    setPlayer1IsDead(false);
-    setPlayer2IsDead(false);
+    // Resetear estados de bloqueo
     setPlayer1IsBlocking(false);
     setPlayer2IsBlocking(false);
-    setPlayer1Health(maxHealth);
-    setPlayer2Health(maxHealth);
-    setPlayer1Stamina(MAX_STAMINA);
-    setPlayer2Stamina(MAX_STAMINA);
     
-    console.log("Combat state cleaned");
+    // Volver a idle normal según el modo para cada personaje
+    const player1IdleIndex = isCombatMode ? findAnimationIndex("idleFight", 1) : findAnimationIndex("idle", 1);
+    const player2IdleIndex = isCombatMode ? findAnimationIndex("idleFight", 2) : findAnimationIndex("idle", 2);
+    
+    // Solo cambiar animación si no están muertos
+    if (!player1IsDead) {
+      setPlayer1AnimationIndex(player1IdleIndex);
+    }
+    if (!player2IsDead) {
+      setPlayer2AnimationIndex(player2IdleIndex);
+    }
+    
+    console.log("Combat state cleaned up - Pete (Player 1) and Tyler (Player 2) ready");
   };
 
   // Limpiar timeouts al desmontar el componente
@@ -1129,7 +1154,7 @@ export const CharacterAnimationsProvider = (props) => {
       console.log("Combat mode activated - waiting for initializeCombat() call");
     } else {
       // Limpiar completamente el estado de combate al cambiar a modo baile
-      cleanCombatState();
+      cleanupCombatState();
       
       // Resetear animationIndex para que ningún botón aparezca activo inicialmente
       setAnimationIndex(-1);

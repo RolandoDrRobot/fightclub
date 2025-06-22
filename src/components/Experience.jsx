@@ -1,5 +1,6 @@
 import { CameraControls } from "./CameraControls";
 import Pete from "./Pete";
+import Tyler from "./Tyler";
 import ParticleEffect from "./ParticleEffect";
 import BloodFloor from "./BloodFloor";
 import Audience from "./Audience";
@@ -58,12 +59,14 @@ const Experience = () => {
       <Audience />
       
       <group position={[0, -1, 0]}>
+        {/* Player 1 - Pete */}
         <Pete 
           player={1} 
           position={transforms.player1.position} 
           rotation={transforms.player1.rotation} 
         />
-        <Pete 
+        {/* Player 2 - Tyler */}
+        <Tyler 
           player={2} 
           position={transforms.player2.position} 
           rotation={transforms.player2.rotation} 

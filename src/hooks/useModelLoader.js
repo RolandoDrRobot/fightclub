@@ -4,6 +4,7 @@ import { useGLTF } from '@react-three/drei';
 // Lista de todos los modelos que necesitan ser cargados
 const modelPaths = [
   './models/pete.glb',
+  './models/Tyler.glb',
   './models/Chuck.glb',
   './models/Earl.glb',
   './models/Wayne.glb',
