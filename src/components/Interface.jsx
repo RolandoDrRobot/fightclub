@@ -189,6 +189,30 @@ const Interface = () => {
         }
       }
       
+      @keyframes neonPulse {
+        0% {
+          box-shadow: 
+            0 0 10px #fc3f31,
+            0 0 20px rgba(252, 63, 49, 0.3),
+            0 4px 8px rgba(252, 63, 49, 0.2),
+            inset 0 0 10px rgba(252, 63, 49, 0.05);
+        }
+        50% {
+          box-shadow: 
+            0 0 25px #fc3f31,
+            0 0 50px rgba(252, 63, 49, 0.8),
+            0 4px 20px rgba(252, 63, 49, 0.5),
+            inset 0 0 25px rgba(252, 63, 49, 0.2);
+        }
+        100% {
+          box-shadow: 
+            0 0 10px #fc3f31,
+            0 0 20px rgba(252, 63, 49, 0.3),
+            0 4px 8px rgba(252, 63, 49, 0.2),
+            inset 0 0 10px rgba(252, 63, 49, 0.05);
+        }
+      }
+      
       @keyframes shimmer {
         0% {
           background-position: -200% 0;
@@ -409,10 +433,10 @@ const Interface = () => {
                     initializeCombat();
                   }}
                   style={{
-                    fontSize: isMobile ? "14px" : "16px",
+                    fontSize: "28px",
                     fontWeight: 700,
                     padding: "10px",
-                    minHeight: "60px",
+                    minHeight: "80px",
                     boxShadow: `
                       0 0 15px #fc3f31,
                       0 0 30px rgba(252, 63, 49, 0.5),
@@ -432,10 +456,11 @@ const Interface = () => {
                     border: "3px solid #fc3f31",
                     borderRadius: "15px",
                     color: "#fc3f31",
-                    textTransform: "uppercase"
+                    textTransform: "uppercase",
+                    animation: "neonPulse 2s ease-in-out infinite"
                   }}
                 >
-                  👊 INICIAR COMBATE
+                  START COMBAT
                 </Button>
               </Stack>
             </Box>
@@ -616,7 +641,7 @@ const Interface = () => {
                 style={{ 
                   padding: "0",
                   backgroundColor: "transparent",
-                  border: `3px solid #42cf52`,
+                  border: `2px solid #42cf52`,
                   borderRadius: isMobile ? "10px" : "15px",
                   transition: "all 0.2s ease",
                   minWidth: isMobile ? "60px" : "120px",
@@ -647,7 +672,7 @@ const Interface = () => {
                   style={{ 
                     padding: isMobile ? "4px 8px" : "8px 12px",
                     backgroundColor: "transparent",
-                    border: `3px solid #04cbee`,
+                    border: `3px solid #fc3f31`,
                     borderRadius: isMobile ? "10px" : "15px",
                     transition: "all 0.2s ease",
                     minWidth: isMobile ? "60px" : "120px",
@@ -655,15 +680,15 @@ const Interface = () => {
                     cursor: "pointer",
                     overflow: "hidden",
                     boxShadow: `
-                      0 0 10px #04cbee,
-                      0 0 20px rgba(4, 203, 238, 0.4),
-                      inset 0 0 10px rgba(4, 203, 238, 0.1)
+                      0 0 10px #fc3f31,
+                      0 0 20px rgba(252, 63, 49, 0.4),
+                      inset 0 0 10px rgba(252, 63, 49, 0.1)
                     `,
                     fontSize: isMobile ? "8px" : "12px",
                     fontWeight: 700,
-                    color: "#04cbee",
+                    color: "#fc3f31",
                     textTransform: "uppercase",
-                    textShadow: "0 0 5px #04cbee"
+                    textShadow: "0 0 5px #fc3f31"
                   }}
                 >
                   {isMobile ? "REVIVE" : "REVIVE LOSER"}

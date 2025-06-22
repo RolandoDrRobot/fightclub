@@ -21,7 +21,7 @@ const LoadingScreen = ({ progress = 0, status = 'Iniciando...' }) => {
     
     @keyframes shimmer {
       0% { 
-        background: linear-gradient(90deg, #04CBEE 0%, #00A8CC 50%, #04CBEE 100%);
+        background: linear-gradient(90deg, #fc3f31 0%, #ff6b53 50%, #fc3f31 100%);
         background-size: 200% 100%;
         background-position: 200% 0;
       }
