@@ -3,7 +3,7 @@ import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 
 const ParticleEffect = () => {
-  const meshRef = useRef();
+  const groupRef = useRef();
   
   // Menos partículas para gotas de sangre
   const particleCount = 25;
@@ -23,69 +23,86 @@ const ParticleEffect = () => {
       // Guardar altura inicial
       initialY[i] = positions[i * 3 + 1];
       
-      // Velocidades - principalmente caída con algo de deriva
-      velocities[i * 3] = (Math.random() - 0.5) * 0.01; // x - deriva lenta
+      // Velocidades inclinadas - las gotas caen diagonalmente
+      velocities[i * 3] = 0.015 + Math.random() * 0.01; // x - deriva constante hacia la derecha
       velocities[i * 3 + 1] = -Math.random() * 0.03 - 0.02; // y - caída
-      velocities[i * 3 + 2] = (Math.random() - 0.5) * 0.01; // z - deriva lenta
+      velocities[i * 3 + 2] = (Math.random() - 0.5) * 0.008; // z - deriva ligera
     }
     
     return { positions, velocities, initialY };
   }, []);
+
+  // Crear array de gotas como meshes individuales
+  const droplets = useMemo(() => {
+    const drops = [];
+    for (let i = 0; i < particleCount; i++) {
+      drops.push({
+        position: [
+          particles.positions[i * 3],
+          particles.positions[i * 3 + 1],
+          particles.positions[i * 3 + 2]
+        ],
+        velocity: [
+          particles.velocities[i * 3],
+          particles.velocities[i * 3 + 1],
+          particles.velocities[i * 3 + 2]
+        ]
+      });
+    }
+    return drops;
+  }, [particles]);
   
   // Animar las gotas de sangre
   useFrame((state) => {
-    if (meshRef.current) {
-      const positions = meshRef.current.geometry.attributes.position.array;
-      
-      for (let i = 0; i < particleCount; i++) {
-        // Aplicar gravedad y movimiento
-        positions[i * 3] += particles.velocities[i * 3]; // deriva x
-        positions[i * 3 + 1] += particles.velocities[i * 3 + 1]; // caída y
-        positions[i * 3 + 2] += particles.velocities[i * 3 + 2]; // deriva z
-        
-        // Acelerar la caída (gravedad)
-        particles.velocities[i * 3 + 1] -= 0.0005;
-        
-        // Reset cuando la gota cae muy bajo
-        if (positions[i * 3 + 1] < -3) {
-          positions[i * 3] = (Math.random() - 0.5) * 15;
-          positions[i * 3 + 1] = Math.random() * 3 + 6;
-          positions[i * 3 + 2] = (Math.random() - 0.5) * 8;
-          particles.velocities[i * 3 + 1] = -Math.random() * 0.02 - 0.01;
+    if (groupRef.current && groupRef.current.children) {
+      groupRef.current.children.forEach((drop, i) => {
+        if (drop && drop.position) {
+          // Aplicar velocidades inclinadas
+          drop.position.x += droplets[i].velocity[0]; // deriva hacia la derecha
+          drop.position.y += droplets[i].velocity[1]; // caída
+          drop.position.z += droplets[i].velocity[2]; // deriva ligera en z
+          
+          // Acelerar la caída (gravedad)
+          droplets[i].velocity[1] -= 0.0005;
+          
+          // Reset cuando la gota cae muy bajo
+          if (drop.position.y < -3) {
+            drop.position.x = (Math.random() - 0.5) * 15;
+            drop.position.y = Math.random() * 3 + 6;
+            drop.position.z = (Math.random() - 0.5) * 8;
+            droplets[i].velocity[0] = 0.015 + Math.random() * 0.01; // Nueva deriva
+            droplets[i].velocity[1] = -Math.random() * 0.02 - 0.01; // Nueva velocidad de caída
+            droplets[i].velocity[2] = (Math.random() - 0.5) * 0.008; // Nueva deriva en z
+          }
+          
+          // Mantener las gotas en el área horizontal
+          if (Math.abs(drop.position.x) > 8) {
+            drop.position.x = (Math.random() - 0.5) * 15;
+          }
+          if (Math.abs(drop.position.z) > 5) {
+            drop.position.z = (Math.random() - 0.5) * 8;
+          }
         }
-        
-        // Mantener las gotas en el área horizontal
-        if (Math.abs(positions[i * 3]) > 8) {
-          positions[i * 3] = (Math.random() - 0.5) * 15;
-        }
-        if (Math.abs(positions[i * 3 + 2]) > 5) {
-          positions[i * 3 + 2] = (Math.random() - 0.5) * 8;
-        }
-      }
-      
-      meshRef.current.geometry.attributes.position.needsUpdate = true;
+      });
     }
   });
 
   return (
-    <points ref={meshRef}>
-      <bufferGeometry>
-        <bufferAttribute
-          attach="attributes-position"
-          count={particleCount}
-          array={particles.positions}
-          itemSize={3}
-        />
-      </bufferGeometry>
-      <pointsMaterial
-        color="#8B0000" // Rojo sangre más oscuro
-        size={0.25} // Más grandes para parecer gotas
-        sizeAttenuation={true}
-        transparent={true}
-        opacity={0.8} // Más opacas
-        blending={THREE.AdditiveBlending}
-      />
-    </points>
+    <group ref={groupRef}>
+      {droplets.map((droplet, index) => (
+        <mesh
+          key={index}
+          position={droplet.position}
+        >
+          <sphereGeometry args={[0.04, 6, 6]} />
+          <meshBasicMaterial
+            color="#8B0000" // Rojo sangre más oscuro
+            transparent={true}
+            opacity={0.8}
+          />
+        </mesh>
+      ))}
+    </group>
   );
 };
 

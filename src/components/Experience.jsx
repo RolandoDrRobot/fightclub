@@ -43,9 +43,10 @@ const Experience = () => {
   return (
     <>
       <CameraControls />
-      <ambientLight />
+      <ambientLight intensity={0.5} />
       <directionalLight
         position={[-5, 5, 5]}
+        intensity={0.6}
         castShadow
         shadow-mapSize-width={2048}
         shadow-mapSize-height={2048}
