@@ -88,22 +88,6 @@ const LoadingScreen = ({ progress = 0, status = 'Iniciando...' }) => {
             <span style={{ display: 'inline-block', margin: '0px' }}>U</span>
             <span style={{ display: 'inline-block', margin: '0px' }}>B</span>
           </div>
-          
-          {/* Efecto de resplandor rotatorio */}
-          <div
-            style={{
-              position: 'absolute',
-              top: '50%',
-              left: '50%',
-              transform: 'translate(-50%, -50%)',
-              width: '400px',
-              height: '400px',
-              border: '2px solid rgba(252, 63, 49, 0.3)',
-              borderRadius: '50%',
-              animation: 'rotate 3s linear infinite',
-              zIndex: -1
-            }}
-          />
         </div>
         
         {/* Texto de carga principal con efecto neón */}

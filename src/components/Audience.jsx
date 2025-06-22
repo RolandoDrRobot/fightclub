@@ -50,53 +50,6 @@ function AudienceMember({ position, rotation, initialAnimationIndex, memberId, .
   );
 }
 
-// Donnie audience member with crowd animation
-function DonnieAudience({ position, rotation, ...props }) {
-  const group = useRef();
-  const { scene, animations } = useGLTF("./models/donnie.glb");
-  
-  // Clone the scene to create independent instance
-  const clonedScene = useMemo(() => SkeletonUtils.clone(scene), [scene]);
-  const { actions, names } = useAnimations(animations, group);
-
-  // Find and play the "crowd" animation in loop
-  useEffect(() => {
-    if (actions && names.length > 0) {
-      // Find the crowd animation
-      const crowdAnimationName = names.find(name => name.toLowerCase().includes('crowd'));
-      
-      if (crowdAnimationName && actions[crowdAnimationName]) {
-        console.log(`Playing Donnie crowd animation: ${crowdAnimationName}`);
-        
-        // Stop all other animations first
-        Object.values(actions).forEach(action => action.stop());
-        
-        // Play the crowd animation in loop
-        actions[crowdAnimationName].reset().fadeIn(0.5).play();
-        actions[crowdAnimationName].setLoop(2201, Infinity); // Loop infinitely
-        
-        return () => {
-          if (actions[crowdAnimationName]) {
-            actions[crowdAnimationName].fadeOut(0.5);
-          }
-        };
-      } else {
-        console.warn('Crowd animation not found for Donnie, available animations:', names);
-        // Fallback to first available animation if crowd not found
-        if (actions[names[0]]) {
-          actions[names[0]].reset().fadeIn(0.5).play();
-        }
-      }
-    }
-  }, [actions, names]);
-
-  return (
-    <group ref={group} position={position} rotation={rotation} {...props} dispose={null}>
-      <primitive object={clonedScene} />
-    </group>
-  );
-}
-
 // Chuck audience member with crowd animation
 function ChuckAudience({ position, rotation, ...props }) {
   const group = useRef();
@@ -223,53 +176,6 @@ function WayneAudience({ position, rotation, ...props }) {
         };
       } else {
         console.warn('Crowd animation not found for Wayne, available animations:', names);
-        // Fallback to first available animation if crowd not found
-        if (actions[names[0]]) {
-          actions[names[0]].reset().fadeIn(0.5).play();
-        }
-      }
-    }
-  }, [actions, names]);
-
-  return (
-    <group ref={group} position={position} rotation={rotation} {...props} dispose={null}>
-      <primitive object={clonedScene} />
-    </group>
-  );
-}
-
-// Carl audience member with crowd animation
-function CarlAudience({ position, rotation, ...props }) {
-  const group = useRef();
-  const { scene, animations } = useGLTF("./models/Carl.glb");
-  
-  // Clone the scene to create independent instance
-  const clonedScene = useMemo(() => SkeletonUtils.clone(scene), [scene]);
-  const { actions, names } = useAnimations(animations, group);
-
-  // Find and play the "crowd" animation in loop
-  useEffect(() => {
-    if (actions && names.length > 0) {
-      // Find the crowd animation
-      const crowdAnimationName = names.find(name => name.toLowerCase().includes('crowd'));
-      
-      if (crowdAnimationName && actions[crowdAnimationName]) {
-        console.log(`Playing Carl crowd animation: ${crowdAnimationName}`);
-        
-        // Stop all other animations first
-        Object.values(actions).forEach(action => action.stop());
-        
-        // Play the crowd animation in loop
-        actions[crowdAnimationName].reset().fadeIn(0.5).play();
-        actions[crowdAnimationName].setLoop(2201, Infinity); // Loop infinitely
-        
-        return () => {
-          if (actions[crowdAnimationName]) {
-            actions[crowdAnimationName].fadeOut(0.5);
-          }
-        };
-      } else {
-        console.warn('Crowd animation not found for Carl, available animations:', names);
         // Fallback to first available animation if crowd not found
         if (actions[names[0]]) {
           actions[names[0]].reset().fadeIn(0.5).play();
@@ -528,10 +434,8 @@ function Audience() {
     const members = [];
     const audienceTypes = [
       { component: 'Lawrence', model: 'Lawrence.glb', name: 'Lawrence' },
-      { component: 'Carl', model: 'Carl.glb', name: 'Carl' },
       { component: 'Vince', model: 'Vince.glb', name: 'Vince' },
       { component: 'Bob', model: 'Bob.glb', name: 'Bob' },
-      { component: 'Donnie', model: 'donnie.glb', name: 'Donnie' },
       { component: 'Tony', model: 'Tony.glb', name: 'Tony' },
       { component: 'Lou', model: 'Lou.glb', name: 'Lou' },
       { component: 'Chuck', model: 'Chuck.glb', name: 'Chuck' },
@@ -539,7 +443,7 @@ function Audience() {
       { component: 'Earl', model: 'Earl.glb', name: 'Earl' }
     ];
     
-    const numMembers = audienceTypes.length; // 10 audience members
+    const numMembers = audienceTypes.length; // 8 audience members
     const radius = 3.0; // Closer distance from center where the fighters are
     const centerY = -1; // Same level as main characters
     
@@ -604,28 +508,10 @@ function Audience() {
                 />
               </group>
             );
-          case 'Donnie':
-            return (
-              <group key={member.id} scale={member.scale}>
-                <DonnieAudience
-                  position={member.position}
-                  rotation={member.rotation}
-                />
-              </group>
-            );
           case 'Wayne':
             return (
               <group key={member.id} scale={member.scale}>
                 <WayneAudience
-                  position={member.position}
-                  rotation={member.rotation}
-                />
-              </group>
-            );
-          case 'Carl':
-            return (
-              <group key={member.id} scale={member.scale}>
-                <CarlAudience
                   position={member.position}
                   rotation={member.rotation}
                 />
@@ -677,11 +563,9 @@ function Audience() {
 
 // Preload all models
 useGLTF.preload("./models/pete.glb");
-useGLTF.preload("./models/donnie.glb");
 useGLTF.preload("./models/Chuck.glb");
 useGLTF.preload("./models/Earl.glb");
 useGLTF.preload("./models/Wayne.glb");
-useGLTF.preload("./models/Carl.glb");
 useGLTF.preload("./models/Vince.glb");
 useGLTF.preload("./models/Lou.glb");
 useGLTF.preload("./models/Tony.glb");
