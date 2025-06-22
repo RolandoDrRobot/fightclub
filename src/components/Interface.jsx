@@ -554,21 +554,19 @@ const Interface = () => {
                             position: "relative",
                             zIndex: 1,
                             padding: "0",
-                            minWidth: isMobile ? "90px" : "150px",
-                            width: isMobile ? "90px" : "150px",
-                            height: isMobile ? "75px" : "120px",
+                            minHeight: "120px",
+                            minWidth: "100px",
                             backgroundColor: "transparent",
-                            border: canUseAttack ? `3px solid #fc3f31` : `3px solid #666`,
-                            borderRadius: isMobile ? "12px" : "15px",
+                            border: "none",
+                            borderRadius: "4px",
                             cursor: canUseAttack ? "pointer" : "not-allowed",
                             opacity: canUseAttack ? 1 : 0.5,
                             transition: "all 0.2s ease",
                             overflow: "hidden",
-                            boxShadow: canUseAttack ? `
-                              0 0 10px #fc3f31,
-                              0 0 20px rgba(252, 63, 49, 0.4),
-                              inset 0 0 10px rgba(252, 63, 49, 0.1)
-                            ` : "none"
+                            display: "inline-flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            boxShadow: "none"
                           }}
                           onTouchStart={(e) => {
                             if (canUseAttack && isMobile) {
@@ -583,21 +581,13 @@ const Interface = () => {
                           onMouseEnter={(e) => {
                             if (canUseAttack && !isMobile) {
                               e.target.style.transform = "scale(1.05)";
-                              e.target.style.boxShadow = `
-                                0 0 15px #fc3f31,
-                                0 0 30px rgba(252, 63, 49, 0.6),
-                                inset 0 0 15px rgba(252, 63, 49, 0.2)
-                              `;
+                              e.target.style.boxShadow = "none";
                             }
                           }}
                           onMouseLeave={(e) => {
                             if (canUseAttack && !isMobile) {
                               e.target.style.transform = "scale(1)";
-                              e.target.style.boxShadow = `
-                                0 0 10px #fc3f31,
-                                0 0 20px rgba(252, 63, 49, 0.4),
-                                inset 0 0 10px rgba(252, 63, 49, 0.1)
-                              `;
+                              e.target.style.boxShadow = "none";
                             }
                           }}
                         >
@@ -605,14 +595,15 @@ const Interface = () => {
                             src={attack.image}
                             alt={attack.label}
                             style={{
-                              width: "100%",
-                              height: "100%",
+                              width: "90%",
+                              height: "90%",
                               objectFit: "contain",
                               filter: canUseAttack ? "none" : "grayscale(1)",
-                              pointerEvents: "none"
+                              pointerEvents: "none",
+                              borderRadius: "4px"
                             }}
                           />
-                      </Button>
+                        </Button>
                       </Box>
                     );
                   })}
@@ -623,7 +614,7 @@ const Interface = () => {
 
           {/* Botón de Bloqueo - Estilo Arcade Mejorado */}
           <Affix position={{ 
-            bottom: isMobile ? 120 : 220, 
+            bottom: isMobile ? 135 : 220, 
             left: isMobile ? 10 : 40
           }}>
             <Box style={{ position: "relative" }}>
@@ -639,17 +630,13 @@ const Interface = () => {
                   minWidth: isMobile ? "70px" : "120px",
                   height: isMobile ? "60px" : "100px",
                   backgroundColor: "transparent",
-                  border: canBlock(player1Stamina, player1IsDead) ? `3px solid #fc3f31` : `3px solid #666`,
+                  border: "none",
                   borderRadius: isMobile ? "12px" : "15px",
                   cursor: canBlock(player1Stamina, player1IsDead) ? "pointer" : "not-allowed",
                   opacity: canBlock(player1Stamina, player1IsDead) ? 1 : 0.5,
                   transition: "all 0.2s ease",
                   overflow: "hidden",
-                  boxShadow: canBlock(player1Stamina, player1IsDead) ? `
-                    0 0 10px #fc3f31,
-                    0 0 20px rgba(252, 63, 49, 0.4),
-                    inset 0 0 10px rgba(252, 63, 49, 0.1)
-                  ` : "none"
+                  boxShadow: "none"
                 }}
               >
                 <img 
@@ -669,7 +656,7 @@ const Interface = () => {
 
           {/* Panel de Control - Derecha */}
           <Affix position={{ 
-            bottom: isMobile ? 120 : 220, 
+            bottom: isMobile ? 145 : 220, 
             right: isMobile ? 10 : 40
           }}>
             <Stack spacing={isMobile ? "xs" : "md"} align="center">
@@ -698,11 +685,7 @@ const Interface = () => {
                   height: isMobile ? "50px" : "100px",
                   cursor: "pointer",
                   overflow: "hidden",
-                  boxShadow: `
-                    0 0 10px #42cf52,
-                    0 0 20px rgba(66, 207, 82, 0.4),
-                    inset 0 0 10px rgba(66, 207, 82, 0.1)
-                  `
+                  boxShadow: "none"
                 }}
               >
                 <img 
