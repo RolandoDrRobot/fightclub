@@ -444,7 +444,7 @@ function Audience() {
     ];
     
     const numMembers = audienceTypes.length; // 8 audience members
-    const radius = 3.0; // Closer distance from center where the fighters are
+    const radius = 2.8; // Closer distance from center where the fighters are
     const centerY = -1; // Same level as main characters
     
     audienceTypes.forEach((type, i) => {

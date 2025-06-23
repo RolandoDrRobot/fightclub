@@ -24,7 +24,7 @@ export const CameraControls = () => {
       timeRef.current += delta;
       
       // Camera orbits around the characters with diagonal movement
-      const baseRadius = 6; // Base distance from center
+      const baseRadius = 4; // Base distance from center (reduced from 6 to 4)
       const speed = 0.2; // Horizontal rotation speed
       const verticalSpeed = 0.15; // Vertical oscillation speed
       const diagonalSpeed = 0.25; // Diagonal movement speed
@@ -38,7 +38,7 @@ export const CameraControls = () => {
       const height = baseHeight + Math.sin(timeRef.current * verticalSpeed) * heightVariation;
       
       // Diagonal radius variation (closer and farther)
-      const radiusVariation = 1.5;
+      const radiusVariation = 1; // Reduced from 1.5 to 1 for closer movement
       const radius = baseRadius + Math.cos(timeRef.current * diagonalSpeed) * radiusVariation;
       
       // Additional diagonal tilt
@@ -93,7 +93,7 @@ export const CameraControls = () => {
         enableZoom={true}
         enableRotate={isCombatMode}
         minDistance={3}
-        maxDistance={10}
+        maxDistance={5}
         minPolarAngle={0}
         maxPolarAngle={Math.PI / 2}
       />

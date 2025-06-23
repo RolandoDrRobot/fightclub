@@ -4,6 +4,7 @@ import Tyler from "./Tyler";
 import ParticleEffect from "./ParticleEffect";
 import BloodFloor from "./BloodFloor";
 import Audience from "./Audience";
+import BarBasement from "./UrbanEnvironment";
 import { useCharacterAnimations } from "../contexts/CharacterAnimations";
 
 const Experience = () => {
@@ -43,14 +44,22 @@ const Experience = () => {
   return (
     <>
       <CameraControls />
-      <ambientLight intensity={0.5} />
+      <ambientLight intensity={0.2} />
       <directionalLight
-        position={[-5, 5, 5]}
-        intensity={0.6}
+        position={[-5, 10, 5]}
+        intensity={0.5}
         castShadow
         shadow-mapSize-width={2048}
         shadow-mapSize-height={2048}
+        shadow-camera-far={50}
+        shadow-camera-left={-20}
+        shadow-camera-right={20}
+        shadow-camera-top={20}
+        shadow-camera-bottom={-20}
       />
+      
+      {/* Sótano del bar */}
+      <BarBasement />
       
       {/* Efectos de sangre - En ambos modos */}
       <ParticleEffect />
@@ -73,14 +82,6 @@ const Experience = () => {
           rotation={transforms.player2.rotation} 
         />
       </group>
-      <mesh
-        rotation={[-0.5 * Math.PI, 0, 0]}
-        position={[0, -1, 0]}
-        receiveShadow
-      >
-        <planeBufferGeometry args={[15, 15, 1, 1]} />
-        <shadowMaterial transparent opacity={0.2} />
-      </mesh>
     </>
   );
 };
