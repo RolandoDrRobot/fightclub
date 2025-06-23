@@ -12,7 +12,7 @@ const CrowdSound = () => {
     if (audioRef.current) {
       // Configurar el audio para loop
       audioRef.current.loop = true;
-      audioRef.current.volume = 0.3; // Volumen inicial
+      audioRef.current.volume = 0.15; // Volumen inicial reducido
       audioRef.current.preload = 'auto';
       
       // Función para intentar reproducir
@@ -69,7 +69,7 @@ const CrowdSound = () => {
       }
 
       // Volúmenes balanceados con la música principal
-      const targetVolume = isCombatMode ? 0.25 : 0.4;
+      const targetVolume = isCombatMode ? 0.15 : 0.2;
       
       console.log(`Cambiando volumen de crowd a ${targetVolume} (Modo: ${isCombatMode ? 'Combate' : 'Baile'})`);
       

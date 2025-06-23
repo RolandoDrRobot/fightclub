@@ -774,8 +774,8 @@ export const CharacterAnimationsProvider = (props) => {
 
     // Si Player 2 está bloqueando, decidir si continuar o no
     if (player2IsBlocking) {
-      // 30% de probabilidad de dejar de bloquear en modo fácil
-      if (Math.random() < 0.3) {
+      // 60% de probabilidad de dejar de bloquear en modo fácil (aumentado de 30%)
+      if (Math.random() < 0.6) {
         console.log("AI decides to stop blocking");
         togglePlayer2Block();
       } else {
@@ -789,7 +789,7 @@ export const CharacterAnimationsProvider = (props) => {
       easy: {
         reactionTime: { min: 1500, max: 3000 }, // 1.5-3 segundos
         attackChance: 0.4, // 40% de probabilidad de atacar
-        blockChance: 0.3,  // 30% de probabilidad de bloquear
+        blockChance: 0.1,  // 10% de probabilidad de bloquear (reducido de 0.3)
         smartBlockChance: 0.1, // 10% de bloqueo inteligente
         staminaAwareness: 0.2 // 20% de consciencia de stamina
       }
