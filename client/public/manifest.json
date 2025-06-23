@@ -1,0 +1,77 @@
+{
+  "name": "Fight Club - Character Customization",
+  "short_name": "Fight Club",
+  "description": "Fight Club character customization and battle application",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#000000",
+  "theme_color": "#fc3f31",
+  "orientation": "portrait-primary",
+  "scope": "/",
+  "lang": "es",
+  "icons": [
+    {
+      "src": "/app.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/app.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/app.png",
+      "sizes": "144x144",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/app.png",
+      "sizes": "96x96",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/app.png",
+      "sizes": "72x72",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/app.png",
+      "sizes": "48x48",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ],
+  "categories": ["games", "entertainment"],
+  "shortcuts": [
+    {
+      "name": "Start Battle",
+      "short_name": "Battle",
+      "description": "Start a new fight",
+      "url": "/?mode=combat",
+      "icons": [
+        {
+          "src": "/app.png",
+          "sizes": "96x96"
+        }
+      ]
+    },
+    {
+      "name": "Dance Mode",
+      "short_name": "Dance",
+      "description": "Enter dance mode",
+      "url": "/?mode=dance",
+      "icons": [
+        {
+          "src": "/app.png",
+          "sizes": "96x96"
+        }
+      ]
+    }
+  ]
+} 
