@@ -367,7 +367,7 @@ const Interface = () => {
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
-                animation: "redNeonText 2s ease-in-out infinite"
+                textShadow: "2px 2px 4px rgba(0,0,0,0.8)"
               }}>
                 {"FIGHT CLUB".split("").map((letter, index) => (
                   <span 
