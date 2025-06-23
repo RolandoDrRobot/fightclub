@@ -30,7 +30,7 @@ Onlydust - will be added shortly
 ### Play
 > Provide instructions on how to play your game. It could be a URL, a README, or a link to a binary to install.
 
-**Live Demo**: [fightclub-pi.vercel.app](fightclub-pi.vercel.app)
+**Live Demo**: [[fightclub-pi.vercel.app](https://fightclub-pi.vercel.app/)] It takes a bit to load the first time, pwa is the best experience, you can download the game in your iphone desktop
 
 **Install:**
 ```bash
