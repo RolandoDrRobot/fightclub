@@ -24,7 +24,7 @@ No-holds-barred fighting here every punch matters and only the strongest survive
 ### GitHub
 > Provide the GitHub where your project is hosted. Please ensure your github repo is registered with [OnlyDust](https://app.onlydust.com/p/create) to receive awards.
 
-[Onlydust](https://github.com/RolandoDrRobot/fightclub)
+Onlydust - will be added shortly
 [Github](https://github.com/RolandoDrRobot/fightclub)
 
 ### Play
