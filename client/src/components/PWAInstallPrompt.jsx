@@ -7,13 +7,13 @@ const PWAInstallPrompt = () => {
   const [isInstalled, setIsInstalled] = useState(false);
 
   useEffect(() => {
-    // Verificar si ya está instalado
+    // Check if already installed
     if (window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone) {
       setIsInstalled(true);
       return;
     }
 
-    // Escuchar el evento beforeinstallprompt
+    // Listen for beforeinstallprompt event
     const handleBeforeInstallPrompt = (e) => {
       console.log('PWA: beforeinstallprompt event fired');
       e.preventDefault();
@@ -23,7 +23,7 @@ const PWAInstallPrompt = () => {
 
     window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
 
-    // Escuchar cuando la app se instala
+    // Listen for when app gets installed
     const handleAppInstalled = () => {
       console.log('PWA: App was installed');
       setIsInstalled(true);
@@ -42,10 +42,10 @@ const PWAInstallPrompt = () => {
   const handleInstallClick = async () => {
     if (!deferredPrompt) return;
 
-    // Mostrar el prompt de instalación
+    // Show install prompt
     deferredPrompt.prompt();
 
-    // Esperar la respuesta del usuario
+    // Wait for user response
     const { outcome } = await deferredPrompt.userChoice;
     console.log(`PWA: User response to the install prompt: ${outcome}`);
 
@@ -55,18 +55,18 @@ const PWAInstallPrompt = () => {
       console.log('PWA: User dismissed the install prompt');
     }
 
-    // Limpiar el prompt
+    // Clean up prompt
     setDeferredPrompt(null);
     setShowInstallPrompt(false);
   };
 
   const handleDismiss = () => {
     setShowInstallPrompt(false);
-    // Ocultar por 24 horas
+    // Hide for 24 hours
     localStorage.setItem('pwa-install-dismissed', Date.now().toString());
   };
 
-  // No mostrar si ya está instalado o si fue dismissado recientemente
+  // Don't show if already installed or recently dismissed
   useEffect(() => {
     const dismissed = localStorage.getItem('pwa-install-dismissed');
     if (dismissed) {
@@ -109,10 +109,10 @@ const PWAInstallPrompt = () => {
             color="#fc3f31"
             style={{ textTransform: 'uppercase', letterSpacing: '1px' }}
           >
-            ¡Instala Fight Club!
+            Install Fight Club!
           </Text>
           <Text size="xs" color="white" mt={4}>
-            Instala la app para una experiencia completa sin conexión
+            Install the app for a complete offline experience
           </Text>
         </Box>
         <Button
@@ -139,7 +139,7 @@ const PWAInstallPrompt = () => {
             }
           }}
         >
-          📱 Instalar
+          📱 Install
         </Button>
         <Button
           variant="outline"
@@ -153,7 +153,7 @@ const PWAInstallPrompt = () => {
             }
           }}
         >
-          Más tarde
+          Later
         </Button>
       </Group>
     </Box>
