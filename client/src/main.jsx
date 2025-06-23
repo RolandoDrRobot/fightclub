@@ -58,14 +58,28 @@ ReactDOM.createRoot(document.getElementById("root")).render(
             primaryColor: '#F5F5DC',
           },
           globalStyles: (_theme) => ({
+            // Ensure black background everywhere
+            html: {
+              backgroundColor: '#000000 !important',
+              background: '#000000 !important',
+              margin: 0,
+              padding: 0,
+            },
             body: {
               width: "100vw",
-              height: "100vh",
+              height: "100dvh",
               fontFamily: 'Anton, Impact, sans-serif',
+              backgroundColor: '#000000 !important',
+              background: '#000000 !important',
+              margin: 0,
+              padding: 0,
             },
             "#root": {
               width: "100%",
               height: "100%",
+              backgroundColor: '#000000 !important',
+              background: '#000000 !important',
+              minHeight: '100dvh',
             },
             // Ensure all buttons use Anton font
             ".mantine-Button-root": {

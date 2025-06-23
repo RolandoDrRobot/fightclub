@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     
     <!-- PWA Meta Tags -->
-    <meta name="theme-color" content="#fc3f31" />
+    <meta name="theme-color" content="#000000" />
     <meta name="description" content="Fight Club - Character Customization and Battle Application" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
@@ -26,9 +26,31 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Anton&family=Exo+2:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
     
+    <!-- Ensure black background everywhere -->
+    <style>
+      html, body {
+        margin: 0;
+        padding: 0;
+        background-color: #000000 !important;
+        background: #000000 !important;
+        color: white;
+      }
+      
+      * {
+        box-sizing: border-box;
+      }
+      
+      #root {
+        background-color: #000000 !important;
+        background: #000000 !important;
+        min-height: 100dvh;
+        width: 100%;
+      }
+    </style>
+    
     <title>Fight Club</title>
   </head>
-  <body>
+  <body style="background-color: #000000 !important; background: #000000 !important; margin: 0; padding: 0;">
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
     
